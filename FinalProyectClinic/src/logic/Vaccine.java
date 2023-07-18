@@ -1,7 +1,10 @@
 package logic;
 
-public class Vaccine {
+import java.io.Serializable;
 
+public class Vaccine implements Serializable{
+
+	private static final long serialVersionUID = 2455143234880788531L;
 	private String code;
 	private String name;
 	private String description;

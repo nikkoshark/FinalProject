@@ -281,8 +281,8 @@ public class Clinic implements Serializable{
 		return total;
 	}
 	
-	public int totalCheckUpDone() {
-		return myCheckUps.size();
+	public int totalPatientsCheck() {
+		return myAppoinments.size();
 	}
 	
 }

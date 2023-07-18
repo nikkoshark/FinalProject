@@ -14,7 +14,7 @@ public class Appoinment implements Serializable{
 	private String ssn;
 	private String phoneNumber;
 	private String description;
-	LocalDateTime date = null;
+	private LocalDateTime date = null;
 	private Medic medic = null;
 	private String status;
 	
