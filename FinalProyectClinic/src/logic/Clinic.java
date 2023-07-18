@@ -16,7 +16,7 @@ public class Clinic implements Serializable{
 	private ArrayList<Disease> myDiseases = null;
 	private ArrayList<User> myUsers = null;
 	private static Clinic clinic = null;
-	private static User user = null;
+	private static User loginUser = null;
 	public static int codePerson = 1;
 	public static int codeCheckUp = 1;
 	public static int codeAppoinment = 1;
@@ -93,6 +93,14 @@ public class Clinic implements Serializable{
 
 	public void setMyUsers(ArrayList<User> myUsers) {
 		this.myUsers = myUsers;
+	}
+
+	public static User getLoginUser() {
+		return loginUser;
+	}
+
+	public static void setLoginUser(User loginUser) {
+		Clinic.loginUser = loginUser;
 	}
 	
 	//searching algorithms
@@ -284,56 +292,19 @@ public class Clinic implements Serializable{
 	public int totalCheckUpDone() {
 		return myCheckUps.size();
 	}
+
+	
+	public boolean confirmLogin(String username, String psw) {
+		boolean verification = false;
+		
+		for(User user: myUsers) {
+			if(user.getName().equals(username) && user.getPassword().equals(psw)) {
+				loginUser = user;
+				verification = true;
+			}
+		}
+		
+		return verification;
+	}
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

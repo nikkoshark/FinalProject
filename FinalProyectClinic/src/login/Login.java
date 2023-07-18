@@ -1,6 +1,5 @@
 package login;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,10 +12,21 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import logic.Clinic;
+import VisualTest.Main;
+import java.awt.SystemColor;
+import javax.swing.JLabel;
+import java.awt.Font;
+import javax.swing.JTextField;
+import javax.swing.JPasswordField;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Login extends JFrame {
 
 	private JPanel contentPane;
+	private JTextField txtUser;
+	private JPasswordField pswfPass;
 
 	/**
 	 * Launch the application.
@@ -70,11 +80,54 @@ public class Login extends JFrame {
 	 */
 	public Login() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 483, 334);
 		contentPane = new JPanel();
+		contentPane.setBackground(SystemColor.activeCaption);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		setResizable(false);
+		setLocationRelativeTo(null);
+		
+		JLabel lblNewLabel = new JLabel("\u00A1BIENVENIDO!");
+		lblNewLabel.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 20));
+		lblNewLabel.setBounds(167, 11, 130, 41);
+		contentPane.add(lblNewLabel);
+		
+		JLabel lblNewLabel_1 = new JLabel("USUARIO");
+		lblNewLabel_1.setFont(new Font("Calibri", Font.ITALIC, 14));
+		lblNewLabel_1.setBounds(167, 77, 77, 14);
+		contentPane.add(lblNewLabel_1);
+		
+		JLabel lblContrasea = new JLabel("CONTRASE\u00D1A");
+		lblContrasea.setFont(new Font("Calibri", Font.ITALIC, 14));
+		lblContrasea.setBounds(167, 145, 91, 14);
+		contentPane.add(lblContrasea);
+		
+		txtUser = new JTextField();
+		txtUser.setBounds(167, 90, 130, 20);
+		contentPane.add(txtUser);
+		txtUser.setColumns(10);
+		
+		pswfPass = new JPasswordField();
+		pswfPass.setBounds(167, 160, 130, 20);
+		contentPane.add(pswfPass);
+		
+		JButton btnNewButton = new JButton("LOGIN");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(Clinic.getInstance().confirmLogin(txtUser.getText(), String.valueOf(pswfPass.getPassword()))) {
+					
+					//save users in the file...
+						Main principal = new Main(Clinic.getLoginUser());
+						principal.setVisible(true);
+						dispose();
+					
+					
+				}
+			}
+		});
+		btnNewButton.setBounds(192, 220, 89, 23);
+		contentPane.add(btnNewButton);
 	}
-
 }
