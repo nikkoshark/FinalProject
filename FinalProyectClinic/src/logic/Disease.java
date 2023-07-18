@@ -1,7 +1,10 @@
 package logic;
 
-public class Disease {
+import java.io.Serializable;
 
+public class Disease implements Serializable{
+
+	private static final long serialVersionUID = 7916527234397206038L;
 	private String code;
 	private String name;
 	private String description;
