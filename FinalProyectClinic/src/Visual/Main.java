@@ -1,4 +1,4 @@
-package VisualTest;
+package Visual;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

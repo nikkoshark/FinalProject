@@ -1,12 +1,11 @@
-package VisualTest;
+package Visual;
 
 
 import javax.swing.JPanel;
 
-import AdminPanels.CreateDisease;
-import AdminPanels.CreateMedic;
-import AdminPanels.CreateSecretary;
-import AdminPanels.CreateVaccine;
+import AdminJDialogs.CreateDiseaseVaccine;
+import AdminJDialogs.CreateMedic;
+import AdminJDialogs.CreateSecretary;
 import AdminPanels.DefaultDashboard;
 import AdminPanels.ListDisease;
 import AdminPanels.ListMedic;
@@ -29,10 +28,6 @@ public class MAdminPanel extends JPanel {
 	private ListSecretary listSecretary;
 	private ListVaccine listVaccine;
 	private ListMedic listMedic;
-	private CreateDisease createDisease;
-	private CreateSecretary createSecretary;
-	private CreateVaccine createVaccine;
-	private CreateMedic createMedic;
 	private DefaultDashboard defDash;
 	/**
 	 * Create the panel.
@@ -47,10 +42,6 @@ public class MAdminPanel extends JPanel {
 		listSecretary = new ListSecretary();
 		listMedic = new ListMedic();
 		listVaccine = new ListVaccine();
-		createDisease = new CreateDisease();
-		createSecretary = new CreateSecretary();
-		createMedic = new CreateMedic();
-		createVaccine = new CreateVaccine();
 		defDash = new DefaultDashboard();
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -71,7 +62,9 @@ public class MAdminPanel extends JPanel {
 		JMenuItem mntmSCreate = new JMenuItem("Create");
 		mntmSCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				menuclicked(createSecretary);
+				CreateSecretary createSecretary = new CreateSecretary();
+				createSecretary.setVisible(true);
+				
 			}
 		});
 		mnS.add(mntmSCreate);
@@ -90,7 +83,8 @@ public class MAdminPanel extends JPanel {
 		JMenuItem mntmMCreate = new JMenuItem("Create");
 		mntmMCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				menuclicked(createMedic);
+				CreateMedic createMedic = new CreateMedic();
+				createMedic.setVisible(true);
 			}
 		});
 		mnM.add(mntmMCreate);
@@ -109,7 +103,8 @@ public class MAdminPanel extends JPanel {
 		JMenuItem mntmVCreate = new JMenuItem("Create");
 		mntmVCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				menuclicked(createVaccine);
+				CreateDiseaseVaccine createVaccine = new CreateDiseaseVaccine("Vaccine");
+				createVaccine.setVisible(true);
 			}
 		});
 		mnV.add(mntmVCreate);
@@ -128,7 +123,8 @@ public class MAdminPanel extends JPanel {
 		JMenuItem mntmDCreate = new JMenuItem("Create");
 		mntmDCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				menuclicked(createDisease);
+				CreateDiseaseVaccine createDiseaseVaccine = new CreateDiseaseVaccine("Disease");
+				createDiseaseVaccine.setVisible(true);
 			}
 		});
 		mnD.add(mntmDCreate);
@@ -159,10 +155,6 @@ public class MAdminPanel extends JPanel {
 		InfoP.add(listVaccine);
 		InfoP.add(listSecretary);
 		InfoP.add(listMedic);
-		InfoP.add(createDisease);
-		InfoP.add(createVaccine);
-		InfoP.add(createSecretary);
-		InfoP.add(createMedic);
 		
 		menuclicked(defDash); //default
 	}
@@ -173,10 +165,6 @@ public class MAdminPanel extends JPanel {
 		listVaccine.setVisible(false);
 		listSecretary.setVisible(false);
 		listMedic.setVisible(false);
-		createDisease.setVisible(false);
-		createVaccine.setVisible(false);
-		createSecretary.setVisible(false);
-		createMedic.setVisible(false);
 		defDash.setVisible(false);
 		
 		panel.setVisible(true);

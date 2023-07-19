@@ -11,8 +11,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import Visual.Main;
 import logic.Clinic;
-import VisualTest.Main;
+
 import java.awt.SystemColor;
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -119,10 +120,9 @@ public class Login extends JFrame {
 				if(Clinic.getInstance().confirmLogin(txtUser.getText(), String.valueOf(pswfPass.getPassword()))) {
 					
 					//save users in the file...
-						Main principal = new Main(Clinic.getLoginUser());
-						principal.setVisible(true);
-						dispose();
-					
+					Main principal = new Main(Clinic.getLoginUser());
+					principal.setVisible(true);
+					dispose();
 					
 				}
 			}

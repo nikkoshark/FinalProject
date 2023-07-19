@@ -300,7 +300,7 @@ public class Clinic implements Serializable{
 		for(User user: myUsers) {
 			if(user.getName().equals(username) && user.getPassword().equals(psw)) {
 				loginUser = user;
-				verification = true;
+				verification = true; 
 			}
 		}
 		
