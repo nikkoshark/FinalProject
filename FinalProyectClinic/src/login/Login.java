@@ -124,7 +124,7 @@ public class Login extends JFrame {
 					principal.setVisible(true);
 					dispose();
 					
-				}
+				} 
 			}
 		});
 		btnNewButton.setBounds(192, 220, 89, 23);
