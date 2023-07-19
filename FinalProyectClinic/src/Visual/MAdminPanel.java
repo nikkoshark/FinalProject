@@ -5,7 +5,7 @@ import javax.swing.JPanel;
 
 import AdminJDialogs.CreateDiseaseVaccine;
 import AdminJDialogs.CreateMedic;
-import AdminJDialogs.CreateSecretary;
+import AdminJDialogs.CreateUser;
 import AdminPanels.DefaultDashboard;
 import AdminPanels.ListDisease;
 import AdminPanels.ListMedic;
@@ -62,8 +62,8 @@ public class MAdminPanel extends JPanel {
 		JMenuItem mntmSCreate = new JMenuItem("Create");
 		mntmSCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CreateSecretary createSecretary = new CreateSecretary();
-				createSecretary.setVisible(true);
+				CreateUser createUser = new CreateUser();
+				createUser.setVisible(true);
 				
 			}
 		});
