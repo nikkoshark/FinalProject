@@ -1,6 +1,7 @@
 package logic;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import login.User;
@@ -294,17 +295,51 @@ public class Clinic implements Serializable{
 	}
 
 	
-	public boolean confirmLogin(String username, String psw) {
-		boolean verification = false;
-		
+	public boolean validUser(String username, String psw) {
 		for(User user: myUsers) {
 			if(user.getName().equals(username) && user.getPassword().equals(psw)) {
 				loginUser = user;
-				verification = true; 
+				return true; 
 			}
 		}
 		
-		return verification;
+		return false;
+	}
+	
+	public boolean isUniquePhoneNumber(String number) {
+		
+		for (Person per : myPersons) {
+			if (per.getPhoneNumber().equalsIgnoreCase(number)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	public boolean isUniqueSsnNumber(String number) {
+		
+		for (Person per : myPersons) {
+			if (per.getSsn().equalsIgnoreCase(number)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	public ArrayList<Appoinment> getAppoinmentsOfMedic(String codeMedic) {
+		ArrayList<Appoinment> appoinments = new ArrayList<>();
+		
+		for (Appoinment appoinment : myAppoinments) {
+			if (appoinment.getStatus().equalsIgnoreCase("Espera")) {
+				if (appoinment.getMedic().getCode().equalsIgnoreCase(codeMedic)) {
+					appoinments.add(appoinment);
+				}
+			}
+		}
+		
+		return appoinments;
 	}
 	
 }

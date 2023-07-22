@@ -117,7 +117,7 @@ public class Login extends JFrame {
 		JButton btnNewButton = new JButton("LOGIN");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(Clinic.getInstance().confirmLogin(txtUser.getText(), String.valueOf(pswfPass.getPassword()))) {
+				if(Clinic.getInstance().validUser(txtUser.getText(), String.valueOf(pswfPass.getPassword()))) {
 					
 					//save users in the file...
 					Main principal = new Main(Clinic.getLoginUser());

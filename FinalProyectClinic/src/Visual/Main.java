@@ -27,6 +27,7 @@ public class Main extends JFrame {
 	private MMedicPanel medicPanel;
 	private MAdminPanel adminPanel;
 	private JButton btnNewButton;
+	private User user = null;
 
 	/**
 	 * Launch the application.
@@ -48,6 +49,7 @@ public class Main extends JFrame {
 	 * Create the frame.
 	 */
 	public Main(User loginUser) {
+		user = loginUser;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		dim = getToolkit().getScreenSize();
@@ -59,9 +61,9 @@ public class Main extends JFrame {
 		medicPanel = new MMedicPanel();
 		adminPanel = new MAdminPanel();
 		
-		if(loginUser.getType().equals("Secretary")) {
+		if(user.getType().equals("Secretary")) {
 			menuclicked(secretaryPanel);
-		}else if(loginUser.getType().equals("Medic")) {
+		}else if(user.getType().equals("Medic")) {
 			menuclicked(medicPanel);
 		}else {
 			menuclicked(adminPanel);
