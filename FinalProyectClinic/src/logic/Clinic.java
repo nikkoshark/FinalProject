@@ -153,6 +153,17 @@ public class Clinic implements Serializable{
 	}
 	
 	//searching index by code
+	public int getIndexUser(String name) {
+		int i = 0;
+		for (User user : myUsers) {
+			if (user.getName().equalsIgnoreCase(name)) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+	
 	public int getIndexPerson(String codigo) {
 		int i = 0;
 		for (Person per : myPersons) {
@@ -233,6 +244,11 @@ public class Clinic implements Serializable{
 		myDiseases.add(disease);
 	}
 	
+	//modified methods
+	public void modifiedUser(User user) {
+		myUsers.set(getIndexUser(user.getName()), user);
+	}
+	
 	//remove methods
 	public void removeUser(User user) {
 		myUsers.remove(user);
@@ -295,6 +311,23 @@ public class Clinic implements Serializable{
 	}
 
 	
+	
+	//miscellaneous methods
+	
+	public ArrayList<Appoinment> getAppoinmentsOfMedic(String codeMedic) {
+		ArrayList<Appoinment> appoinments = new ArrayList<>();
+		
+		for (Appoinment appoinment : myAppoinments) {
+			if (appoinment.getStatus().equalsIgnoreCase("Espera")) {
+				if (appoinment.getMedic().getCode().equalsIgnoreCase(codeMedic)) {
+					appoinments.add(appoinment);
+				}
+			}
+		}
+		
+		return appoinments;
+	}
+	
 	public boolean validUser(String username, String psw) {
 		for(User user: myUsers) {
 			if(user.getName().equals(username) && user.getPassword().equals(psw)) {
@@ -328,18 +361,54 @@ public class Clinic implements Serializable{
 		return true;
 	}
 	
-	public ArrayList<Appoinment> getAppoinmentsOfMedic(String codeMedic) {
-		ArrayList<Appoinment> appoinments = new ArrayList<>();
+	public boolean isUniqueUserName(String name) {
 		
-		for (Appoinment appoinment : myAppoinments) {
-			if (appoinment.getStatus().equalsIgnoreCase("Espera")) {
-				if (appoinment.getMedic().getCode().equalsIgnoreCase(codeMedic)) {
-					appoinments.add(appoinment);
-				}
+		for (User use : myUsers) {
+			if (use.getName().equalsIgnoreCase(name)) {
+				return false;
 			}
 		}
 		
-		return appoinments;
+		return true;
 	}
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -12,16 +12,21 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import Visual.Main;
+import javafx.scene.input.KeyCode;
 import logic.Clinic;
 
 import java.awt.SystemColor;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class Login extends JFrame {
 
@@ -35,7 +40,7 @@ public class Login extends JFrame {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				File file = new File("file.dat");
+				File file = new File("clinic_data.dat");
 				
 				FileInputStream inputStream;
 				FileOutputStream outputStream;
@@ -54,7 +59,7 @@ public class Login extends JFrame {
 					try {
 						outputStream = new FileOutputStream(file);
 						objectOutputStream = new ObjectOutputStream(outputStream);
-						User user = new User("Admin", "admin", "admin123");
+						User user = new User("Admin", "a", "a");
 						Clinic.getInstance().insertUser(user);
 						objectOutputStream.writeObject(Clinic.getInstance());
 						outputStream.close();
@@ -95,39 +100,63 @@ public class Login extends JFrame {
 		lblNewLabel.setBounds(167, 11, 130, 41);
 		contentPane.add(lblNewLabel);
 		
-		JLabel lblNewLabel_1 = new JLabel("USUARIO");
+		JLabel lblNewLabel_1 = new JLabel("USUARIO:");
 		lblNewLabel_1.setFont(new Font("Calibri", Font.ITALIC, 14));
 		lblNewLabel_1.setBounds(167, 77, 77, 14);
 		contentPane.add(lblNewLabel_1);
 		
-		JLabel lblContrasea = new JLabel("CONTRASE\u00D1A");
+		JLabel lblContrasea = new JLabel("CONTRASE\u00D1A:");
 		lblContrasea.setFont(new Font("Calibri", Font.ITALIC, 14));
 		lblContrasea.setBounds(167, 145, 91, 14);
 		contentPane.add(lblContrasea);
 		
 		txtUser = new JTextField();
+		txtUser.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					login();
+				}
+			}
+		});
 		txtUser.setBounds(167, 90, 130, 20);
 		contentPane.add(txtUser);
 		txtUser.setColumns(10);
 		
+		//action perform to make enter press login button
 		pswfPass = new JPasswordField();
+		pswfPass.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					login();
+				}
+			}
+		});
 		pswfPass.setBounds(167, 160, 130, 20);
 		contentPane.add(pswfPass);
 		
 		JButton btnNewButton = new JButton("LOGIN");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(Clinic.getInstance().validUser(txtUser.getText(), String.valueOf(pswfPass.getPassword()))) {
-					
-					//save users in the file...
-					Main principal = new Main(Clinic.getLoginUser());
-					principal.setVisible(true);
-					dispose();
-					
-				} 
+				login();
 			}
 		});
 		btnNewButton.setBounds(192, 220, 89, 23);
 		contentPane.add(btnNewButton);
+	}
+	
+	public void login() {
+		if(Clinic.getInstance().validUser(txtUser.getText(), String.valueOf(pswfPass.getPassword()))) {
+			
+			//save users in the file...
+			Main principal = new Main(Clinic.getLoginUser());
+			principal.setVisible(true);
+			dispose();
+			
+		}
+		else {
+			JOptionPane.showMessageDialog(null, "Usario o contraseña no valido, \npor favor verificar los campos.", "Fallo en iniciar sesion", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 }

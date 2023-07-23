@@ -8,12 +8,15 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import AdminPanels.ListUsers;
 import logic.Clinic;
 import login.User;
 import sun.misc.Cleaner;
 
 import java.awt.SystemColor;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
@@ -29,30 +32,29 @@ public class CreateUser extends JDialog {
 	private JTextField txtUser;
 	private JPasswordField txtPsw;
 	private JComboBox comboBox;
+	private User user = null;
 
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		try {
-			CreateUser dialog = new CreateUser();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * Create the dialog.
 	 */
-	public CreateUser() {
+	public CreateUser(User seleUser) {
+		user = seleUser;
+		
+		setTitle("Modificar");
+		if (user == null) {
+			setTitle("Registrar");
+		}
 		setBounds(100, 100, 518, 389);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(SystemColor.activeCaption);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
+		setLocationRelativeTo(null);
 		{
 			JLabel lblTitle = new JLabel("NUEVO USUARIO");
 			lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -60,7 +62,7 @@ public class CreateUser extends JDialog {
 			contentPanel.add(lblTitle);
 		}
 		{
-			JLabel lblHorarioEntrada = new JLabel("Usuario");
+			JLabel lblHorarioEntrada = new JLabel("Usuario:");
 			lblHorarioEntrada.setBounds(122, 114, 120, 14);
 			contentPanel.add(lblHorarioEntrada);
 		}
@@ -71,18 +73,18 @@ public class CreateUser extends JDialog {
 			contentPanel.add(txtUser);
 		}
 		{
-			JLabel lblHorarioSalida = new JLabel("Contrase\u00F1a");
+			JLabel lblHorarioSalida = new JLabel("Contrase\u00F1a:");
 			lblHorarioSalida.setBounds(122, 173, 120, 14);
 			contentPanel.add(lblHorarioSalida);
 		}
 		{
-			JLabel lblTipo = new JLabel("Tipo");
+			JLabel lblTipo = new JLabel("Tipo:");
 			lblTipo.setBounds(262, 114, 46, 14);
 			contentPanel.add(lblTipo);
 		}
 		{
 			comboBox = new JComboBox();
-			comboBox.setModel(new DefaultComboBoxModel(new String[] {"<SELECCIONAR>", "Secretary", "Medic", "Admin"}));
+			comboBox.setModel(new DefaultComboBoxModel(new String[] {"<SELECCIONAR>", "Secretaria", "Medico", "Admin"}));
 			comboBox.setBounds(262, 139, 127, 20);
 			contentPanel.add(comboBox);
 		}
@@ -96,30 +98,58 @@ public class CreateUser extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("SAVE");
-				okButton.addActionListener(new ActionListener() {
+				JButton btnSave = new JButton("MODIFICAR");
+				if (user == null) {
+					btnSave.setText("SALVAR");
+				}
+				btnSave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						User insUser = new User(String.valueOf(comboBox.getSelectedItem()), txtUser.getText(), String.valueOf(txtPsw.getPassword()));
-						Clinic.getInstance().insertUser(insUser);
-						clean();
+						if (Clinic.getInstance().isUniqueUserName(txtUser.getText())) {
+							if (!txtUser.getText().isEmpty() && String.valueOf(txtPsw.getPassword()).length() > 0 && comboBox.getSelectedIndex() > 0) {
+								if (user == null) {									
+									User insUser = new User(String.valueOf(comboBox.getSelectedItem()), txtUser.getText(), String.valueOf(txtPsw.getPassword()));
+									Clinic.getInstance().insertUser(insUser);
+									JOptionPane.showMessageDialog(null, "Registro hecho.", "Registro", JOptionPane.INFORMATION_MESSAGE);
+									clean();
+									ListUsers.loadUsers();
+								}
+								else {
+									user.setName(txtUser.getText());
+									user.setPassword(String.valueOf(txtPsw.getPassword()));
+									user.setType(String.valueOf(comboBox.getSelectedItem()));
+									
+									Clinic.getInstance().modifiedUser(user);
+									dispose();
+									ListUsers.loadUsers();
+								}
+								
+							}
+							else {
+								JOptionPane.showMessageDialog(null, "Parametro(s) sin completar,\npor favor completar los campos.", "Usuario Invalido", JOptionPane.ERROR_MESSAGE);								
+							}
+						}
+						else {
+							JOptionPane.showMessageDialog(null, "Usuario ya ha sido registrado.", "Usuario Invalido", JOptionPane.ERROR_MESSAGE);
+						}
 					}
 
 				});
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
+				btnSave.setActionCommand("OK");
+				buttonPane.add(btnSave);
+				getRootPane().setDefaultButton(btnSave);
 			}
 			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.addActionListener(new ActionListener() {
+				JButton btnCancel = new JButton("CANCEL");
+				btnCancel.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						dispose();
 					}
 				});
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
+				btnCancel.setActionCommand("Cancel");
+				buttonPane.add(btnCancel);
 			}
 		}
+		loadUser();
 	}
 	
 	private void clean() {
@@ -128,4 +158,32 @@ public class CreateUser extends JDialog {
 		comboBox.setSelectedIndex(0);
 						
 	}
+	
+	private void loadUser() {
+		if (user != null) {
+			txtUser.setText(user.getName());
+			txtPsw.setText(user.getPassword());
+			
+			if (user.getType().equalsIgnoreCase("Secretaria")) {
+				comboBox.setSelectedIndex(1);
+			}
+			else if (user.getType().equalsIgnoreCase("Medico")) {
+				comboBox.setSelectedIndex(2);
+			}
+			else {
+				comboBox.setSelectedIndex(3);
+			}
+		}
+	}
+	
+	
 }
+
+
+
+
+
+
+
+
+

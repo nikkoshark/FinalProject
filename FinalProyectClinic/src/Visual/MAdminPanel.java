@@ -9,7 +9,7 @@ import AdminJDialogs.CreateUser;
 import AdminPanels.DefaultDashboard;
 import AdminPanels.ListDisease;
 import AdminPanels.ListMedic;
-import AdminPanels.ListSecretary;
+import AdminPanels.ListUsers;
 import AdminPanels.ListVaccine;
 
 import java.awt.SystemColor;
@@ -25,7 +25,7 @@ import javax.swing.JButton;
 public class MAdminPanel extends JPanel {
 
 	private ListDisease listDisease;
-	private ListSecretary listSecretary;
+	private ListUsers listSecretary;
 	private ListVaccine listVaccine;
 	private ListMedic listMedic;
 	private DefaultDashboard defDash;
@@ -39,7 +39,7 @@ public class MAdminPanel extends JPanel {
 		setLayout(null);
 
 		listDisease = new ListDisease();
-		listSecretary = new ListSecretary();
+		listSecretary = new ListUsers();
 		listMedic = new ListMedic();
 		listVaccine = new ListVaccine();
 		defDash = new DefaultDashboard();
@@ -48,10 +48,10 @@ public class MAdminPanel extends JPanel {
 		menuBar.setBounds(0, 0, 1340, 21);
 		add(menuBar);
 		
-		JMenu mnS = new JMenu("Secretaries");
+		JMenu mnS = new JMenu("Usuarios");
 		menuBar.add(mnS);
 		
-		JMenuItem mntmSList = new JMenuItem("List");
+		JMenuItem mntmSList = new JMenuItem("Listar");
 		mntmSList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				menuclicked(listSecretary);
@@ -59,10 +59,10 @@ public class MAdminPanel extends JPanel {
 		});
 		mnS.add(mntmSList);
 		
-		JMenuItem mntmSCreate = new JMenuItem("Create");
+		JMenuItem mntmSCreate = new JMenuItem("Registrar");
 		mntmSCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CreateUser createUser = new CreateUser();
+				CreateUser createUser = new CreateUser(null);
 				createUser.setVisible(true);
 				
 			}
