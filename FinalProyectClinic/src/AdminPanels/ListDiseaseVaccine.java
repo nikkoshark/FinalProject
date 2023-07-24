@@ -158,8 +158,11 @@ public class ListDiseaseVaccine extends JPanel {
 		
 		menuclicked(VD);
 
-		loadDisease();
-		loadVaccine();
+		if(VD == 0) {
+			loadDisease();
+		}else {
+			loadVaccine();
+		}
 	}
 	
 	private void menuclicked(int type) {
