@@ -12,10 +12,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionListener;
+import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import com.toedter.calendar.JDateChooser;
 
 public class MMedicPanel extends JPanel {
 	private JTable table;
@@ -82,10 +84,11 @@ public class MMedicPanel extends JPanel {
 		
 		JButton btnConsultar = new JButton("CONSULTAR");
 		btnConsultar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {/*
 				CreateCheckup createCheck = new CreateCheckup();
 				createCheck.setModal(true);
 				createCheck.setVisible(true);
+				*/
 			}
 		});
 		btnConsultar.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -96,5 +99,12 @@ public class MMedicPanel extends JPanel {
 		label.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 20));
 		label.setBounds(10, 23, 225, 27);
 		panel.add(label);
+		
+		JDateChooser dateChooser = new JDateChooser();
+		dateChooser.setBounds(650, 23, 117, 20);
+		panel.add(dateChooser);
+
+		Date date = new Date();
+		dateChooser.setDate(date);
 	}
 }

@@ -7,6 +7,10 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import logic.Clinic;
+import logic.Medic;
+
 import java.awt.SystemColor;
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -15,22 +19,26 @@ import javax.swing.JTextArea;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.util.Date;
 import java.awt.event.ActionEvent;
+import javax.swing.JSpinner;
+import com.toedter.calendar.JDateChooser;
+import javax.swing.SpinnerListModel;
 
 public class CreateMedic extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_5;
-	private JTextField textField_6;
-	private JTextField textField_7;
-	private JTextField textField_8;
-	private JTextField textField_9;
-	private JTextField textField_4;
-	private JTextField textField_10;
+	private JTextField txtCode;
+	private JTextField txtSSN;
+	private JTextField txtLastName;
+	private JTextField txtName;
+	private JTextField txtSpeciality;
+	private JTextField txtPhone;
+	private JTextField txtUser;
+	private JTextField txtPsw;
+	private JTextArea txtAAddress;
+	private JComboBox cbSex;
 
 	/**
 	 * Launch the application.
@@ -49,6 +57,7 @@ public class CreateMedic extends JDialog {
 	 * Create the dialog.
 	 */
 	public CreateMedic() {
+		setLocationRelativeTo(null);
 		setBounds(100, 100, 519, 399);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(SystemColor.activeCaption);
@@ -60,89 +69,67 @@ public class CreateMedic extends JDialog {
 			lblNuevoMdico.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			lblNuevoMdico.setBounds(174, 16, 174, 25);
 			contentPanel.add(lblNuevoMdico);
-		}
-		{
+			
 			JLabel lblHorarioEntrada = new JLabel("Horario Entrada");
 			lblHorarioEntrada.setBounds(346, 213, 120, 14);
 			contentPanel.add(lblHorarioEntrada);
-		}
-		{
-			textField_2 = new JTextField();
-			textField_2.setColumns(10);
-			textField_2.setBounds(346, 238, 110, 20);
-			contentPanel.add(textField_2);
-		}
-		{
+
 			JLabel lblHorarioSalida = new JLabel("Horario Salida");
 			lblHorarioSalida.setBounds(346, 261, 120, 14);
 			contentPanel.add(lblHorarioSalida);
+
+			JLabel lblCode = new JLabel("C\u00F3digo");
+			lblCode.setBounds(39, 52, 46, 14);
+			contentPanel.add(lblCode);
+
+			txtCode = new JTextField();
+			txtCode.setEditable(false);
+			txtCode.setColumns(10);
+			txtCode.setBounds(39, 77, 128, 20);
+			contentPanel.add(txtCode);
 		}
 		{
-			textField_3 = new JTextField();
-			textField_3.setColumns(10);
-			textField_3.setBounds(346, 286, 110, 20);
-			contentPanel.add(textField_3);
+			JLabel lblCedula = new JLabel("C\u00E9dula");
+			lblCedula.setBounds(177, 52, 46, 14);
+			contentPanel.add(lblCedula);
 		}
 		{
-			JLabel label = new JLabel("C\u00F3digo");
-			label.setBounds(39, 52, 46, 14);
-			contentPanel.add(label);
+			txtSSN = new JTextField();
+			txtSSN.setColumns(10);
+			txtSSN.setBounds(177, 76, 142, 20);
+			contentPanel.add(txtSSN);
 		}
 		{
-			textField = new JTextField();
-			textField.setEditable(false);
-			textField.setColumns(10);
-			textField.setBounds(39, 77, 128, 20);
-			contentPanel.add(textField);
+			JLabel lblSexo = new JLabel("Sexo");
+			lblSexo.setBounds(329, 52, 46, 14);
+			contentPanel.add(lblSexo);
 		}
 		{
-			JLabel label = new JLabel("C\u00E9dula");
-			label.setBounds(177, 52, 46, 14);
-			contentPanel.add(label);
+			JLabel lblApellido = new JLabel("Apellido[s]");
+			lblApellido.setBounds(247, 107, 126, 14);
+			contentPanel.add(lblApellido);
 		}
 		{
-			textField_1 = new JTextField();
-			textField_1.setColumns(10);
-			textField_1.setBounds(177, 76, 142, 20);
-			contentPanel.add(textField_1);
+			txtLastName = new JTextField();
+			txtLastName.setColumns(10);
+			txtLastName.setBounds(247, 128, 212, 20);
+			contentPanel.add(txtLastName);
 		}
 		{
-			JLabel label = new JLabel("Sexo");
-			label.setBounds(329, 52, 46, 14);
-			contentPanel.add(label);
+			txtName = new JTextField();
+			txtName.setColumns(10);
+			txtName.setBounds(38, 130, 199, 20);
+			contentPanel.add(txtName);
 		}
 		{
-			JLabel label = new JLabel("Apellido[s]");
-			label.setBounds(247, 107, 126, 14);
-			contentPanel.add(label);
+			JLabel lblNombre = new JLabel("Nombre[s]");
+			lblNombre.setBounds(38, 105, 85, 14);
+			contentPanel.add(lblNombre);
 		}
 		{
-			textField_5 = new JTextField();
-			textField_5.setColumns(10);
-			textField_5.setBounds(247, 128, 212, 20);
-			contentPanel.add(textField_5);
-		}
-		{
-			textField_6 = new JTextField();
-			textField_6.setColumns(10);
-			textField_6.setBounds(38, 130, 199, 20);
-			contentPanel.add(textField_6);
-		}
-		{
-			JLabel label = new JLabel("Nombre[s]");
-			label.setBounds(38, 105, 85, 14);
-			contentPanel.add(label);
-		}
-		{
-			JLabel label = new JLabel("Fecha de Nacimiento");
-			label.setBounds(38, 159, 112, 14);
-			contentPanel.add(label);
-		}
-		{
-			textField_7 = new JTextField();
-			textField_7.setColumns(10);
-			textField_7.setBounds(38, 183, 128, 20);
-			contentPanel.add(textField_7);
+			JLabel lblDate = new JLabel("Fecha de Nacimiento");
+			lblDate.setBounds(38, 159, 112, 14);
+			contentPanel.add(lblDate);
 		}
 		{
 			JLabel lblEspecialidad = new JLabel("Especialidad");
@@ -150,39 +137,39 @@ public class CreateMedic extends JDialog {
 			contentPanel.add(lblEspecialidad);
 		}
 		{
-			textField_8 = new JTextField();
-			textField_8.setColumns(10);
-			textField_8.setBounds(177, 183, 159, 20);
-			contentPanel.add(textField_8);
+			txtSpeciality = new JTextField();
+			txtSpeciality.setColumns(10);
+			txtSpeciality.setBounds(177, 183, 159, 20);
+			contentPanel.add(txtSpeciality);
 		}
 		{
-			JLabel label = new JLabel("Direcci\u00F3n");
-			label.setBounds(39, 213, 84, 14);
-			contentPanel.add(label);
+			JLabel lblDir = new JLabel("Direcci\u00F3n");
+			lblDir.setBounds(39, 213, 84, 14);
+			contentPanel.add(lblDir);
 		}
 		{
-			JTextArea textArea = new JTextArea();
-			textArea.setLineWrap(true);
-			textArea.setEditable(false);
-			textArea.setBounds(38, 233, 182, 73);
-			contentPanel.add(textArea);
+			txtAAddress = new JTextArea();
+			txtAAddress.setLineWrap(true);
+			txtAAddress.setEditable(false);
+			txtAAddress.setBounds(38, 233, 182, 73);
+			contentPanel.add(txtAAddress);
 		}
 		{
-			JLabel label = new JLabel("Tel\u00E9fono");
-			label.setBounds(346, 159, 46, 14);
-			contentPanel.add(label);
+			JLabel lblTel = new JLabel("Tel\u00E9fono");
+			lblTel.setBounds(346, 159, 46, 14);
+			contentPanel.add(lblTel);
 		}
 		{
-			textField_9 = new JTextField();
-			textField_9.setColumns(10);
-			textField_9.setBounds(346, 184, 111, 20);
-			contentPanel.add(textField_9);
+			txtPhone = new JTextField();
+			txtPhone.setColumns(10);
+			txtPhone.setBounds(346, 184, 111, 20);
+			contentPanel.add(txtPhone);
 		}
 		{
-			JComboBox comboBox = new JComboBox();
-			comboBox.setModel(new DefaultComboBoxModel(new String[] {"<SELECCIONAR>", "Femenino", "Masculino"}));
-			comboBox.setBounds(329, 77, 127, 20);
-			contentPanel.add(comboBox);
+			cbSex = new JComboBox();
+			cbSex.setModel(new DefaultComboBoxModel(new String[] {"<SELECCIONAR>", "F", "M"}));
+			cbSex.setBounds(329, 77, 127, 20);
+			contentPanel.add(cbSex);
 		}
 		{
 			JLabel lblUsuario = new JLabel("Usuario");
@@ -190,10 +177,10 @@ public class CreateMedic extends JDialog {
 			contentPanel.add(lblUsuario);
 		}
 		{
-			textField_4 = new JTextField();
-			textField_4.setColumns(10);
-			textField_4.setBounds(228, 238, 110, 20);
-			contentPanel.add(textField_4);
+			txtUser = new JTextField();
+			txtUser.setColumns(10);
+			txtUser.setBounds(228, 238, 110, 20);
+			contentPanel.add(txtUser);
 		}
 		{
 			JLabel lblContrasea = new JLabel("Contrase\u00F1a");
@@ -201,21 +188,40 @@ public class CreateMedic extends JDialog {
 			contentPanel.add(lblContrasea);
 		}
 		{
-			textField_10 = new JTextField();
-			textField_10.setColumns(10);
-			textField_10.setBounds(228, 286, 110, 20);
-			contentPanel.add(textField_10);
+			txtPsw = new JTextField();
+			txtPsw.setColumns(10);
+			txtPsw.setBounds(228, 286, 110, 20);
+			contentPanel.add(txtPsw);
 		}
+		
+		JSpinner spnEntry = new JSpinner();
+		spnEntry.setModel(new SpinnerListModel(new String[] {"0800", "0830", "0900", "0930", "1000", "1030", "1100", "1130", "1200", "1230", "1300", "1330", "1400", "1430", "1500", "1530", "1600", "1630", "1700", "1730", "1800"}));
+		spnEntry.setBounds(346, 238, 110, 20);
+		contentPanel.add(spnEntry);
+		
+		JSpinner spnExit = new JSpinner();
+		spnExit.setBounds(346, 286, 110, 20);
+		contentPanel.add(spnExit);
+		
+		JDateChooser dateChooser = new JDateChooser();
+		dateChooser.setBounds(36, 183, 131, 20);
+		contentPanel.add(dateChooser);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setBackground(SystemColor.inactiveCaption);
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("OK");
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
+				JButton btnAdd = new JButton("INSERTAR");
+				btnAdd.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						//Medic medic = new Medic(txtCode.getText(), txtSSN.getText(), txtName.getText(), txtLastName.getText(), txtPhone.getText(), txtAAddress.getText(), new Date()/*txtDate.getText()*/, String.valueOf(cbSex.getSelectedItem()), txtSpeciality.getText(), true);
+						//Clinic.getInstance().insertPerson(medic);
+					}
+				});
+				btnAdd.setActionCommand("OK");
+				buttonPane.add(btnAdd);
+				getRootPane().setDefaultButton(btnAdd);
 			}
 			{
 				JButton cancelButton = new JButton("Cancel");
@@ -229,5 +235,4 @@ public class CreateMedic extends JDialog {
 			}
 		}
 	}
-
 }

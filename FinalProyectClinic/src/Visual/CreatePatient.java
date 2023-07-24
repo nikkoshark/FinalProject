@@ -45,8 +45,8 @@ public class CreatePatient extends JDialog {
 	 */
 	public CreatePatient() {
 		setBounds(100, 100, 504, 390);
-		setResizable(false);
-		setLocationRelativeTo(null);
+		//setResizable(false);
+		//setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(SystemColor.activeCaption);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));

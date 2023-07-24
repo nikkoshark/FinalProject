@@ -12,6 +12,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import AdminJDialogs.CreateUser;
+import Dashboards.UserInfo;
 import logic.Clinic;
 import login.User;
 
@@ -31,6 +32,7 @@ public class ListUsers extends JPanel {
 	private User seleUser = null;
 	private JButton btnDelete;
 	private JButton btnEdit;
+	private UserInfo usin;
 
 	/**
 	 * Create the panel.
@@ -40,6 +42,9 @@ public class ListUsers extends JPanel {
 		setSize(1320, 551);
 		setLayout(null);
 		setVisible(false);
+		
+		usin = new UserInfo();
+		usin.setLocation(38, 38);
 		
 		JLabel lblNewLabel = new JLabel("LISTADO USUARIOS");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -73,7 +78,7 @@ public class ListUsers extends JPanel {
 		
 		
 		model = new DefaultTableModel();
-		String[] headers = {"Usuario", "Posicion"}; //HEADERS FOR THE LIST
+		String[] headers = {"Usuario", "Posición"}; //HEADERS FOR THE LIST
 		model.setColumnIdentifiers(headers);
 		
 		table.setModel(model);
@@ -96,7 +101,7 @@ public class ListUsers extends JPanel {
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(seleUser != null) {
-					int option = JOptionPane.showConfirmDialog(null, "Desea eliminar el usuario: " + seleUser.getName() + "?", "Confirmacion", JOptionPane.OK_CANCEL_OPTION);
+					int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar el usuario: " + seleUser.getName() + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
 					if (option == JOptionPane.OK_OPTION) {
 						Clinic.getInstance().removeUser(seleUser);
 						btnEdit.setEnabled(false);
@@ -108,6 +113,14 @@ public class ListUsers extends JPanel {
 		});
 		btnDelete.setBounds(436, 490, 89, 23);
 		add(btnDelete);
+		
+		JPanel dash = new JPanel();
+		dash.setBackground(SystemColor.activeCaption);
+		dash.setBounds(811, 64, 431, 415);
+		add(dash);
+		dash.setLayout(null);
+		
+		dash.add(usin);
 		loadUsers();
 	}
 	
@@ -124,22 +137,3 @@ public class ListUsers extends JPanel {
 	}
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -7,10 +7,9 @@ import AdminJDialogs.CreateDiseaseVaccine;
 import AdminJDialogs.CreateMedic;
 import AdminJDialogs.CreateUser;
 import AdminPanels.DefaultDashboard;
-import AdminPanels.ListDisease;
 import AdminPanels.ListMedic;
 import AdminPanels.ListUsers;
-import AdminPanels.ListVaccine;
+import AdminPanels.ListDiseaseVaccine;
 
 import java.awt.SystemColor;
 import javax.swing.JLabel;
@@ -24,9 +23,9 @@ import javax.swing.JButton;
 
 public class MAdminPanel extends JPanel {
 
-	private ListDisease listDisease;
+	private ListDiseaseVaccine listDisease;
+	private ListDiseaseVaccine listVaccine;
 	private ListUsers listSecretary;
-	private ListVaccine listVaccine;
 	private ListMedic listMedic;
 	private DefaultDashboard defDash;
 	/**
@@ -38,10 +37,10 @@ public class MAdminPanel extends JPanel {
 		setSize(1340, 648);
 		setLayout(null);
 
-		listDisease = new ListDisease();
+		listDisease = new ListDiseaseVaccine(0);
+		listVaccine = new ListDiseaseVaccine(1);
 		listSecretary = new ListUsers();
 		listMedic = new ListMedic();
-		listVaccine = new ListVaccine();
 		defDash = new DefaultDashboard();
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -103,7 +102,7 @@ public class MAdminPanel extends JPanel {
 		JMenuItem mntmVCreate = new JMenuItem("Create");
 		mntmVCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CreateDiseaseVaccine createVaccine = new CreateDiseaseVaccine("Vaccine");
+				CreateDiseaseVaccine createVaccine = new CreateDiseaseVaccine(1, null, null);
 				createVaccine.setVisible(true);
 			}
 		});
@@ -123,8 +122,8 @@ public class MAdminPanel extends JPanel {
 		JMenuItem mntmDCreate = new JMenuItem("Create");
 		mntmDCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CreateDiseaseVaccine createDiseaseVaccine = new CreateDiseaseVaccine("Disease");
-				createDiseaseVaccine.setVisible(true);
+				CreateDiseaseVaccine createDisease = new CreateDiseaseVaccine(0, null, null);
+				createDisease.setVisible(true);
 			}
 		});
 		mnD.add(mntmDCreate);

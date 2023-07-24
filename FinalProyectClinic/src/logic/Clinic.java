@@ -107,9 +107,9 @@ public class Clinic implements Serializable{
 	//searching algorithms
 	
 	//searching object by code
-	public Person searchPerson(String code) {
+	public Person searchPerson(String ssn) {
 		for (Person per : myPersons) {
-			if (per.getCode().equalsIgnoreCase(code)) {
+			if (per.getSsn().equalsIgnoreCase(ssn)) {
 				return per;
 			}
 		}
@@ -248,6 +248,14 @@ public class Clinic implements Serializable{
 	public void modifiedUser(User user) {
 		myUsers.set(getIndexUser(user.getName()), user);
 	}
+
+	public void modifiedVaccine(Vaccine vaccine) {
+		myVaccines.set(getIndexvaccine(vaccine.getName()), vaccine);
+	}
+
+	public void modifiedDisease(Disease disease) {
+		myDiseases.set(getIndexDisease(disease.getName()), disease);
+	}
 	
 	//remove methods
 	public void removeUser(User user) {
@@ -373,42 +381,3 @@ public class Clinic implements Serializable{
 	}
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

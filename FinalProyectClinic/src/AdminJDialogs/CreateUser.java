@@ -35,10 +35,6 @@ public class CreateUser extends JDialog {
 	private User user = null;
 
 	/**
-	 * Launch the application.
-	 */
-
-	/**
 	 * Create the dialog.
 	 */
 	public CreateUser(User seleUser) {
@@ -60,38 +56,34 @@ public class CreateUser extends JDialog {
 			lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			lblTitle.setBounds(159, 44, 188, 25);
 			contentPanel.add(lblTitle);
-		}
-		{
+
 			JLabel lblHorarioEntrada = new JLabel("Usuario:");
 			lblHorarioEntrada.setBounds(122, 114, 120, 14);
 			contentPanel.add(lblHorarioEntrada);
-		}
-		{
+
 			txtUser = new JTextField();
 			txtUser.setColumns(10);
 			txtUser.setBounds(122, 139, 110, 20);
 			contentPanel.add(txtUser);
-		}
-		{
+
 			JLabel lblHorarioSalida = new JLabel("Contrase\u00F1a:");
 			lblHorarioSalida.setBounds(122, 173, 120, 14);
 			contentPanel.add(lblHorarioSalida);
-		}
-		{
+	
+			txtPsw = new JPasswordField();
+			txtPsw.setBounds(122, 198, 110, 20);
+			contentPanel.add(txtPsw);
+			
 			JLabel lblTipo = new JLabel("Tipo:");
 			lblTipo.setBounds(262, 114, 46, 14);
 			contentPanel.add(lblTipo);
-		}
-		{
+
 			comboBox = new JComboBox();
 			comboBox.setModel(new DefaultComboBoxModel(new String[] {"<SELECCIONAR>", "Secretaria", "Medico", "Admin"}));
 			comboBox.setBounds(262, 139, 127, 20);
 			contentPanel.add(comboBox);
 		}
 		
-		txtPsw = new JPasswordField();
-		txtPsw.setBounds(122, 198, 110, 20);
-		contentPanel.add(txtPsw);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setBackground(SystemColor.inactiveCaption);
@@ -125,16 +117,15 @@ public class CreateUser extends JDialog {
 								
 							}
 							else {
-								JOptionPane.showMessageDialog(null, "Parametro(s) sin completar,\npor favor completar los campos.", "Usuario Invalido", JOptionPane.ERROR_MESSAGE);								
+								JOptionPane.showMessageDialog(null, "¡Parámetro(s) sin completar!\nPor favor completar los campos.", "Información Vacía", JOptionPane.ERROR_MESSAGE);								
 							}
 						}
 						else {
-							JOptionPane.showMessageDialog(null, "Usuario ya ha sido registrado.", "Usuario Invalido", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null, "Este usuario ya ha sido registrado.", "Usuario Inválido", JOptionPane.ERROR_MESSAGE);
 						}
 					}
 
 				});
-				btnSave.setActionCommand("OK");
 				buttonPane.add(btnSave);
 				getRootPane().setDefaultButton(btnSave);
 			}
@@ -145,7 +136,6 @@ public class CreateUser extends JDialog {
 						dispose();
 					}
 				});
-				btnCancel.setActionCommand("Cancel");
 				buttonPane.add(btnCancel);
 			}
 		}

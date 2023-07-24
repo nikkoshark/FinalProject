@@ -12,14 +12,19 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import com.toedter.calendar.JDateChooser;
+
+import Dashboards.GenderInfo;
 
 public class MSecretaryPanel extends JPanel {
 	private JTable table;
 	private static DefaultTableModel model;
 	private static Object[] row;
+	private GenderInfo gender;
 
 	/**
 	 * Create the panel.
@@ -29,6 +34,8 @@ public class MSecretaryPanel extends JPanel {
 		setSize(1340, 648);
 		setLayout(null);
 		setVisible(false);
+		
+		gender = new GenderInfo();
 		
 		JPanel panel = new JPanel();
 		panel.setBounds(0, 0, 1340, 648);
@@ -59,13 +66,17 @@ public class MSecretaryPanel extends JPanel {
 		
 		JLabel lblNewLabel = new JLabel("DASHBOARD (SECRETARY POV)");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		lblNewLabel.setBounds(107, 31, 292, 64);
+		lblNewLabel.setBounds(80, 11, 292, 33);
 		dashboardP.add(lblNewLabel);
 		
 		JComboBox comboBox = new JComboBox();
 		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Personas en espera (Status = waiting)", "Sexo\u00BF"}));
-		comboBox.setBounds(107, 117, 292, 20);
+		comboBox.setBounds(90, 43, 292, 20);
 		dashboardP.add(comboBox);
+		
+		JPanel dash = new JPanel();
+		dash.setBounds(54, 74, 350, 350);
+		dashboardP.add(dash);
 		
 		JButton btnNewButton = new JButton("NUEVA CITA");
 		btnNewButton.addActionListener(new ActionListener() {
@@ -75,7 +86,7 @@ public class MSecretaryPanel extends JPanel {
 				createApp.setVisible(true);
 			}
 		});
-		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		btnNewButton.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 30));
 		btnNewButton.setBounds(803, 514, 528, 83);
 		panel.add(btnNewButton);
 		
@@ -83,6 +94,15 @@ public class MSecretaryPanel extends JPanel {
 		lblNewLabel_1.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 20));
 		lblNewLabel_1.setBounds(10, 23, 225, 27);
 		panel.add(lblNewLabel_1);
+		
+		JDateChooser dateChooser = new JDateChooser();
+		dateChooser.setBounds(650, 23, 117, 20);
+		panel.add(dateChooser);
+
+		Date date = new Date();
+		dateChooser.setDate(date);
+		
+		dash.add(gender);
 
 	}
 }

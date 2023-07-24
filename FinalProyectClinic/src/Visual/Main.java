@@ -2,38 +2,23 @@ package Visual;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
-import com.sun.glass.events.WindowEvent;
 
 import logic.Clinic;
 import login.Login;
 import login.User;
 
 import java.awt.SystemColor;
-import java.awt.Window;
-
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import javax.swing.JLabel;
-import java.awt.Font;
 
 public class Main extends JFrame {
 
