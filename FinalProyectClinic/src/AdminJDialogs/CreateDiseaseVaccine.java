@@ -51,6 +51,7 @@ public class CreateDiseaseVaccine extends JDialog {
 	 * Create the dialog.
 	 */
 	public CreateDiseaseVaccine(int type, Disease dis, Vaccine vac) {
+		
 		disease = dis;
 		vaccine = vac;
 		VD = type;
@@ -119,16 +120,14 @@ public class CreateDiseaseVaccine extends JDialog {
 				btnCreate.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if(VD == 0 && disease == null) {
-							Disease insDisease = null;
-							insDisease = new Disease(txtCode.getText(), txtName.getText(), txtADesc.getText(), true);
+							Disease insDisease = new Disease(txtCode.getText(), txtName.getText(), txtADesc.getText(), true);
 							Clinic.getInstance().insertDisease(insDisease);
 							//
 							JOptionPane.showMessageDialog(null, "¡Registro de Enfermedad Satisfactoria!", "Registrar", JOptionPane.INFORMATION_MESSAGE);
 							clear();
 							ListDiseaseVaccine.loadDisease();
 						} else if(VD == 1 && vaccine == null) {
-							Vaccine insVaccine = null;
-							insVaccine = new Vaccine(txtCode.getText(), txtName.getText(), txtADesc.getText());
+							Vaccine insVaccine = new Vaccine(txtCode.getText(), txtName.getText(), txtADesc.getText());
 							Clinic.getInstance().insertVaccine(insVaccine);
 							//
 							JOptionPane.showMessageDialog(null, "¡Registro de Vacuna Satisfactoria!", "Registrar", JOptionPane.INFORMATION_MESSAGE);

@@ -15,7 +15,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-import org.jfree.data.general.ValueDataset;
+import libraries.org.jfree.data.general.ValueDataset;
 
 import com.sun.org.apache.xml.internal.utils.Trie;
 
