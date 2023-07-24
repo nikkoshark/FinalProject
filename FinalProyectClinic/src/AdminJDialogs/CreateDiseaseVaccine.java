@@ -8,6 +8,8 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import com.sun.java.swing.plaf.windows.WindowsBorders.DashedBorder;
+
 import AdminPanels.ListDiseaseVaccine;
 import logic.Clinic;
 import logic.Disease;

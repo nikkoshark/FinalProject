@@ -15,8 +15,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-import libraries.org.jfree.data.general.ValueDataset;
-
 import com.sun.org.apache.xml.internal.utils.Trie;
 
 import AdminJDialogs.CreateDiseaseVaccine;
