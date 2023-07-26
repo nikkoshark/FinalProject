@@ -30,9 +30,9 @@ public class UserInfo extends JPanel {
 
 		DefaultPieDataset dataset = new DefaultPieDataset();
 		
-		dataset.setValue("Secretaria", typeEquals("Secretaria"));
-		dataset.setValue("Medico", typeEquals("Medico"));
-		dataset.setValue("Admin", typeEquals("Admin"));
+		dataset.setValue("Secretaria", Clinic.getInstance().totalUsers("Secretaria"));
+		dataset.setValue("Medico", Clinic.getInstance().totalUsers("Medico"));
+		dataset.setValue("Admin", Clinic.getInstance().totalUsers("Admin"));
 		JFreeChart chart = ChartFactory.createPieChart("USER PIE CHART" , dataset);
 		
 		ChartPanel chartPanel = new ChartPanel(chart); 
@@ -41,16 +41,6 @@ public class UserInfo extends JPanel {
 		panel.setLayout(null);
 		chartPanel.setPreferredSize(dimension);
 		panel.add(chartPanel);
-	}
-	
-	private int typeEquals(String type) {
-		int cant = 0;
-		for(User user: Clinic.getInstance().getMyUsers()) {
-			if(user.getType().equalsIgnoreCase(type)){
-				cant++;
-			}
-		}		
-		return cant;
 	}
 
 

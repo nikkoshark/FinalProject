@@ -82,7 +82,7 @@ public class MAdminPanel extends JPanel {
 		JMenuItem mntmMCreate = new JMenuItem("Create");
 		mntmMCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CreateMedic createMedic = new CreateMedic();
+				CreateMedic createMedic = new CreateMedic(null);
 				createMedic.setVisible(true);
 			}
 		});

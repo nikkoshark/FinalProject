@@ -189,7 +189,7 @@ public class Clinic implements Serializable{
 	public int getIndexAppoinment(String codigo) {
 		int i = 0;
 		for (Appoinment app : myAppoinments) {
-			if (app.getCode().equalsIgnoreCase(codigo)) {
+			if (app.getSsn().equalsIgnoreCase(codigo)) {
 				return i;
 			}
 			i++;
@@ -256,6 +256,14 @@ public class Clinic implements Serializable{
 	public void modifiedDisease(Disease disease) {
 		myDiseases.set(getIndexDisease(disease.getName()), disease);
 	}
+
+	public void modifiedAppoinment(Appoinment app) {
+		myAppoinments.set(getIndexAppoinment(app.getSsn()), app);
+	}
+	
+	public void modifiedPerson(Person person) {
+		myPersons.set(getIndexPerson(person.getSsn()), person);
+	}
 	
 	//remove methods
 	public void removeUser(User user) {
@@ -313,6 +321,30 @@ public class Clinic implements Serializable{
 		
 		return total;
 	}
+
+	public int totalUsers(String type) {
+		int total = 0;
+		for(User user: myUsers) {
+			if(user.getType().equalsIgnoreCase(type)){
+				total++;
+			}
+		}		
+		return total;
+	}
+	
+	public int totalPatientsStatus(String status) {
+		int total = 0;
+		
+		for (Appoinment app : myAppoinments) {
+			if (app instanceof Appoinment && app.getStatus().equalsIgnoreCase(status)) {
+				total++;
+			}
+		}
+		
+		return total;
+	}
+	
+	
 	
 	public int totalPatientsCheck() {
 		return myAppoinments.size();

@@ -8,15 +8,16 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
+import com.sun.java.swing.plaf.windows.WindowsBorders.DashedBorder;
 
 import logic.Clinic;
 import logic.Disease;
 
 public class AppointmentInfo extends JPanel {
 
-	/**
-	 * Create the panel.
-	 */
+	/*
+	 * 
+	 * */
 	public AppointmentInfo() {
 		setSize(350,350);
 		setLayout(null);
@@ -28,30 +29,19 @@ public class AppointmentInfo extends JPanel {
 
 		DefaultPieDataset dataset = new DefaultPieDataset();
 		
-		dataset.setValue("Secretaria", typeEquals("Secretaria"));
-		dataset.setValue("Medico", typeEquals("Medico"));
-		dataset.setValue("Admin", typeEquals("Admin"));
+		dataset.setValue("No Presente", Clinic.getInstance().totalPatientsStatus("No Presente"));
+		dataset.setValue("En Espera", Clinic.getInstance().totalPatientsStatus("En Espera"));
+		dataset.setValue("Vista", Clinic.getInstance().totalPatientsStatus("Vista")); 
 
-		JFreeChart chart = ChartFactory.createPieChart("DISEASE PIE CHART" , dataset);
+		JFreeChart chart = ChartFactory.createPieChart("STATUS PIE CHART" , dataset);
 		
 		ChartPanel chartPanel = new ChartPanel(chart); 
 		chartPanel.setBounds(25, 23, 300, 300);
 
-		Dimension dimension = new Dimension(300, 300);
 		panel.setLayout(null);
-		chartPanel.setPreferredSize(dimension);
+		chartPanel.setPreferredSize(new Dimension(300, 300));
 
 		panel.add(chartPanel);
-	}
-	
-	private int typeEquals(String name) {
-		int cant = 0;
-		for(Disease disease: Clinic.getInstance().getMyDiseases()) {
-			if(disease.getName().equalsIgnoreCase(name)){
-				cant++;
-			}
-		}		
-		return cant;
 	}
 
 

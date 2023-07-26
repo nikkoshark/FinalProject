@@ -30,10 +30,8 @@ public class DiseaseInfo extends JPanel {
 
 		DefaultPieDataset dataset = new DefaultPieDataset();
 		
-		dataset.setValue("Secretaria", typeEquals("Secretaria"));
-		dataset.setValue("Medico", typeEquals("Medico"));
-		dataset.setValue("Admin", typeEquals("Admin"));
-
+		dataset.setValue("To be determined", 1);
+		
 		JFreeChart chart = ChartFactory.createPieChart("DISEASE PIE CHART" , dataset);
 		
 		ChartPanel chartPanel = new ChartPanel(chart); 
@@ -46,15 +44,6 @@ public class DiseaseInfo extends JPanel {
 		panel.add(chartPanel);
 	}
 	
-	private int typeEquals(String name) {
-		int cant = 0;
-		for(Disease disease: Clinic.getInstance().getMyDiseases()) {
-			if(disease.getName().equalsIgnoreCase(name)){
-				cant++;
-			}
-		}		
-		return cant;
-	}
 
 
 }

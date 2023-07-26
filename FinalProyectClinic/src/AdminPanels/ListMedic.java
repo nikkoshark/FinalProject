@@ -9,12 +9,26 @@ import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import AdminJDialogs.CreateMedic;
+import logic.Clinic;
+import logic.Medic;
+import logic.Person;
+import login.User;
+
 import javax.swing.JButton;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class ListMedic extends JPanel {
-	private JTable table;
+	private static JTable table;
 	private static DefaultTableModel model;
 	private static Object[] row;
+	private Person selMedic = null;
+	private JButton btnEdit;
+	private JButton btnDelete;
 
 	/**
 	 * Create the panel.
@@ -39,16 +53,60 @@ public class ListMedic extends JPanel {
 		panel.add(scrollPane, BorderLayout.CENTER);
 		
 		table = new JTable();
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				int index = table.getSelectedRow();
+				
+				if(index>=0) {
+					btnEdit.setEnabled(true);
+					btnDelete.setEnabled(true);
+					selMedic = Clinic.getInstance().getMyPersons().get(index);
+				}
+			}
+		});
 		scrollPane.setViewportView(table);
 		model = new DefaultTableModel();
-		String[] headers = {"Código", "Nombre", "Horario Entrada", "Horario Salida"}; //HEADERS FOR THE LIST
+		String[] headers = {"Código", "Nombre", "Especialidad"/*, "Horario Entrada", "Horario Salida"*/}; //HEADERS FOR THE LIST
 		model.setColumnIdentifiers(headers);
 		table.setModel(model);
 		
-		JButton btnEdit = new JButton("EDITAR");
+		btnEdit = new JButton("EDITAR");
+		btnEdit.setEnabled(false);
+		btnEdit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CreateMedic regMedic = new CreateMedic(selMedic);
+				regMedic.setModal(true);
+				regMedic.setVisible(true);
+				btnEdit.setEnabled(false);
+				btnDelete.setEnabled(false);
+			}
+		});
 		btnEdit.setBounds(543, 488, 89, 23);
 		add(btnEdit);
+		
+		btnDelete = new JButton("ELIMINAR");
+		btnDelete.setEnabled(false);
+		btnDelete.setBounds(444, 488, 89, 23);
+		add(btnDelete);
+		
+		
+		loadMedic();
 
+	}
+	public static void loadMedic() {
+		model.setRowCount(0);
+		row = new Object[table.getColumnCount()];
+		
+		for (Person med : Clinic.getInstance().getMyPersons()) {
+			if(med instanceof Medic) {
+				row[0] = med.getCode();
+				row[1] = med.getName();
+				row[2] = ((Medic) med).getSpeciality();
+				//horarios not yet implemented.
+				model.addRow(row);
+			}
+		}
 	}
 
 }

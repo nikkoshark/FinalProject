@@ -9,6 +9,10 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import logic.Clinic;
+import logic.Patient;
+import logic.Person;
+
 import java.awt.SystemColor;
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -20,10 +24,10 @@ import javax.swing.JTextField;
 public class SearchPatient extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
-	private JTable table;
+	private static JTable table;
 	private static DefaultTableModel model;
 	private static Object[] row;
-	private JTextField textField;
+	private JTextField searchBar;
 
 	/**
 	 * Launch the application.
@@ -92,15 +96,15 @@ public class SearchPatient extends JDialog {
 			rdbtnApellido.setBounds(294, 7, 109, 23);
 			panel.add(rdbtnApellido);
 			{
-				textField = new JTextField();
-				textField.setBounds(137, 34, 166, 20);
-				panel.add(textField);
-				textField.setColumns(10);
+				searchBar = new JTextField();
+				searchBar.setBounds(137, 34, 166, 20);
+				panel.add(searchBar);
+				searchBar.setColumns(10);
 			}
 			
-			JButton btnNewButton = new JButton("BUSCAR");
-			btnNewButton.setBounds(313, 33, 89, 23);
-			panel.add(btnNewButton);
+			JButton btnSearch = new JButton("BUSCAR");
+			btnSearch.setBounds(313, 33, 89, 23);
+			panel.add(btnSearch);
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -108,16 +112,33 @@ public class SearchPatient extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("OK");
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
+				JButton btnEdit = new JButton("Ver Expediente");
+				buttonPane.add(btnEdit);
+				getRootPane().setDefaultButton(btnEdit);
 			}
 			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
+				JButton btnClose = new JButton("Cancelar");
+				buttonPane.add(btnClose);
+			}
+		}
+		loadPatient();
+	}
+	
+	public static void loadPatient() {
+		model.setRowCount(0);
+		row = new Object[table.getColumnCount()];
+		
+		for (Person patient : Clinic.getInstance().getMyPersons()) {
+			if(patient instanceof Patient) {
+				row[0] = patient.getSsn();
+				row[1] = patient.getName();
+				row[2] = patient.getLastName();
+				row[3] = patient.getSex();
+				model.addRow(row);
 			}
 		}
 	}
+	
+	
+	
 }

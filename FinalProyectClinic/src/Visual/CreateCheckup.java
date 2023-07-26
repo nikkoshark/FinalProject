@@ -1,6 +1,7 @@
 package Visual;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;
@@ -13,11 +14,16 @@ import CheckupPanels.CheckupsRecord;
 import CheckupPanels.DiseasePanel;
 import CheckupPanels.InfoPanel;
 import CheckupPanels.MedicalRecordPanel;
+import logic.Appoinment;
 import logic.Clinic;
+import logic.Patient;
 import logic.Person;
 
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.ParseException;
+import java.util.Date;
 import java.awt.event.ActionEvent;
 import java.awt.SystemColor;
 import javax.swing.JLabel;
@@ -50,26 +56,17 @@ public class CreateCheckup extends JDialog {
 	private JComboBox cbBloodType;
 	private JButton btnEdit;
 	private Person patient = null;
+	private Appoinment appinfo = null;
 	private int patientVer = 0;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			CreateCheckup dialog = new CreateCheckup(null);
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * Create the dialog.
 	 */
-	public CreateCheckup(Person per) { //sends a "PERSON" from appointment, if NEW, autofills from clinic, ELSE, txt's enabled
-		patient = Clinic.getInstance().searchPerson(per.getSsn());
+	public CreateCheckup(Appoinment app) { //sends a "PERSON" from appointment, if NEW, autofills from clinic, ELSE, txt's enabled
+		appinfo = app;
+		patient = Clinic.getInstance().searchPerson(appinfo.getSsn());
+		
 		
 		setBounds(100, 100, 915, 546);
 		setResizable(false);
@@ -78,21 +75,6 @@ public class CreateCheckup extends JDialog {
 		contentPanel.setBackground(SystemColor.activeCaption);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		
-		if (patient != null) { //if found, show everything
-			ftxtSSN.setText(patient.getSsn());
-			txtName.setText(patient.getName());
-			txtLastName.setText(patient.getLastName());
-			//txtEmail.setText(patient);
-			//dateChooser.setText(true);
-			txtaAddress.setText(patient.getAddress());
-			ftxtPhone.setText(patient.getPhoneNumber());
-			changeEditable(false, 0, "Editar Paciente");
-		} else { //just send whatever was before
-			txtName.setText(per.getName());
-			txtLastName.setText(per.getLastName());
-			ftxtPhone.setText(per.getPhoneNumber());
-		}
 		
 		infoPanel = new InfoPanel();
 		diseasePanel = new DiseasePanel();
@@ -251,7 +233,6 @@ public class CreateCheckup extends JDialog {
 		}
 		
 		
-		
 		JPanel infoP = new JPanel();
 		infoP.setBackground(SystemColor.inactiveCaption);
 		infoP.setBounds(285, 70, 614, 403);
@@ -272,13 +253,48 @@ public class CreateCheckup extends JDialog {
 			buttonPane.setBackground(SystemColor.inactiveCaption);
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
 			
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.addActionListener(new ActionListener() {
+			JButton btnPatient = new JButton("*Salvar Paciente");
+			btnPatient.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					String code = txtCode.getText();
+					String ssn =  ftxtSSN.getText();
+					String name = txtName.getText();
+					String lastName = txtLastName.getText();
+					String phone = ftxtPhone.getText();
+					String secondaryPhone = txtEmail.getText(); // change in logic
+					String address = txtaAddress.getText();
+					Date date = dateChooser.getDate();
+					char sex= String.valueOf(cbSex.getSelectedItem()).charAt(0);
+					String bloodType = String.valueOf(cbBloodType.getSelectedItem());
+					if(patient == null) {
+						Patient insPatient = new Patient(code, ssn, name, lastName, phone, address, date, sex, bloodType, secondaryPhone);
+						Clinic.getInstance().insertPerson(insPatient);
+						JOptionPane.showMessageDialog(null, "Registro hecho.", "Registro", JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						patient.setCode(code);
+						patient.setSsn(ssn);
+						patient.setName(name);
+						patient.setLastName(lastName);
+						patient.setPhoneNumber(phone);
+						patient.setAddress(address);
+						patient.setBirthdate(date);
+						((Patient)patient).setBloodType(bloodType);
+						((Patient)patient).setSecondaryPhoneNumber(secondaryPhone);
+						
+						Clinic.getInstance().modifiedPerson(patient);
+						dispose();
+					}
+				}
+			});
+			buttonPane.add(btnPatient);
+			{
+				JButton btnRegister = new JButton("REGISTRAR");
+				buttonPane.add(btnRegister);
+				getRootPane().setDefaultButton(btnRegister);
+			
+				JButton btnClose = new JButton("CANCELAR");
+				btnClose.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						int option = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea salir? Perderá todo su proceso.", "Verificación", JOptionPane.OK_CANCEL_OPTION);
 						if(option == JOptionPane.OK_OPTION) {
@@ -286,32 +302,58 @@ public class CreateCheckup extends JDialog {
 						}
 					}
 				});
-				buttonPane.add(cancelButton);
+				buttonPane.add(btnClose);
 			}
 		}
-
-		{
-			JButton btninf = new JButton("inf");
-			btninf.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					menuclicked(infoPanel);
-				}
-			});
-			btninf.setBounds(285, 50, 89, 23);
-			contentPanel.add(btninf);
-		}
-		{
-			JButton btnhis = new JButton("historial");
-			btnhis.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					menuclicked(medicalRecordPanel);
-				}
-			});
-			btnhis.setBounds(384, 50, 89, 23);
-			contentPanel.add(btnhis);
-		}
+		
+		JPanel infP = new JPanel();
+		infP.setBounds(285, 40, 110, 33);
+		contentPanel.add(infP);
+		infP.addMouseListener(new PanelButtonMouseAdapter(infP, 1));
+		infP.setLayout(null);
+		
+		JLabel lblInf = new JLabel("INFORMACI\u00D3N");
+		lblInf.setBounds(8, 5, 93, 19);
+		lblInf.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 15));
+		infP.add(lblInf);
+		
+		JPanel hisP = new JPanel();
+		hisP.setBounds(396, 40, 110, 33);
+		contentPanel.add(hisP);
+		hisP.addMouseListener(new PanelButtonMouseAdapter(hisP, 2));
+		hisP.setLayout(null);
+		
+		JLabel lblHis = new JLabel("HISTORIAL");
+		lblHis.setBounds(23, 5, 64, 19);
+		lblHis.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 15));
+		hisP.add(lblHis);
+		
+		loadperson();
 	}
 	
+	private void loadperson() {
+		if(patient == null) {
+			/*patient.setSsn(appinfo.getSsn());
+			patient.setName(appinfo.getName());
+			patient.setPhoneNumber(appinfo.getPhoneNumber());*/
+		}
+		ftxtSSN.setText(patient.getSsn());	
+		txtName.setText(patient.getName());
+		txtLastName.setText(patient.getLastName());
+		txtaAddress.setText(patient.getAddress());
+		txtEmail.setText(((Patient)patient).getSecondaryPhoneNumber());
+		dateChooser.setDate(patient.getBirthdate());
+		ftxtPhone.setText(patient.getPhoneNumber());
+		cbBloodType.setSelectedItem(((Patient)patient).getBloodType());
+		if(patient.getSex() == 'F') {
+			cbSex.setSelectedIndex(1);
+		} else {
+			cbSex.setSelectedIndex(2);
+		}
+			
+		
+	}
+
 	private void changeEditable(boolean bool, int ver, String text) {
 		ftxtSSN.setEditable(bool);
 		txtName.setEditable(bool);
@@ -332,5 +374,32 @@ public class CreateCheckup extends JDialog {
 		
 		panel.setVisible(true);
 		
+	}
+	
+	private class PanelButtonMouseAdapter extends MouseAdapter{
+			
+		JPanel panel;
+		private int typo;
+		public PanelButtonMouseAdapter(JPanel panel, int typo) {
+			this.panel = panel;
+			this.typo = typo;
+		}
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			panel.setBackground(new Color(119, 136, 153));
+		}
+		@Override
+		public void mouseExited(MouseEvent e) {
+			panel.setBackground(new Color(240, 240, 240));
+		}
+		@Override
+		public void mousePressed(MouseEvent e) {
+			panel.setBackground(new Color(192, 192, 192));
+			if(typo == 1) {
+				menuclicked(infoPanel);
+			} else {
+				menuclicked(medicalRecordPanel);
+			}
+		}
 	}
 }

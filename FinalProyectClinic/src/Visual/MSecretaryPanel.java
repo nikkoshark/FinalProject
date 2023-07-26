@@ -19,12 +19,24 @@ import javax.swing.DefaultComboBoxModel;
 import com.toedter.calendar.JDateChooser;
 
 import Dashboards.GenderInfo;
+import logic.Appoinment;
+import logic.Clinic;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class MSecretaryPanel extends JPanel {
-	private JTable table;
+	private static JTable table;
 	private static DefaultTableModel model;
 	private static Object[] row;
 	private GenderInfo gender;
+	private JButton btnEdit;
+	private static JDateChooser dateChooser;
+	private Appoinment selAppoinment;
 
 	/**
 	 * Create the panel.
@@ -52,6 +64,16 @@ public class MSecretaryPanel extends JPanel {
 		tableP.add(scrollPane, BorderLayout.CENTER);
 		
 		table = new JTable();
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int index = table.getSelectedRow();
+				if(index>=0) {
+					btnEdit.setEnabled(true);
+					selAppoinment = Clinic.getInstance().getMyAppoinments().get(index);
+				}
+			}
+		});
 		scrollPane.setViewportView(table);
 		model = new DefaultTableModel();
 		String[] headers = {"Cédula", "Nombre Paciente", "Fecha", "Doctor", "Status"}; //HEADERS FOR THE LIST
@@ -81,7 +103,7 @@ public class MSecretaryPanel extends JPanel {
 		JButton btnNewButton = new JButton("NUEVA CITA");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CreateAppointment createApp = new CreateAppointment();
+				CreateAppointment createApp = new CreateAppointment(null);
 				createApp.setModal(true);
 				createApp.setVisible(true);
 			}
@@ -95,14 +117,63 @@ public class MSecretaryPanel extends JPanel {
 		lblNewLabel_1.setBounds(10, 23, 225, 27);
 		panel.add(lblNewLabel_1);
 		
-		JDateChooser dateChooser = new JDateChooser();
+		dateChooser = new JDateChooser();
 		dateChooser.setBounds(650, 23, 117, 20);
 		panel.add(dateChooser);
 
+
 		Date date = new Date();
 		dateChooser.setDate(date);
+		LocalDateTime local = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+		
+	
+		ZonedDateTime zone = local.atZone(ZoneId.systemDefault());
+		Date dateoutput = Date.from(zone.toInstant());
+		
 		
 		dash.add(gender);
+		
+		btnEdit = new JButton("EDITAR CITA");
+		btnEdit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CreateAppointment regApp = new CreateAppointment(selAppoinment);
+				regApp.setModal(true);
+				regApp.setVisible(true);
+				btnEdit.setEnabled(false);
+			}
+		});
+		btnEdit.setEnabled(false);
+		btnEdit.setBounds(803, 480, 154, 23);
+		panel.add(btnEdit);
+		
+		
+		loadAppointments();
 
+	}
+	
+	public static void loadAppointments() {
+		model.setRowCount(0);
+		row = new Object[table.getColumnCount()];
+		
+		/*
+	    LocalDateTime ldt = LocalDateTime.now();  
+	    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");  
+		*/
+		
+		
+		for(Appoinment appointment : Clinic.getInstance().getMyAppoinments()) {
+			/*String strDate = formatter.format(appointment.getDate()); 
+			String strDate2 = formatter.format(ldt);
+			if(strDate.equalsIgnoreCase(strDate2)) {
+			if(appointment.getDate().equals(local)) {*/
+				row[0] = appointment.getSsn();
+				row[1] = appointment.getName();
+				row[2] = appointment.getDate();
+				row[3] = appointment.getMedic(); 
+				row[4] = appointment.getStatus();
+			//}
+			
+			model.addRow(row);
+		}
 	}
 }

@@ -68,9 +68,9 @@ public class Main extends JFrame {
 		medicPanel = new MMedicPanel();
 		adminPanel = new MAdminPanel();
 		
-		if(user.getType().equals("Secretary")) {
+		if(user.getType().equals("Secretaria")) {
 			menuclicked(secretaryPanel);
-		}else if(user.getType().equals("Medic")) {
+		}else if(user.getType().equals("Medico")) {
 			menuclicked(medicPanel);
 		}else {
 			menuclicked(adminPanel);

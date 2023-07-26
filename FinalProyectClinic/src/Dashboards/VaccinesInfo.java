@@ -19,6 +19,7 @@ public class VaccinesInfo extends JPanel {
 	/*
 	  PERSONAS VACUNADAS EN BASE A LA VACUNA ELEGIDA 
 	  PORCENTAJE DE LOS VACUNADOS VS NO VACUNADOS
+	//LOOK AT EVERY PERSON, CHECK IF INSIDE THE PERSON HAS BEEN VACCINATED BY IT
 	 */
 	public VaccinesInfo() {
 		setSize(400,400);
@@ -30,10 +31,8 @@ public class VaccinesInfo extends JPanel {
 		add(panel);
 
 		DefaultPieDataset dataset = new DefaultPieDataset();
-		
-		dataset.setValue("Secretaria", typeEquals("Secretaria"));
-		dataset.setValue("Medico", typeEquals("Medico"));
-		dataset.setValue("Admin", typeEquals("Admin"));
+
+		dataset.setValue("To be determined", 1);
 
 		JFreeChart chart = ChartFactory.createPieChart("DISEASE PIE CHART" , dataset);
 		
@@ -47,16 +46,6 @@ public class VaccinesInfo extends JPanel {
 		panel.add(chartPanel);
 	}
 	
-	//LOOK AT EVERY PERSON, CHECK IF INSIDE THE PERSON HAS BEEN VACCINATED BY IT
-	private int typeEquals(String name) {
-		int cant = 0;
-		for(Vaccine vaccine: Clinic.getInstance().getMyVaccines()) {
-			if(vaccine.getName().equalsIgnoreCase(name)){
-				cant++;
-			}
-		}		
-		return cant;
-	}
 
 
 }

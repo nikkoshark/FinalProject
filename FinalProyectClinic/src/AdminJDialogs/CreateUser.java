@@ -103,7 +103,6 @@ public class CreateUser extends JDialog {
 									Clinic.getInstance().insertUser(insUser);
 									JOptionPane.showMessageDialog(null, "Registro hecho.", "Registro", JOptionPane.INFORMATION_MESSAGE);
 									clean();
-									ListUsers.loadUsers();
 								}
 								else {
 									user.setName(txtUser.getText());
@@ -112,8 +111,8 @@ public class CreateUser extends JDialog {
 									
 									Clinic.getInstance().modifiedUser(user);
 									dispose();
-									ListUsers.loadUsers();
 								}
+								ListUsers.loadUsers();
 								
 							}
 							else {
@@ -168,12 +167,4 @@ public class CreateUser extends JDialog {
 	
 	
 }
-
-
-
-
-
-
-
-
 

@@ -6,6 +6,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import Dashboards.DiseaseInfo;
+import Dashboards.GenderInfo;
 import Dashboards.UserInfo;
 import Dashboards.VaccinesInfo;
 
@@ -16,7 +17,7 @@ import java.awt.event.ActionEvent;
 public class DefaultDashboard extends JPanel {
 	
 	private UserInfo usin;
-	private VaccinesInfo vacin;
+	private GenderInfo vacin;
 	private DiseaseInfo dinfo;
 
 	/**
@@ -28,7 +29,7 @@ public class DefaultDashboard extends JPanel {
 		setVisible(false);
 
 		usin = new UserInfo();
-		vacin = new VaccinesInfo();
+		vacin = new GenderInfo();
 		dinfo = new DiseaseInfo();
 		
 		JLabel lblNewLabel = new JLabel("DEFAULT DASHBOARD");
