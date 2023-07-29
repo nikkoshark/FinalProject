@@ -15,7 +15,6 @@ import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -28,17 +27,12 @@ import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFormattedTextField;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.toedter.calendar.JDateChooser;
 
-import Dashboards.AppointmentInfo;
 import logic.Appoinment;
 import logic.Clinic;
 import logic.Medic;
 import logic.Person;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerDateModel;
-import java.util.Calendar;
 
 public class CreateAppointment extends JDialog {
 
@@ -220,6 +214,7 @@ public class CreateAppointment extends JDialog {
 								Clinic.getInstance().modifiedAppoinment(appoinment);
 								dispose();
 								MSecretaryPanel.loadAppointments();
+								MMedicPanel.loadAppointments();
 							}
 						}
 						else {
@@ -254,7 +249,7 @@ public class CreateAppointment extends JDialog {
 		ftxtSSN.setText("");
 		cbStatus.setSelectedIndex(0);
 		cbDoctor.setSelectedIndex(0);
-		dateChooser.setDate(null);
+		dateChooser.setDate(new Date());
 	}
 	
 	private void loadApp() {
@@ -277,15 +272,8 @@ public class CreateAppointment extends JDialog {
 					i++;
 				}
 			}
-			
-			if(appoinment.getStatus().equalsIgnoreCase("En Espera")) {
-				cbStatus.setSelectedIndex(0);
-			}else if (appoinment.getStatus().equalsIgnoreCase("No Presente")) {
-				cbStatus.setSelectedIndex(1);
-			}else {
-				cbStatus.setSelectedIndex(2);
-			}
-			//appoinment.setStatus(String.valueOf(cbStatus.getSelectedItem()));
+
+			cbStatus.setSelectedItem(appoinment.getStatus());
 		}
 	}
 	

@@ -189,7 +189,7 @@ public class Clinic implements Serializable{
 	public int getIndexAppoinment(String codigo) {
 		int i = 0;
 		for (Appoinment app : myAppoinments) {
-			if (app.getSsn().equalsIgnoreCase(codigo)) {
+			if (app.getCode().equalsIgnoreCase(codigo)) {
 				return i;
 			}
 			i++;
@@ -255,19 +255,19 @@ public class Clinic implements Serializable{
 	}
 
 	public void modifiedVaccine(Vaccine vaccine) {
-		myVaccines.set(getIndexvaccine(vaccine.getName()), vaccine);
+		myVaccines.set(getIndexvaccine(vaccine.getCode()), vaccine);
 	}
 
 	public void modifiedDisease(Disease disease) {
-		myDiseases.set(getIndexDisease(disease.getName()), disease);
+		myDiseases.set(getIndexDisease(disease.getCode()), disease);
 	}
 
 	public void modifiedAppoinment(Appoinment app) {
-		myAppoinments.set(getIndexAppoinment(app.getSsn()), app);
+		myAppoinments.set(getIndexAppoinment(app.getCode()), app);
 	}
 	
 	public void modifiedPerson(Person person) {
-		myPersons.set(getIndexPerson(person.getSsn()), person);
+		myPersons.set(getIndexPerson(person.getCode()), person);
 	}
 	
 	//remove methods

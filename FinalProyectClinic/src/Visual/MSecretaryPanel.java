@@ -1,6 +1,5 @@
 package Visual;
 
-
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
@@ -18,15 +17,16 @@ import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+
 import com.toedter.calendar.JDateChooser;
 
+import Dashboards.AppointmentInfo;
 import Dashboards.GenderInfo;
 import logic.Appoinment;
 import logic.Clinic;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -37,25 +37,28 @@ public class MSecretaryPanel extends JPanel {
 	private static DefaultTableModel model;
 	private static Object[] row;
 	private GenderInfo gender;
+	private AppointmentInfo appinfo;
 	private JButton btnEdit;
 	private static JDateChooser dateChooser;
 	private Appoinment selAppoinment;
 	private JButton btnDelete;
+	private JComboBox cbDash;
 
 	/**
 	 * Create the panel.
 	 */
 	public MSecretaryPanel() {
-		setBackground(SystemColor.activeCaption);
+		setOpaque(false);
 		setSize(1340, 648);
 		setLayout(null);
 		setVisible(false);
 		
 		gender = new GenderInfo();
+		appinfo = new AppointmentInfo();
 		
 		JPanel panel = new JPanel();
 		panel.setBounds(0, 0, 1340, 648);
-		panel.setBackground(SystemColor.activeCaption);
+		panel.setOpaque(false);
 		add(panel);
 		panel.setLayout(null);
 		
@@ -85,7 +88,7 @@ public class MSecretaryPanel extends JPanel {
 		});
 		scrollPane.setViewportView(table);
 		model = new DefaultTableModel();
-		String[] headers = {"Cédula", "Nombre Paciente", "Hora", "Doctor", "Status"}; //HEADERS FOR THE LIST
+		String[] headers = {"Cédula", "Nombre Paciente", "Hora", "Doctor", "Status"};
 		model.setColumnIdentifiers(headers);
 		table.setModel(model);
 		
@@ -95,52 +98,48 @@ public class MSecretaryPanel extends JPanel {
 		panel.add(dashboardP);
 		dashboardP.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("DASHBOARD (SECRETARY POV)");
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		lblNewLabel.setBounds(80, 11, 292, 33);
-		dashboardP.add(lblNewLabel);
+		cbDash = new JComboBox();
+		cbDash.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int select = cbDash.getSelectedIndex();
+				if(select == 0) {
+					menuclicked(appinfo);
+				} else {
+					menuclicked(gender);
+				}
+			}
+		});
+		cbDash.setModel(new DefaultComboBoxModel(new String[] {"Status de Personas", "Sexo\u00BF"}));
+		cbDash.setBounds(90, 43, 292, 20);
+		dashboardP.add(cbDash);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Personas en espera (Status = waiting)", "Sexo\u00BF"}));
-		comboBox.setBounds(90, 43, 292, 20);
-		dashboardP.add(comboBox);
 		
-		JPanel dash = new JPanel();
-		dash.setBounds(54, 74, 350, 350);
-		dashboardP.add(dash);
-		
-		JButton btnNewButton = new JButton("NUEVA CITA");
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton btnNewApp = new JButton("NUEVA CITA");
+		btnNewApp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				CreateAppointment createApp = new CreateAppointment(null);
 				createApp.setModal(true);
 				createApp.setVisible(true);
 			}
 		});
-		btnNewButton.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 30));
-		btnNewButton.setBounds(803, 514, 528, 83);
-		panel.add(btnNewButton);
+		btnNewApp.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 30));
+		btnNewApp.setBounds(803, 514, 528, 83);
+		panel.add(btnNewApp);
 		
-		JLabel lblNewLabel_1 = new JLabel("LISTA DE ESPERA");
-		lblNewLabel_1.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 20));
-		lblNewLabel_1.setBounds(10, 23, 225, 27);
-		panel.add(lblNewLabel_1);
+		JLabel lblWaiting = new JLabel("LISTA DE ESPERA");
+		lblWaiting.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 20));
+		lblWaiting.setBounds(10, 23, 225, 27);
+		panel.add(lblWaiting);
 		
 		dateChooser = new JDateChooser();
 		dateChooser.setBounds(650, 23, 117, 20);
 		panel.add(dateChooser);
 
-
 		Date date = new Date();
 		dateChooser.setDate(date);
 		LocalDateTime local = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-		
-	
 		ZonedDateTime zone = local.atZone(ZoneId.systemDefault());
 		Date dateoutput = Date.from(zone.toInstant());
-		
-		
-		dash.add(gender);
 		
 		btnEdit = new JButton("EDITAR CITA");
 		btnEdit.addActionListener(new ActionListener() {
@@ -175,8 +174,23 @@ public class MSecretaryPanel extends JPanel {
 		panel.add(btnDelete);
 		
 		
+		JPanel dash = new JPanel();
+		dash.setBounds(54, 74, 350, 350);
+		dashboardP.add(dash);
+		dash.setLayout(null);
+		
+		dash.add(gender);
+		dash.add(appinfo);
+		menuclicked(appinfo);
+		
 		loadAppointments();
 
+	}
+	
+	private void menuclicked(JPanel panel) {
+		gender.setVisible(false);
+		appinfo.setVisible(false);
+		panel.setVisible(true);
 	}
 	
 	public static void loadAppointments() {

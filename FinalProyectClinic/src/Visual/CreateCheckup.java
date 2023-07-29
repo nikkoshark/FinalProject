@@ -58,23 +58,28 @@ public class CreateCheckup extends JDialog {
 	private Person patient = null;
 	private Appoinment appinfo = null;
 	private int patientVer = 0;
+	private char ch;
 
 
 	/**
 	 * Create the dialog.
 	 */
-	public CreateCheckup(Appoinment app) { //sends a "PERSON" from appointment, if NEW, autofills from clinic, ELSE, txt's enabled
+	public CreateCheckup(Appoinment app) { //sends AN APPOINTMENT, if ssn exists, autofill. else, save ssn, name and phone
 		appinfo = app;
 		patient = Clinic.getInstance().searchPerson(appinfo.getSsn());
 		
+		if(patient == null) {
+			patient = new Patient(null, appinfo.getSsn(), appinfo.getName(), null, appinfo.getPhoneNumber(), null, null, ch, null, null);
+			//changeEditable(true, 1, "Establecer Paciente");
+		}
 		
 		setBounds(100, 100, 915, 546);
-		setResizable(false);
-		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(SystemColor.activeCaption);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		setResizable(false);
+		setLocationRelativeTo(null);
 		
 		infoPanel = new InfoPanel();
 		diseasePanel = new DiseasePanel();
@@ -262,13 +267,13 @@ public class CreateCheckup extends JDialog {
 					String name = txtName.getText();
 					String lastName = txtLastName.getText();
 					String phone = ftxtPhone.getText();
-					String secondaryPhone = txtEmail.getText(); // change in logic
+					String email = txtEmail.getText();
 					String address = txtaAddress.getText();
 					Date date = dateChooser.getDate();
 					char sex= String.valueOf(cbSex.getSelectedItem()).charAt(0);
 					String bloodType = String.valueOf(cbBloodType.getSelectedItem());
 					if(patient == null) {
-						Patient insPatient = new Patient(code, ssn, name, lastName, phone, address, date, sex, bloodType, secondaryPhone);
+						Patient insPatient = new Patient(code, ssn, name, lastName, phone, address, date, sex, bloodType, email);
 						Clinic.getInstance().insertPerson(insPatient);
 						JOptionPane.showMessageDialog(null, "Registro hecho.", "Registro", JOptionPane.INFORMATION_MESSAGE);
 					} else {
@@ -280,7 +285,7 @@ public class CreateCheckup extends JDialog {
 						patient.setAddress(address);
 						patient.setBirthdate(date);
 						((Patient)patient).setBloodType(bloodType);
-						((Patient)patient).setSecondaryPhoneNumber(secondaryPhone);
+						((Patient)patient).setEmail(email);
 						
 						Clinic.getInstance().modifiedPerson(patient);
 						dispose();
@@ -330,27 +335,17 @@ public class CreateCheckup extends JDialog {
 		
 		loadperson();
 	}
-	
+
 	private void loadperson() {
-		if(patient == null) {
-			/*patient.setSsn(appinfo.getSsn());
-			patient.setName(appinfo.getName());
-			patient.setPhoneNumber(appinfo.getPhoneNumber());*/
-		}
 		ftxtSSN.setText(patient.getSsn());	
 		txtName.setText(patient.getName());
 		txtLastName.setText(patient.getLastName());
 		txtaAddress.setText(patient.getAddress());
-		txtEmail.setText(((Patient)patient).getSecondaryPhoneNumber());
+		txtEmail.setText(((Patient)patient).getEmail());
 		dateChooser.setDate(patient.getBirthdate());
 		ftxtPhone.setText(patient.getPhoneNumber());
 		cbBloodType.setSelectedItem(((Patient)patient).getBloodType());
-		if(patient.getSex() == 'F') {
-			cbSex.setSelectedIndex(1);
-		} else {
-			cbSex.setSelectedIndex(2);
-		}
-			
+		cbSex.setSelectedItem(patient.getSex());		
 		
 	}
 

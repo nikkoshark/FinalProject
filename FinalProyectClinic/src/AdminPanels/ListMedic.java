@@ -3,6 +3,7 @@ package AdminPanels;
 import java.awt.Font;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.SystemColor;
 import java.awt.BorderLayout;
@@ -86,6 +87,20 @@ public class ListMedic extends JPanel {
 		add(btnEdit);
 		
 		btnDelete = new JButton("ELIMINAR");
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(selMedic != null) {
+					int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar el médico: " + selMedic.getName() + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
+					if (option == JOptionPane.OK_OPTION) {
+						Clinic.getInstance().removePerson(selMedic); //ERROR MAKER
+						btnEdit.setEnabled(false);
+						btnDelete.setEnabled(false);
+						loadMedic();
+					}
+				
+				}
+			}
+		});
 		btnDelete.setEnabled(false);
 		btnDelete.setBounds(444, 488, 89, 23);
 		add(btnDelete);

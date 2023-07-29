@@ -8,17 +8,17 @@ public class Patient extends Person implements Serializable{
 
 	private static final long serialVersionUID = -1364712702441777544L;
 	private String bloodType;
-	private String secondaryPhoneNumber;
+	private String email;
 	private ArrayList<CheckUp> myCheckUpsRecord = null;
 	private ArrayList<CheckUp> myMedicalRecord = null;
 	private ArrayList<Vaccine> myVaccines = null;
 	private ArrayList<Disease> myDiseases = null;
 
 	public Patient(String code, String ssn, String name, String lastName, String phoneNumber, String address,
-			Date birthdate, char sex, String bloodType, String secondaryPhoneNumber) {
+			Date birthdate, char sex, String bloodType, String email) {
 		super(code, ssn, name, lastName, phoneNumber, address, birthdate, sex);
 		this.bloodType = bloodType;
-		this.secondaryPhoneNumber = secondaryPhoneNumber;
+		this.email = email;
 		this.myCheckUpsRecord = new ArrayList<>();
 		this.myMedicalRecord = new ArrayList<>();
 		this.myVaccines = new ArrayList<>();
@@ -33,12 +33,12 @@ public class Patient extends Person implements Serializable{
 		this.bloodType = bloodType;
 	}
 
-	public String getSecondaryPhoneNumber() {
-		return secondaryPhoneNumber;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setSecondaryPhoneNumber(String secondaryPhoneNumber) {
-		this.secondaryPhoneNumber = secondaryPhoneNumber;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public ArrayList<CheckUp> getMyCheckUpsRecord() {

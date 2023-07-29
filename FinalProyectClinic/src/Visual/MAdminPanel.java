@@ -7,24 +7,28 @@ import AdminJDialogs.CreateDiseaseVaccine;
 import AdminJDialogs.CreateMedic;
 import AdminJDialogs.CreateUser;
 import AdminPanels.DefaultDashboard;
+import AdminPanels.ListDisease;
 import AdminPanels.ListMedic;
 import AdminPanels.ListUsers;
-import AdminPanels.ListDiseaseVaccine;
+import AdminPanels.ListVaccine;
 
-import java.awt.SystemColor;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MAdminPanel extends JPanel {
 
-	private ListDiseaseVaccine listDisease;
-	private ListDiseaseVaccine listVaccine;
+	private ListDisease listDisease;
+	private ListVaccine listVaccine;
 	private ListUsers listUsers;
 	private ListMedic listMedic;
 	private DefaultDashboard defDash;
@@ -32,13 +36,12 @@ public class MAdminPanel extends JPanel {
 	 * Create the panel.
 	 */
 	public MAdminPanel() {
-		setBackground(SystemColor.activeCaption);
-
+		setOpaque(false);
 		setSize(1340, 648);
 		setLayout(null);
 
-		listDisease = new ListDiseaseVaccine("disease");
-		listVaccine = new ListDiseaseVaccine("vaccine");
+		listDisease = new ListDisease();
+		listVaccine = new ListVaccine();
 		listUsers = new ListUsers();
 		listMedic = new ListMedic();
 		defDash = new DefaultDashboard();
@@ -128,6 +131,18 @@ public class MAdminPanel extends JPanel {
 			}
 		});
 		mnD.add(mntmDCreate);
+		
+		JMenu nmR = new JMenu("Respaldo");
+		nmR.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int option = JOptionPane.showConfirmDialog(null, "¿Desea hacer un respaldo de todo el sistema?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
+				if(option == JOptionPane.OK_OPTION) {
+					JOptionPane.showMessageDialog(null, "¡Se ha creado un respaldo del sistema exitosamente!", "Respaldo EXitoso", JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
+		});
+		menuBar.add(nmR);
 		
 		JPanel InfoP = new JPanel();
 		InfoP.setBounds(10, 67, 1320, 551);

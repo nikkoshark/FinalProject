@@ -8,7 +8,8 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import AdminPanels.ListDiseaseVaccine;
+import AdminPanels.ListDisease;
+import AdminPanels.ListVaccine;
 import logic.Clinic;
 import logic.Disease;
 import logic.Vaccine;
@@ -36,18 +37,6 @@ public class CreateDiseaseVaccine extends JDialog {
 	private String type = null;
 	private JCheckBox chckbxIsWatched = new JCheckBox("En Vigilancia");
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			CreateDiseaseVaccine dialog = new CreateDiseaseVaccine(null, null, null);
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * Create the dialog.
@@ -59,7 +48,7 @@ public class CreateDiseaseVaccine extends JDialog {
 		type = typeToRegister;
 		
 		setTitle("Modificar");
-		if(disease == null || vaccine == null) {
+		if(disease == null && vaccine == null) {
 			setTitle("Registrar");
 		}
 		
@@ -73,17 +62,17 @@ public class CreateDiseaseVaccine extends JDialog {
 			txtCode.setText(getCodeVaccine(Clinic.getInstance().codeVaccine));
 		}
 		
-		setLocationRelativeTo(null);
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(SystemColor.activeCaption);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
+		setLocationRelativeTo(null);
 		{
 			
 			lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 20));
-			lblTitle.setBounds(114, 11, 202, 25);
+			lblTitle.setBounds(200, 20, 230, 25);
 			contentPanel.add(lblTitle);
 		}
 		{
@@ -124,48 +113,46 @@ public class CreateDiseaseVaccine extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton btnCreate = new JButton("REGISTRAR");
-				if(disease == null || vaccine == null) {
-					btnCreate.setText("SALVAR");
+				JButton btnCreate = new JButton("MODIFICAR");
+				if(disease == null && vaccine == null) {
+					btnCreate.setText("REGISTRAR");
 				}
 				btnCreate.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						
-						if (!txtCode.getText().isEmpty() && !txtName.getText().isEmpty() && !txtDesc.getText().isEmpty()) {							
-							if(type.equalsIgnoreCase("disease") && disease == null) {
-								Disease insDisease = new Disease(txtCode.getText(), txtName.getText(), txtDesc.getText(), chckbxIsWatched.isSelected());
-								Clinic.getInstance().insertDisease(insDisease);
-								
-								JOptionPane.showMessageDialog(null, "¡Registro de Enfermedad Satisfactoria!", "Registrar", JOptionPane.INFORMATION_MESSAGE);
-								clear();
-								ListDiseaseVaccine.loadDisease();
-							} else if(type.equalsIgnoreCase("vaccine") && vaccine == null) {
-								Vaccine insVaccine = new Vaccine(txtCode.getText(), txtName.getText(), txtDesc.getText());
-								Clinic.getInstance().insertVaccine(insVaccine);
-								
-								JOptionPane.showMessageDialog(null, "¡Registro de Vacuna Satisfactoria!", "Registrar", JOptionPane.INFORMATION_MESSAGE);
-								clear();
-								ListDiseaseVaccine.loadVaccine();
-								
-							} else if (type.equalsIgnoreCase("disease")){
-								disease.setCode(txtCode.getText());
-								disease.setName(txtName.getText());
-								disease.setDescription(txtDesc.getText());
-								disease.setWatched(chckbxIsWatched.isSelected());
-								
-								Clinic.getInstance().modifiedDisease(disease);
-								dispose();
-								ListDiseaseVaccine.loadDisease();							
-							} else {
-								vaccine.setCode(txtCode.getText());
-								vaccine.setName(txtName.getText());
-								vaccine.setDescription(txtDesc.getText());
-								Clinic.getInstance().modifiedVaccine(vaccine);
-								dispose();
-								ListDiseaseVaccine.loadVaccine();
+						if (!txtCode.getText().isEmpty() && !txtName.getText().isEmpty() && !txtDesc.getText().isEmpty()) {
+							if(vaccine == null && disease == null) {
+								if(type.equalsIgnoreCase("disease")) {
+									Disease insDisease = new Disease(txtCode.getText(), txtName.getText(), txtDesc.getText(), chckbxIsWatched.isSelected());
+									Clinic.getInstance().insertDisease(insDisease);
+									JOptionPane.showMessageDialog(null, "¡Registro de Enfermedad Satisfactoria!", "Registrar", JOptionPane.INFORMATION_MESSAGE);
+									clear();
+								} else {
+									Vaccine insVaccine = new Vaccine(txtCode.getText(), txtName.getText(), txtDesc.getText());
+									Clinic.getInstance().insertVaccine(insVaccine);
+									JOptionPane.showMessageDialog(null, "¡Registro de Vacuna Satisfactoria!", "Registrar", JOptionPane.INFORMATION_MESSAGE);
+									clear();
+								}
+							} else  {
+								if (type.equalsIgnoreCase("disease")){
+									disease.setCode(txtCode.getText());
+									disease.setName(txtName.getText());
+									disease.setDescription(txtDesc.getText());
+									disease.setWatched(chckbxIsWatched.isSelected());
+									Clinic.getInstance().modifiedDisease(disease);
+									dispose();
+								} else {
+									vaccine.setCode(txtCode.getText());
+									vaccine.setName(txtName.getText());
+									vaccine.setDescription(txtDesc.getText());
+									Clinic.getInstance().modifiedVaccine(vaccine);
+									dispose();
+								}
 							}
-						}
-						else {
+							ListDisease.loadDisease();
+							ListVaccine.loadVaccine();
+								
+						} else {
 							JOptionPane.showMessageDialog(null, "¡Parámetro(s) sin completar!\nPor favor completar los campos.", "Información Vacía", JOptionPane.ERROR_MESSAGE);
 						}
 						
@@ -204,7 +191,6 @@ public class CreateDiseaseVaccine extends JDialog {
 			txtCode.setText(disease.getCode());
 			txtName.setText(disease.getName());
 			txtDesc.setText(disease.getDescription());
-			
 			chckbxIsWatched.setSelected(disease.isWatched());
 		}
 		else if (vaccine != null) {
@@ -214,7 +200,7 @@ public class CreateDiseaseVaccine extends JDialog {
 		}
 	}
 	
-	private String getCodeVaccine(int codeVaccine) {
+	private static String getCodeVaccine(int codeVaccine) {
 		int total = codeVaccine / 10;
 		String code = null;
 		

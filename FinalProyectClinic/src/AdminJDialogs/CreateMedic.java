@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -12,6 +13,7 @@ import javax.swing.text.MaskFormatter;
 import logic.Clinic;
 import logic.Medic;
 import logic.Person;
+import login.User;
 
 import java.awt.SystemColor;
 import javax.swing.JLabel;
@@ -24,8 +26,6 @@ import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.JSpinner;
@@ -33,7 +33,6 @@ import javax.swing.SpinnerListModel;
 import com.toedter.calendar.JDateChooser;
 
 import AdminPanels.ListMedic;
-import Visual.CreateAppointment;
 import javax.swing.JFormattedTextField;
 
 public class CreateMedic extends JDialog {
@@ -43,15 +42,16 @@ public class CreateMedic extends JDialog {
 	private JFormattedTextField ftxtSSN;
 	private JTextField txtLastName;
 	private JTextField txtName;
-	private JTextField txtSpeciality;
 	private JFormattedTextField ftxtPhone;
 	private JTextField txtUser;
 	private JTextField txtPsw;
 	private JTextArea txtAAddress;
 	private JComboBox cbSex;
+	private JComboBox cbSpeciality;
 	private JSpinner spnEntry;
 	private JSpinner spnExit;
 	private JDateChooser dateChooser;
+	private JCheckBox chbxAvailable;
 	private Person medic;
 
 
@@ -74,27 +74,28 @@ public class CreateMedic extends JDialog {
 		setLocationRelativeTo(null);
 		{
 			JLabel lblNuevoMdico = new JLabel("REGISTRO M\u00C9DICO");
-			lblNuevoMdico.setFont(new Font("Tahoma", Font.PLAIN, 20));
-			lblNuevoMdico.setBounds(174, 16, 174, 25);
+			lblNuevoMdico.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 20));
+			lblNuevoMdico.setBounds(161, 27, 174, 25);
 			contentPanel.add(lblNuevoMdico);
 
+
 			JLabel lblCode = new JLabel("C\u00F3digo");
-			lblCode.setBounds(39, 52, 46, 14);
+			lblCode.setBounds(39, 60, 46, 14);
 			contentPanel.add(lblCode);
 
 			txtCode = new JTextField();
 			txtCode.setEditable(false);
 			txtCode.setText(getCodePerson(Clinic.getInstance().codePerson));
 			txtCode.setColumns(10);
-			txtCode.setBounds(39, 77, 128, 20);
+			txtCode.setBounds(39, 77, 85, 20);
 			contentPanel.add(txtCode);
 
 			JLabel lblCedula = new JLabel("C\u00E9dula");
-			lblCedula.setBounds(177, 52, 46, 14);
+			lblCedula.setBounds(134, 63, 109, 14);
 			contentPanel.add(lblCedula);
 
 			ftxtSSN = new JFormattedTextField();
-			ftxtSSN.setBounds(177, 77, 142, 20);
+			ftxtSSN.setBounds(134, 77, 99, 20);
 			contentPanel.add(ftxtSSN);
 			
 			MaskFormatter maskssn;
@@ -107,7 +108,7 @@ public class CreateMedic extends JDialog {
 			}
 
 			JLabel lblApellido = new JLabel("Apellido[s]");
-			lblApellido.setBounds(247, 107, 126, 14);
+			lblApellido.setBounds(248, 115, 126, 14);
 			contentPanel.add(lblApellido);
 
 			txtLastName = new JTextField();
@@ -116,7 +117,7 @@ public class CreateMedic extends JDialog {
 			contentPanel.add(txtLastName);
 
 			JLabel lblNombre = new JLabel("Nombre[s]");
-			lblNombre.setBounds(38, 105, 85, 14);
+			lblNombre.setBounds(39, 115, 85, 14);
 			contentPanel.add(lblNombre);
 			
 			txtName = new JTextField();
@@ -125,26 +126,25 @@ public class CreateMedic extends JDialog {
 			contentPanel.add(txtName);
 
 			JLabel lblEspecialidad = new JLabel("Especialidad");
-			lblEspecialidad.setBounds(177, 161, 110, 14);
+			lblEspecialidad.setBounds(174, 171, 110, 14);
 			contentPanel.add(lblEspecialidad);
-
-			txtSpeciality = new JTextField();
-			txtSpeciality.setColumns(10);
-			txtSpeciality.setBounds(177, 183, 159, 20);
-			contentPanel.add(txtSpeciality);
+			
+			cbSpeciality = new JComboBox();
+			cbSpeciality.setModel(new DefaultComboBoxModel(new String[] {"<SELECCIONAR>", "Psic\u00F3logo", "Ginec\u00F3logo", "Otra Opci\u00F3n (add)"}));
+			cbSpeciality.setBounds(174, 183, 161, 20);
+			contentPanel.add(cbSpeciality);
 
 			JLabel lblDir = new JLabel("Direcci\u00F3n");
-			lblDir.setBounds(39, 213, 84, 14);
+			lblDir.setBounds(39, 223, 84, 14);
 			contentPanel.add(lblDir);
 
 			txtAAddress = new JTextArea();
 			txtAAddress.setLineWrap(true);
-			txtAAddress.setEditable(false);
-			txtAAddress.setBounds(38, 233, 182, 73);
+			txtAAddress.setBounds(38, 238, 182, 68);
 			contentPanel.add(txtAAddress);
 
 			JLabel lblTel = new JLabel("Tel\u00E9fono");
-			lblTel.setBounds(346, 159, 46, 14);
+			lblTel.setBounds(346, 171, 113, 14);
 			contentPanel.add(lblTel);
 			
 			ftxtPhone = new JFormattedTextField();
@@ -161,16 +161,16 @@ public class CreateMedic extends JDialog {
 			}
 
 			JLabel lblSexo = new JLabel("Sexo");
-			lblSexo.setBounds(329, 52, 46, 14);
+			lblSexo.setBounds(243, 63, 99, 14);
 			contentPanel.add(lblSexo);
 			
 			cbSex = new JComboBox();
-			cbSex.setModel(new DefaultComboBoxModel(new String[] {" <SELECCIONAR>", " Femenino", " Masculino"}));
-			cbSex.setBounds(329, 77, 127, 20);
+			cbSex.setModel(new DefaultComboBoxModel(new String[] {"<SELECCIONAR>", "Femenino", "Masculino"}));
+			cbSex.setBounds(243, 77, 120, 20);
 			contentPanel.add(cbSex);
 
 			JLabel lblUsuario = new JLabel("Usuario");
-			lblUsuario.setBounds(228, 213, 120, 14);
+			lblUsuario.setBounds(228, 223, 120, 14);
 			contentPanel.add(lblUsuario);
 
 			txtUser = new JTextField();
@@ -179,7 +179,7 @@ public class CreateMedic extends JDialog {
 			contentPanel.add(txtUser);
 
 			JLabel lblContrasea = new JLabel("Contrase\u00F1a");
-			lblContrasea.setBounds(228, 261, 120, 14);
+			lblContrasea.setBounds(230, 271, 120, 14);
 			contentPanel.add(lblContrasea);
 			
 			txtPsw = new JTextField();
@@ -188,29 +188,35 @@ public class CreateMedic extends JDialog {
 			contentPanel.add(txtPsw);
 			
 			JLabel lblHorarioEntrada = new JLabel("Horario Entrada");
-			lblHorarioEntrada.setBounds(346, 213, 120, 14);
+			lblHorarioEntrada.setBounds(346, 223, 120, 14);
 			contentPanel.add(lblHorarioEntrada);
 
 			spnEntry = new JSpinner();
-			spnEntry.setModel(new SpinnerListModel(new String[] {"0800", "0830", "0900", "0930", "1000", "1030", "1100", "1130", "1200", "1230", "1300", "1330", "1400", "1430", "1500", "1530", "1600", "1630", "1700", "1730", "1800"}));
+			spnEntry.setModel(new SpinnerListModel(new String[] {"08:00 AM", "08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM"}));
 			spnEntry.setBounds(346, 238, 110, 20);
 			contentPanel.add(spnEntry);
 
 			JLabel lblHorarioSalida = new JLabel("Horario Salida");
-			lblHorarioSalida.setBounds(346, 261, 120, 14);
+			lblHorarioSalida.setBounds(346, 271, 120, 14);
 			contentPanel.add(lblHorarioSalida);
 			
 			spnExit = new JSpinner();
+			spnExit.setModel(new SpinnerListModel(new String[] {"08:00 AM", "08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM"}));
 			spnExit.setBounds(346, 286, 110, 20);
 			contentPanel.add(spnExit);
 			
 			JLabel lblDate = new JLabel("Fecha de Nacimiento");
-			lblDate.setBounds(38, 159, 112, 14);
+			lblDate.setBounds(39, 171, 143, 14);
 			contentPanel.add(lblDate);
 			
 			dateChooser = new JDateChooser();
-			dateChooser.setBounds(36, 183, 131, 20);
+			dateChooser.setBounds(39, 183, 128, 20);
 			contentPanel.add(dateChooser);
+			
+			chbxAvailable = new JCheckBox("Disponible");
+			chbxAvailable.setBackground(SystemColor.activeCaption);
+			chbxAvailable.setBounds(369, 76, 99, 23);
+			contentPanel.add(chbxAvailable);
 		}
 		
 		
@@ -228,7 +234,7 @@ public class CreateMedic extends JDialog {
 				}
 				btnAdd.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(Clinic.getInstance().isUniqueSsnNumber(ftxtSSN.getText())) {
+						if(Clinic.getInstance().isUniqueSsnNumber(ftxtSSN.getText()) || medic != null) {
 							String code = txtCode.getText();
 							String ssn =  ftxtSSN.getText();
 							String name = txtName.getText();
@@ -237,11 +243,13 @@ public class CreateMedic extends JDialog {
 							String address = txtAAddress.getText();
 							Date date = dateChooser.getDate();
 							char sex = String.valueOf(cbSex.getSelectedItem()).charAt(0);
-							String speciality = txtSpeciality.getText();
+							String speciality = String.valueOf(cbSpeciality.getSelectedItem());
 							boolean available = true;
+							//User insUser = new User("Medico", txtUser.getText(), txtPsw.getText());
 							if(medic == null) {
-								Medic insmedic = new Medic(code, ssn, name, lastName, phone, address, new Date()/*txtDate.getText()*/, sex, speciality, available);
+								Medic insmedic = new Medic(code, ssn, name, lastName, phone, address, date, sex, speciality, available);
 								Clinic.getInstance().insertPerson(insmedic);
+								//Clinic.getInstance().insertUser(insUser);
 								JOptionPane.showMessageDialog(null, "Registro hecho.", "Registro", JOptionPane.INFORMATION_MESSAGE);
 								clean();
 							} else {
@@ -251,9 +259,9 @@ public class CreateMedic extends JDialog {
 								medic.setLastName(lastName);
 								medic.setPhoneNumber(phone);
 								medic.setAddress(address);
-								medic.setBirthdate(date); //not functional (also DATE, not LocalDateTime)
-								((Medic)medic).setAvailable(available); // not in the visual yet
+								medic.setBirthdate(date);
 								medic.setSex(sex);
+								((Medic)medic).setAvailable(available);
 								((Medic)medic).setSpeciality(speciality);
 								
 								Clinic.getInstance().modifiedPerson(medic);
@@ -282,7 +290,7 @@ public class CreateMedic extends JDialog {
 	}
 	
 
-	private String getCodePerson(int codePerson) {
+	private static String getCodePerson(int codePerson) {
 		int total = codePerson / 10;
 		String code = null;
 		
@@ -307,15 +315,19 @@ public class CreateMedic extends JDialog {
 
 	private void clean(){
 		txtAAddress.setText("");
-		txtCode.setText("");
+		txtCode.setText(""+getCodePerson(Clinic.getInstance().codePerson));
 		txtLastName.setText("");
 		txtName.setText("");
 		ftxtPhone.setText("");
 		txtPsw.setText("");
-		txtSpeciality.setText("");
+		cbSex.setSelectedIndex(0);
+		cbSpeciality.setSelectedIndex(0);
 		ftxtSSN.setText("");
 		txtUser.setText("");
+		chbxAvailable.setSelected(false);
+		dateChooser.setDate(null);
 	}
+	
 	private void loadMedic() {
 		if(medic != null) {
 			txtAAddress.setText(medic.getAddress());
@@ -323,10 +335,15 @@ public class CreateMedic extends JDialog {
 			txtLastName.setText(medic.getLastName());
 			txtName.setText(medic.getName());
 			ftxtPhone.setText(medic.getPhoneNumber());
-			//txtPsw.setText();
-			txtSpeciality.setText(((Medic)medic).getSpeciality());
+			cbSpeciality.setSelectedItem(((Medic)medic).getSpeciality());
 			ftxtSSN.setText(medic.getSsn());
-			//txtUser.setText("");
+			cbSex.setSelectedItem(medic.getSex());
+			dateChooser.setDate(medic.getBirthdate());
+			//chbxAvailable.setSelected(medic.isAvailable());
+			//spnEntry
+			//spnExit
+			//txtUser.setText();
+			//txtPsw.setText();
 		}
 		
 		

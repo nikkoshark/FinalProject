@@ -34,6 +34,7 @@ public class Login extends JFrame {
 	private JPanel contentPane;
 	private JTextField txtUser;
 	private JPasswordField pswfPass;
+	private JButton btnLogin;
 
 	/**
 	 * Launch the application.
@@ -137,11 +138,11 @@ public class Login extends JFrame {
 		pswfPass.setBounds(167, 160, 130, 20);
 		contentPane.add(pswfPass);
 		
-		JButton btnLogin = new JButton("LOGIN");
+		btnLogin = new JButton("LOGIN");
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				login();
-				btnLogin.doClick();
+				//btnLogin.doClick();
 				
 			}
 		});

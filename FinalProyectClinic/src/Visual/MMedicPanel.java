@@ -26,7 +26,6 @@ import Dashboards.AppointmentInfo;
 import Dashboards.GenderInfo;
 import logic.Appoinment;
 import logic.Clinic;
-import logic.Person;
 
 public class MMedicPanel extends JPanel {
 	private static JTable table;
@@ -42,7 +41,7 @@ public class MMedicPanel extends JPanel {
 	 * Create the panel.
 	 */
 	public MMedicPanel() {
-		setBackground(SystemColor.activeCaption);
+		setOpaque(false);
 		setSize(1340, 648);
 		setLayout(null);
 		setVisible(false);
@@ -52,7 +51,7 @@ public class MMedicPanel extends JPanel {
 		
 		JPanel panel = new JPanel();
 		panel.setBounds(0, 0, 1340, 648);
-		panel.setBackground(SystemColor.activeCaption);
+		panel.setOpaque(false);
 		add(panel);
 		panel.setLayout(null);
 		
@@ -83,7 +82,7 @@ public class MMedicPanel extends JPanel {
 		});
 		scrollPane.setViewportView(table);
 		model = new DefaultTableModel();
-		String[] headers = {"Codigo", "Cédula", "Nombre Paciente", "Fecha", "Status"}; //HEADERS FOR THE LIST
+		String[] headers = {"Codigo", "Cédula", "Nombre Paciente", "Fecha", "Status"};
 		model.setColumnIdentifiers(headers);
 		table.setModel(model);
 		
