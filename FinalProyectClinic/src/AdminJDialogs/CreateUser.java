@@ -96,7 +96,7 @@ public class CreateUser extends JDialog {
 				}
 				btnSave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if (Clinic.getInstance().isUniqueUserName(txtUser.getText())) {
+						if (Clinic.getInstance().isUniqueUserName(txtUser.getText()) || user != null)  {
 							if (!txtUser.getText().isEmpty() && String.valueOf(txtPsw.getPassword()).length() > 0 && comboBox.getSelectedIndex() > 0) {
 								if (user == null) {									
 									User insUser = new User(String.valueOf(comboBox.getSelectedItem()), txtUser.getText(), String.valueOf(txtPsw.getPassword()));

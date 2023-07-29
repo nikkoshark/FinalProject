@@ -22,24 +22,26 @@ import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JCheckBox;
 
 public class CreateDiseaseVaccine extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
-	private JTextField txtCode;
+	private JTextField txtCode = new JTextField();
 	private JTextField txtName;
 	private JLabel lblTitle;
-	private JTextArea txtADesc;
+	private JTextArea txtDesc;
 	private Disease disease = null;
 	private Vaccine vaccine = null;
-	private int VD;
+	private String type = null;
+	private JCheckBox chckbxIsWatched = new JCheckBox("En Vigilancia");
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		try {
-			CreateDiseaseVaccine dialog = new CreateDiseaseVaccine(0, null, null);
+			CreateDiseaseVaccine dialog = new CreateDiseaseVaccine(null, null, null);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -50,21 +52,25 @@ public class CreateDiseaseVaccine extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public CreateDiseaseVaccine(int type, Disease dis, Vaccine vac) {
+	public CreateDiseaseVaccine(String typeToRegister, Disease dis, Vaccine vac) {
 		
 		disease = dis;
 		vaccine = vac;
-		VD = type;
+		type = typeToRegister;
 		
 		setTitle("Modificar");
 		if(disease == null || vaccine == null) {
 			setTitle("Registrar");
 		}
 		
-		if(VD == 0) {
-			lblTitle = new JLabel("NUEVA ENFERMEDAD");
+		if(type.equalsIgnoreCase("disease")) {
+			lblTitle = new JLabel("REGISTRO ENFERMEDAD");
+			chckbxIsWatched.setVisible(true);
+			txtCode.setText(getCodeDisease(Clinic.getInstance().codeDisease));
 		}else {
-			lblTitle = new JLabel("NUEVA VACUNA");
+			lblTitle = new JLabel("REGISTRO VACUNA");
+			chckbxIsWatched.setVisible(false);
+			txtCode.setText(getCodeVaccine(Clinic.getInstance().codeVaccine));
 		}
 		
 		setLocationRelativeTo(null);
@@ -82,31 +88,36 @@ public class CreateDiseaseVaccine extends JDialog {
 		}
 		{
 			JLabel lblCode = new JLabel("C\u00F3digo");
-			lblCode.setBounds(32, 59, 46, 14);
+			lblCode.setBounds(32, 9, 46, 14);
 			contentPanel.add(lblCode);
 
-			txtCode = new JTextField();
+			
+			txtCode.setEditable(false);
 			txtCode.setColumns(10);
-			txtCode.setBounds(32, 84, 185, 20);
+			txtCode.setBounds(32, 32, 120, 20);
 			contentPanel.add(txtCode);
 
 			JLabel lblAddress = new JLabel("Descripci\u00F3n");
-			lblAddress.setBounds(32, 115, 120, 14);
+			lblAddress.setBounds(32, 113, 120, 14);
 			contentPanel.add(lblAddress);
 
-			txtADesc = new JTextArea();
-			txtADesc.setLineWrap(true);
-			txtADesc.setBounds(32, 140, 376, 73);
-			contentPanel.add(txtADesc);
+			txtDesc = new JTextArea();
+			txtDesc.setLineWrap(true);
+			txtDesc.setBounds(32, 136, 376, 73);
+			contentPanel.add(txtDesc);
 
 			JLabel lblName = new JLabel("Nombre");
-			lblName.setBounds(223, 59, 46, 14);
+			lblName.setBounds(32, 61, 46, 14);
 			contentPanel.add(lblName);
 			
 			txtName = new JTextField();
 			txtName.setColumns(10);
-			txtName.setBounds(223, 84, 185, 20);
+			txtName.setBounds(32, 84, 185, 20);
 			contentPanel.add(txtName);
+			
+			chckbxIsWatched.setBackground(SystemColor.activeCaption);
+			chckbxIsWatched.setBounds(240, 82, 113, 25);
+			contentPanel.add(chckbxIsWatched);
 
 			JPanel buttonPane = new JPanel();
 			buttonPane.setBackground(SystemColor.inactiveCaption);
@@ -119,38 +130,46 @@ public class CreateDiseaseVaccine extends JDialog {
 				}
 				btnCreate.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(VD == 0 && disease == null) {
-							Disease insDisease = new Disease(txtCode.getText(), txtName.getText(), txtADesc.getText(), true);
-							Clinic.getInstance().insertDisease(insDisease);
-							//
-							JOptionPane.showMessageDialog(null, "¡Registro de Enfermedad Satisfactoria!", "Registrar", JOptionPane.INFORMATION_MESSAGE);
-							clear();
-							ListDiseaseVaccine.loadDisease();
-						} else if(VD == 1 && vaccine == null) {
-							Vaccine insVaccine = new Vaccine(txtCode.getText(), txtName.getText(), txtADesc.getText());
-							Clinic.getInstance().insertVaccine(insVaccine);
-							//
-							JOptionPane.showMessageDialog(null, "¡Registro de Vacuna Satisfactoria!", "Registrar", JOptionPane.INFORMATION_MESSAGE);
-							clear();
-							ListDiseaseVaccine.loadVaccine();
-							
-						} else if (VD == 0){
-							disease.setCode(txtCode.getText());
-							disease.setName(txtName.getText());
-							disease.setDescription(txtADesc.getText());
-							disease.setWatched(true);
-							
-							Clinic.getInstance().modifiedDisease(disease);
-							dispose();
-							ListDiseaseVaccine.loadDisease();							
-						} else {
-							vaccine.setCode(txtCode.getText());
-							vaccine.setName(txtName.getText());
-							vaccine.setDescription(txtADesc.getText());
-							Clinic.getInstance().modifiedVaccine(vaccine);
-							dispose();
-							ListDiseaseVaccine.loadVaccine();
+						
+						if (!txtCode.getText().isEmpty() && !txtName.getText().isEmpty() && !txtDesc.getText().isEmpty()) {							
+							if(type.equalsIgnoreCase("disease") && disease == null) {
+								Disease insDisease = new Disease(txtCode.getText(), txtName.getText(), txtDesc.getText(), chckbxIsWatched.isSelected());
+								Clinic.getInstance().insertDisease(insDisease);
+								
+								JOptionPane.showMessageDialog(null, "¡Registro de Enfermedad Satisfactoria!", "Registrar", JOptionPane.INFORMATION_MESSAGE);
+								clear();
+								ListDiseaseVaccine.loadDisease();
+							} else if(type.equalsIgnoreCase("vaccine") && vaccine == null) {
+								Vaccine insVaccine = new Vaccine(txtCode.getText(), txtName.getText(), txtDesc.getText());
+								Clinic.getInstance().insertVaccine(insVaccine);
+								
+								JOptionPane.showMessageDialog(null, "¡Registro de Vacuna Satisfactoria!", "Registrar", JOptionPane.INFORMATION_MESSAGE);
+								clear();
+								ListDiseaseVaccine.loadVaccine();
+								
+							} else if (type.equalsIgnoreCase("disease")){
+								disease.setCode(txtCode.getText());
+								disease.setName(txtName.getText());
+								disease.setDescription(txtDesc.getText());
+								disease.setWatched(chckbxIsWatched.isSelected());
+								
+								Clinic.getInstance().modifiedDisease(disease);
+								dispose();
+								ListDiseaseVaccine.loadDisease();							
+							} else {
+								vaccine.setCode(txtCode.getText());
+								vaccine.setName(txtName.getText());
+								vaccine.setDescription(txtDesc.getText());
+								Clinic.getInstance().modifiedVaccine(vaccine);
+								dispose();
+								ListDiseaseVaccine.loadVaccine();
+							}
 						}
+						else {
+							JOptionPane.showMessageDialog(null, "¡Parámetro(s) sin completar!\nPor favor completar los campos.", "Información Vacía", JOptionPane.ERROR_MESSAGE);
+						}
+						
+						
 					}
 
 				});
@@ -167,12 +186,76 @@ public class CreateDiseaseVaccine extends JDialog {
 				buttonPane.add(btnCancel);
 			}
 		}
+		loadVD();
 	}
 
 	private void clear() {
 		txtCode.setText("");
 		txtName.setText("");
-		txtADesc.setText("");	
+		txtDesc.setText("");	
+		
+		if (type.equalsIgnoreCase("disease")) {
+			chckbxIsWatched.setSelected(false);
+		}
 	}
 	
+	private void loadVD() {
+		if (disease != null) {
+			txtCode.setText(disease.getCode());
+			txtName.setText(disease.getName());
+			txtDesc.setText(disease.getDescription());
+			
+			chckbxIsWatched.setSelected(disease.isWatched());
+		}
+		else if (vaccine != null) {
+			txtCode.setText(vaccine.getCode());
+			txtName.setText(vaccine.getName());
+			txtDesc.setText(vaccine.getDescription());
+		}
+	}
+	
+	private String getCodeVaccine(int codeVaccine) {
+		int total = codeVaccine / 10;
+		String code = null;
+		
+		code = "V-0000" + codeVaccine;
+		
+		if (total >= 1 && total < 10) {
+			code = "V-000" + codeVaccine;
+		}
+		else if (total >= 10 && total < 100) {
+			code = "V-00" + codeVaccine;
+		}
+		else if (total >= 100 && total < 1000) {
+			code = "V-0" + codeVaccine;
+		}
+		else if (total >= 1000) {
+			code = "V-" + codeVaccine;
+		}
+		
+		return code;
+	}
+
+	
+	private static String getCodeDisease(int codeDisease) {
+		int total = codeDisease / 10;
+		String code = null;
+		
+		code = "D-0000" + codeDisease;
+		
+		if (total >= 1 && total < 10) {
+			code = "D-000" + codeDisease;
+		}
+		else if (total >= 10 && total < 100) {
+			code = "D-00" + codeDisease;
+		}
+		else if (total >= 100 && total < 1000) {
+			code = "D-0" + codeDisease;
+		}
+		else if (total >= 1000) {
+			code = "D-" + codeDisease;
+		}
+		
+		return code;
+	}
 }

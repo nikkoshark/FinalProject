@@ -25,7 +25,7 @@ public class MAdminPanel extends JPanel {
 
 	private ListDiseaseVaccine listDisease;
 	private ListDiseaseVaccine listVaccine;
-	private ListUsers listSecretary;
+	private ListUsers listUsers;
 	private ListMedic listMedic;
 	private DefaultDashboard defDash;
 	/**
@@ -37,14 +37,14 @@ public class MAdminPanel extends JPanel {
 		setSize(1340, 648);
 		setLayout(null);
 
-		listDisease = new ListDiseaseVaccine(0);
-		listVaccine = new ListDiseaseVaccine(1);
-		listSecretary = new ListUsers();
+		listDisease = new ListDiseaseVaccine("disease");
+		listVaccine = new ListDiseaseVaccine("vaccine");
+		listUsers = new ListUsers();
 		listMedic = new ListMedic();
 		defDash = new DefaultDashboard();
 		
 		JMenuBar menuBar = new JMenuBar();
-		menuBar.setBounds(0, 0, 1340, 21);
+		menuBar.setBounds(0, 0, 1259, 21);
 		add(menuBar);
 		
 		JMenu mnS = new JMenu("Usuarios");
@@ -53,7 +53,7 @@ public class MAdminPanel extends JPanel {
 		JMenuItem mntmSList = new JMenuItem("Listar");
 		mntmSList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				menuclicked(listSecretary);
+				menuclicked(listUsers);
 			}
 		});
 		mnS.add(mntmSList);
@@ -102,7 +102,7 @@ public class MAdminPanel extends JPanel {
 		JMenuItem mntmVCreate = new JMenuItem("Create");
 		mntmVCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CreateDiseaseVaccine createVaccine = new CreateDiseaseVaccine(1, null, null);
+				CreateDiseaseVaccine createVaccine = new CreateDiseaseVaccine("vaccine", null, null);
 				createVaccine.setVisible(true);
 			}
 		});
@@ -114,6 +114,7 @@ public class MAdminPanel extends JPanel {
 		JMenuItem mntmDList = new JMenuItem("List");
 		mntmDList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//ListDiseaseVaccine.changeType("disease");
 				menuclicked(listDisease);
 			}
 		});
@@ -122,7 +123,7 @@ public class MAdminPanel extends JPanel {
 		JMenuItem mntmDCreate = new JMenuItem("Create");
 		mntmDCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CreateDiseaseVaccine createDisease = new CreateDiseaseVaccine(0, null, null);
+				CreateDiseaseVaccine createDisease = new CreateDiseaseVaccine("disease", null, null);
 				createDisease.setVisible(true);
 			}
 		});
@@ -152,7 +153,7 @@ public class MAdminPanel extends JPanel {
 		InfoP.add(defDash);
 		InfoP.add(listDisease);
 		InfoP.add(listVaccine);
-		InfoP.add(listSecretary);
+		InfoP.add(listUsers);
 		InfoP.add(listMedic);
 		
 		menuclicked(defDash); //default
@@ -162,7 +163,7 @@ public class MAdminPanel extends JPanel {
 	private void menuclicked(JPanel panel) {
 		listDisease.setVisible(false);
 		listVaccine.setVisible(false);
-		listSecretary.setVisible(false);
+		listUsers.setVisible(false);
 		listMedic.setVisible(false);
 		defDash.setVisible(false);
 		

@@ -20,6 +20,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class SearchPatient extends JDialog {
 
@@ -27,7 +33,10 @@ public class SearchPatient extends JDialog {
 	private static JTable table;
 	private static DefaultTableModel model;
 	private static Object[] row;
-	private JTextField searchBar;
+	private static JTextField txtSearchBar;
+	private static JRadioButton rdbtnCedula;
+	private static JRadioButton rdbtnNombre;
+	private static JRadioButton rdbtnCodigo;
 
 	/**
 	 * Launch the application.
@@ -67,12 +76,25 @@ public class SearchPatient extends JDialog {
 			panel.setLayout(new BorderLayout(0, 0));
 			{
 				JScrollPane scrollPane = new JScrollPane();
+				scrollPane.setLocation(98, 0);
 				panel.add(scrollPane, BorderLayout.CENTER);
 				{
-					table = new JTable();
+					table = new JTable(){
+						public boolean editCellAt(int row, int column, java.util.EventObject e) {
+							return false;
+						}
+					};
+					table.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mouseClicked(MouseEvent e) {
+							if (e.getClickCount() == 2) {
+								System.out.println("dos click");
+							}
+						}
+					});
 					scrollPane.setViewportView(table);
 					model = new DefaultTableModel();
-					String[] headers = {"Código", "Nombre", "Apellido", "Sexo"}; //HEADERS FOR THE LIST
+					String[] headers = {"Código", "Cedula", "Nombre", "Apellido"}; //HEADERS FOR THE LIST
 					model.setColumnIdentifiers(headers);
 					table.setModel(model);
 				}
@@ -84,27 +106,45 @@ public class SearchPatient extends JDialog {
 			contentPanel.add(panel);
 			panel.setLayout(null);
 			
-			JRadioButton rdbtnNewRadioButton = new JRadioButton("C\u00E9dula");
-			rdbtnNewRadioButton.setBounds(47, 7, 109, 23);
-			panel.add(rdbtnNewRadioButton);
+			rdbtnCedula = new JRadioButton("C\u00E9dula");
+			rdbtnCedula.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					changeRadioButton(rdbtnCedula);
+				}
+			});
+			rdbtnCedula.setSelected(true);
+			rdbtnCedula.setBounds(47, 7, 109, 23);
+			panel.add(rdbtnCedula);
 			
-			JRadioButton rdbtnNombre = new JRadioButton("Nombre");
+			rdbtnNombre = new JRadioButton("Nombre");
+			rdbtnNombre.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					changeRadioButton(rdbtnNombre);
+				}
+			});
 			rdbtnNombre.setBounds(170, 7, 109, 23);
 			panel.add(rdbtnNombre);
 			
-			JRadioButton rdbtnApellido = new JRadioButton("Apellido");
-			rdbtnApellido.setBounds(294, 7, 109, 23);
-			panel.add(rdbtnApellido);
+			rdbtnCodigo = new JRadioButton("Codigo");
+			rdbtnCodigo.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					changeRadioButton(rdbtnCodigo);
+				}
+			});
+			rdbtnCodigo.setBounds(294, 7, 109, 23);
+			panel.add(rdbtnCodigo);
 			{
-				searchBar = new JTextField();
-				searchBar.setBounds(137, 34, 166, 20);
-				panel.add(searchBar);
-				searchBar.setColumns(10);
+				txtSearchBar = new JTextField();
+				txtSearchBar.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyReleased(KeyEvent e) {
+						loadPatient();
+					}
+				});
+				txtSearchBar.setBounds(121, 34, 166, 20);
+				panel.add(txtSearchBar);
+				txtSearchBar.setColumns(10);
 			}
-			
-			JButton btnSearch = new JButton("BUSCAR");
-			btnSearch.setBounds(313, 33, 89, 23);
-			panel.add(btnSearch);
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -118,6 +158,11 @@ public class SearchPatient extends JDialog {
 			}
 			{
 				JButton btnClose = new JButton("Cancelar");
+				btnClose.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						dispose();
+					}
+				});
 				buttonPane.add(btnClose);
 			}
 		}
@@ -130,15 +175,42 @@ public class SearchPatient extends JDialog {
 		
 		for (Person patient : Clinic.getInstance().getMyPersons()) {
 			if(patient instanceof Patient) {
-				row[0] = patient.getSsn();
-				row[1] = patient.getName();
-				row[2] = patient.getLastName();
-				row[3] = patient.getSex();
-				model.addRow(row);
+				if (rdbtnCedula.isSelected()) {
+					if (patient.getSsn().contains(txtSearchBar.getText())) {
+						row[0] = patient.getCode();
+						row[1] = patient.getSsn();
+						row[2] = patient.getName();
+						row[3] = patient.getLastName();
+						model.addRow(row);
+					}
+				}else if (rdbtnCodigo.isSelected()) {
+					if (patient.getCode().contains(txtSearchBar.getText())) {
+						row[0] = patient.getCode();
+						row[1] = patient.getSsn();
+						row[2] = patient.getName();
+						row[3] = patient.getLastName();
+						model.addRow(row);
+					}
+				}else if (rdbtnNombre.isSelected()) {
+					if (patient.getName().contains(txtSearchBar.getText())) {
+						row[0] = patient.getCode();
+						row[1] = patient.getSsn();
+						row[2] = patient.getName();
+						row[3] = patient.getLastName();
+						model.addRow(row);
+					}
+				}
 			}
 		}
 	}
 	
-	
+	public void changeRadioButton(JRadioButton btn) {
+		rdbtnCedula.setSelected(false);
+		rdbtnCodigo.setSelected(false);
+		rdbtnNombre.setSelected(false);
+		
+		btn.setSelected(true);
+		
+	}
 	
 }

@@ -40,13 +40,15 @@ public class ListDiseaseVaccine extends JPanel {
 	private Vaccine selVaccine;
 	private DiseaseInfo dinfo;
 	private VaccinesInfo vacin;
-	private int VD;
+	private String type;
+	private final String diseaseString = "disease";
+	//private final String vaccineString = "vaccine";
 
 	/**
 	 * Create the panel.
 	 */
-	public ListDiseaseVaccine(int type) {
-		VD = type;
+	public ListDiseaseVaccine(String typeOfList) {
+		type = typeOfList;
 		setBackground(SystemColor.activeCaption);
 		setSize(1320, 551);
 		setLayout(null);
@@ -55,7 +57,7 @@ public class ListDiseaseVaccine extends JPanel {
 		dinfo = new DiseaseInfo();
 		vacin = new VaccinesInfo();
 		
-		if(VD == 0) {
+		if(type.equalsIgnoreCase(diseaseString)) {
 			lblTitle = new JLabel("LISTAR ENFERMEDADES");
 		}else {
 			lblTitle = new JLabel("LISTAR VACUNAS");
@@ -80,10 +82,13 @@ public class ListDiseaseVaccine extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				int index = table.getSelectedRow();
 				
-				if(index>=0) {
+				System.out.println(index);
+				
+				if(index >= 0) {
+					System.out.println("paso");
 					btnEdit.setEnabled(true);
 					btnDelete.setEnabled(true);
-					if(VD == 0) {
+					if(type.equalsIgnoreCase(diseaseString)) {
 						selDisease = Clinic.getInstance().getMyDiseases().get(index);
 					} else {
 						selVaccine = Clinic.getInstance().getMyVaccines().get(index);
@@ -92,8 +97,15 @@ public class ListDiseaseVaccine extends JPanel {
 			}
 		});
 		model = new DefaultTableModel();
-		String[] headers = {"Código", "Nombre", "Descripción"}; //HEADERS FOR THE LIST
-		model.setColumnIdentifiers(headers);
+		
+		if (type.equalsIgnoreCase("disease")) {
+			String[] headers = {"Código", "Nombre", "Descripción", "Estatus"};
+			model.setColumnIdentifiers(headers);
+		}
+		else {
+			String[] headers = {"Código", "Nombre", "Descripción"}; //HEADERS FOR THE LIST
+			model.setColumnIdentifiers(headers);
+		}
 		table.setModel(model);
 		scrollPane.setViewportView(table);
 		
@@ -106,19 +118,18 @@ public class ListDiseaseVaccine extends JPanel {
 					int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar la enfermedad: " + selDisease.getName() + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
 					if (option == JOptionPane.OK_OPTION) {
 						Clinic.getInstance().removeDisease(selDisease);
-						btnEdit.setEnabled(false);
-						btnDelete.setEnabled(false);
 						loadDisease();
 					}
 				} else {
 					int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar la vacuna: " + selVaccine.getName() + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
 					if (option == JOptionPane.OK_OPTION) {
 						Clinic.getInstance().removeVaccine(selVaccine);
-						btnEdit.setEnabled(false);
-						btnDelete.setEnabled(false);
 						loadVaccine();
 					}
 				}
+				
+				btnEdit.setEnabled(false);
+				btnDelete.setEnabled(false);
 				
 			}
 		});
@@ -131,12 +142,12 @@ public class ListDiseaseVaccine extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				btnEdit.setEnabled(false);
 				btnDelete.setEnabled(false);
-				if(VD == 0) {
-					CreateDiseaseVaccine regDisease = new CreateDiseaseVaccine(0, selDisease, null);
+				if(type.equalsIgnoreCase(diseaseString)) {
+					CreateDiseaseVaccine regDisease = new CreateDiseaseVaccine("disease", selDisease, null);
 					regDisease.setModal(true);
 					regDisease.setVisible(true);
 				} else {
-					CreateDiseaseVaccine regVaccine = new CreateDiseaseVaccine(1, null, selVaccine);
+					CreateDiseaseVaccine regVaccine = new CreateDiseaseVaccine("vaccine", null, selVaccine);
 					regVaccine.setModal(true);
 					regVaccine.setVisible(true);
 				}
@@ -154,26 +165,27 @@ public class ListDiseaseVaccine extends JPanel {
 		dash.add(dinfo);
 		dash.add(vacin);
 		
-		menuclicked(VD);
+		menuclicked(type);
+		
+		loadVD(type);
 
-		if(VD == 0) {
-			loadDisease();
-		}else {
-			loadVaccine();
-		}
 	}
 	
-	private void menuclicked(int type) {
-		if(type==1) {
-			dinfo.setEnabled(false);
-			vacin.setEnabled(true);
-		} else {
+	public static void setType(String typeChange) {
+		//type = typeChange;
+	}
+	
+	
+	private void menuclicked(String type) {
+		if(type.equalsIgnoreCase(diseaseString)) {
 			dinfo.setEnabled(true);
 			vacin.setEnabled(false);
+		} else {
+			dinfo.setEnabled(false);
+			vacin.setEnabled(true);
 		}
 	}
 	
-
 	public static void loadVaccine() {
 		model.setRowCount(0);
 		row = new Object[table.getColumnCount()];
@@ -197,6 +209,33 @@ public class ListDiseaseVaccine extends JPanel {
 			row[2] = disease.getDescription();
 			model.addRow(row);
 			
+		}
+	}
+	
+	public static void loadVD(String type) {
+		model.setRowCount(0);
+		row = new Object[table.getColumnCount()];
+		
+		if (type.equalsIgnoreCase("disease")) {			
+			for(Disease disease : Clinic.getInstance().getMyDiseases()) {
+				row[0] = disease.getCode();
+				row[1] = disease.getName();
+				row[2] = disease.getDescription();
+				row[3] = " Neutro";
+				if (disease.isWatched()) {					
+					row[3] = " Vigilado";
+				}
+				model.addRow(row);
+				
+			}
+		}else {
+			for(Vaccine vaccine : Clinic.getInstance().getMyVaccines()) {
+				row[0] = vaccine.getCode();
+				row[1] = vaccine.getName();
+				row[2] = vaccine.getDescription();
+				model.addRow(row);
+				
+			}
 		}
 	}
 }

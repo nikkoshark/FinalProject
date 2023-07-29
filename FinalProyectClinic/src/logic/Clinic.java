@@ -226,22 +226,27 @@ public class Clinic implements Serializable{
 	
 	public void insertPerson(Person person) {
 		myPersons.add(person);
+		codePerson++;
 	}
 	
 	public void insertCheckUp(CheckUp checkUp) {
 		myCheckUps.add(checkUp);
+		codeCheckUp++;
 	}
 	
 	public void insertAppoinment(Appoinment appoinment) {
 		myAppoinments.add(appoinment);
+		codeAppoinment++;
 	}
 	
 	public void insertVaccine(Vaccine vaccine) {
 		myVaccines.add(vaccine);
+		codeVaccine++;
 	}
 	
 	public void insertDisease(Disease disease) {
 		myDiseases.add(disease);
+		codeDisease++;
 	}
 	
 	//modified methods

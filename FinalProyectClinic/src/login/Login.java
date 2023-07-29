@@ -27,6 +27,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 public class Login extends JFrame {
 
@@ -136,14 +137,17 @@ public class Login extends JFrame {
 		pswfPass.setBounds(167, 160, 130, 20);
 		contentPane.add(pswfPass);
 		
-		JButton btnNewButton = new JButton("LOGIN");
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton btnLogin = new JButton("LOGIN");
+		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				login();
+				btnLogin.doClick();
+				
 			}
 		});
-		btnNewButton.setBounds(192, 220, 89, 23);
-		contentPane.add(btnNewButton);
+		btnLogin.setBounds(192, 220, 89, 23);
+		contentPane.add(btnLogin);
+	
 	}
 	
 	public void login() {

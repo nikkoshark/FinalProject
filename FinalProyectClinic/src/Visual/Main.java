@@ -97,6 +97,18 @@ public class Main extends JFrame {
 				Login login = new Login();
 				login.setVisible(true);
 				dispose();
+				
+				File file = new File("clinic_data.dat");
+		        FileOutputStream outputStream;
+		        ObjectOutputStream objectOutputStream;
+		        
+		        try {
+					outputStream = new FileOutputStream(file);
+					objectOutputStream = new ObjectOutputStream(outputStream);
+					objectOutputStream.writeObject(Clinic.getInstance());
+				} catch (Exception e1) {
+					// TODO: handle exception
+				} 
 			}
 		});
 		btnNewButton.setBounds(1257, 0, 93, 23);

@@ -65,15 +65,15 @@ public class CreateMedic extends JDialog {
 		if(medic == null) {
 			setTitle("Registrar");
 		}
-		setLocationRelativeTo(null);
 		setBounds(100, 100, 519, 399);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(SystemColor.activeCaption);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
+		setLocationRelativeTo(null);
 		{
-			JLabel lblNuevoMdico = new JLabel("NUEVO M\u00C9DICO");
+			JLabel lblNuevoMdico = new JLabel("REGISTRO M\u00C9DICO");
 			lblNuevoMdico.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			lblNuevoMdico.setBounds(174, 16, 174, 25);
 			contentPanel.add(lblNuevoMdico);
@@ -84,6 +84,7 @@ public class CreateMedic extends JDialog {
 
 			txtCode = new JTextField();
 			txtCode.setEditable(false);
+			txtCode.setText(getCodePerson(Clinic.getInstance().codePerson));
 			txtCode.setColumns(10);
 			txtCode.setBounds(39, 77, 128, 20);
 			contentPanel.add(txtCode);
@@ -164,7 +165,7 @@ public class CreateMedic extends JDialog {
 			contentPanel.add(lblSexo);
 			
 			cbSex = new JComboBox();
-			cbSex.setModel(new DefaultComboBoxModel(new String[] {"<SELECCIONAR>", "Femenino", "Masculino"}));
+			cbSex.setModel(new DefaultComboBoxModel(new String[] {" <SELECCIONAR>", " Femenino", " Masculino"}));
 			cbSex.setBounds(329, 77, 127, 20);
 			contentPanel.add(cbSex);
 
@@ -235,7 +236,7 @@ public class CreateMedic extends JDialog {
 							String phone = ftxtPhone.getText();
 							String address = txtAAddress.getText();
 							Date date = dateChooser.getDate();
-							char sex= String.valueOf(cbSex.getSelectedItem()).charAt(0);
+							char sex = String.valueOf(cbSex.getSelectedItem()).charAt(0);
 							String speciality = txtSpeciality.getText();
 							boolean available = true;
 							if(medic == null) {
@@ -280,6 +281,29 @@ public class CreateMedic extends JDialog {
 		loadMedic();
 	}
 	
+
+	private String getCodePerson(int codePerson) {
+		int total = codePerson / 10;
+		String code = null;
+		
+		code = "C-0000" + codePerson;
+		
+		if (total >= 1 && total < 10) {
+			code = "C-000" + codePerson;
+		}
+		else if (total >= 10 && total < 100) {
+			code = "C-00" + codePerson;
+		}
+		else if (total >= 100 && total < 1000) {
+			code = "C-0" + codePerson;
+		}
+		else if (total >= 1000) {
+			code = "C-" + codePerson;
+		}
+		
+		return code;
+	}
+
 
 	private void clean(){
 		txtAAddress.setText("");

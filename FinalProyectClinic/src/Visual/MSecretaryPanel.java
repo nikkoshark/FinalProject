@@ -9,6 +9,8 @@ import javax.swing.table.DefaultTableModel;
 
 import java.awt.SystemColor;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -28,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class MSecretaryPanel extends JPanel {
 	private static JTable table;
@@ -37,6 +40,7 @@ public class MSecretaryPanel extends JPanel {
 	private JButton btnEdit;
 	private static JDateChooser dateChooser;
 	private Appoinment selAppoinment;
+	private JButton btnDelete;
 
 	/**
 	 * Create the panel.
@@ -63,20 +67,25 @@ public class MSecretaryPanel extends JPanel {
 		JScrollPane scrollPane = new JScrollPane();
 		tableP.add(scrollPane, BorderLayout.CENTER);
 		
-		table = new JTable();
+		table = new JTable(){
+			public boolean editCellAt(int row, int column, java.util.EventObject e) {
+				return false;
+			}
+		};
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int index = table.getSelectedRow();
 				if(index>=0) {
 					btnEdit.setEnabled(true);
+					btnDelete.setEnabled(true);
 					selAppoinment = Clinic.getInstance().getMyAppoinments().get(index);
 				}
 			}
 		});
 		scrollPane.setViewportView(table);
 		model = new DefaultTableModel();
-		String[] headers = {"Cédula", "Nombre Paciente", "Fecha", "Doctor", "Status"}; //HEADERS FOR THE LIST
+		String[] headers = {"Cédula", "Nombre Paciente", "Hora", "Doctor", "Status"}; //HEADERS FOR THE LIST
 		model.setColumnIdentifiers(headers);
 		table.setModel(model);
 		
@@ -140,11 +149,30 @@ public class MSecretaryPanel extends JPanel {
 				regApp.setModal(true);
 				regApp.setVisible(true);
 				btnEdit.setEnabled(false);
+				btnDelete.setEnabled(false);
 			}
 		});
 		btnEdit.setEnabled(false);
 		btnEdit.setBounds(803, 480, 154, 23);
 		panel.add(btnEdit);
+		
+		btnDelete = new JButton("ELIMINAR CITA");
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(selAppoinment != null) {
+					int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar el usuario: " + selAppoinment.getCode() + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
+					if (option == JOptionPane.OK_OPTION) {
+						Clinic.getInstance().removeAppoinment(selAppoinment);
+						btnEdit.setEnabled(false);
+						btnDelete.setEnabled(false);
+						loadAppointments();
+					}
+				}
+			}
+		});
+		btnDelete.setEnabled(false);
+		btnDelete.setBounds(981, 480, 154, 23);
+		panel.add(btnDelete);
 		
 		
 		loadAppointments();
@@ -154,24 +182,14 @@ public class MSecretaryPanel extends JPanel {
 	public static void loadAppointments() {
 		model.setRowCount(0);
 		row = new Object[table.getColumnCount()];
-		
-		/*
-	    LocalDateTime ldt = LocalDateTime.now();  
-	    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");  
-		*/
-		
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 		
 		for(Appoinment appointment : Clinic.getInstance().getMyAppoinments()) {
-			/*String strDate = formatter.format(appointment.getDate()); 
-			String strDate2 = formatter.format(ldt);
-			if(strDate.equalsIgnoreCase(strDate2)) {
-			if(appointment.getDate().equals(local)) {*/
-				row[0] = appointment.getSsn();
-				row[1] = appointment.getName();
-				row[2] = appointment.getDate();
-				row[3] = appointment.getMedic(); 
-				row[4] = appointment.getStatus();
-			//}
+			row[0] = " " + appointment.getSsn();
+			row[1] = " " + appointment.getName();
+			row[2] = " " + appointment.getDate().format(dateTimeFormatter);
+			row[3] = " " + appointment.getMedic().getName(); 
+			row[4] = " " + appointment.getStatus();
 			
 			model.addRow(row);
 		}

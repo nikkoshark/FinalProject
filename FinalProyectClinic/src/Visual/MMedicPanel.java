@@ -64,7 +64,11 @@ public class MMedicPanel extends JPanel {
 		JScrollPane scrollPane = new JScrollPane();
 		tableP.add(scrollPane, BorderLayout.CENTER);
 		
-		table = new JTable();
+		table = new JTable(){
+			public boolean editCellAt(int row, int column, java.util.EventObject e) {
+				return false;
+			}
+		};
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -72,15 +76,14 @@ public class MMedicPanel extends JPanel {
 				
 				if (index >= 0) {
 					btnConsultar.setEnabled(true);
-					selPatient = Clinic.getInstance().getMyAppoinments().get(index);
-					//selPatient.setSsn(String.valueOf(table.getValueAt(index, 0))); //table.getValueAt(index, 0);
-					//selPatient.setName(String.valueOf(table.getValueAt(index, 1)));
+					String ssn = (String) table.getModel().getValueAt(index, 0);
+					selPatient = Clinic.getInstance().searchAppoinment(ssn);
 				}
 			}
 		});
 		scrollPane.setViewportView(table);
 		model = new DefaultTableModel();
-		String[] headers = {"Cédula", "Nombre Paciente", "Fecha", "Doctor", "Status"}; //HEADERS FOR THE LIST
+		String[] headers = {"Codigo", "Cédula", "Nombre Paciente", "Fecha", "Status"}; //HEADERS FOR THE LIST
 		model.setColumnIdentifiers(headers);
 		table.setModel(model);
 		
@@ -150,7 +153,7 @@ public class MMedicPanel extends JPanel {
 				}
 			}
 		});
-		cbDash.setModel(new DefaultComboBoxModel(new String[] {"Status de Personas", "Sexo\u00BF"}));
+		cbDash.setModel(new DefaultComboBoxModel(new String[] {"Status de Personas", "Sexo"}));
 		cbDash.setBounds(133, 11, 292, 20);
 		dashboardP.add(cbDash);
 
@@ -179,13 +182,15 @@ public class MMedicPanel extends JPanel {
 		row = new Object[table.getColumnCount()];
 
 		for(Appoinment appointment : Clinic.getInstance().getMyAppoinments()) {
-			row[0] = appointment.getSsn();
-			row[1] = appointment.getName();
-			row[2] = appointment.getDate();
-			row[3] = appointment.getMedic(); 
-			row[4] = appointment.getStatus();
-			
-			model.addRow(row);
+			if (true) {				
+				row[0] = " " + appointment.getCode(); 
+				row[1] = " " + appointment.getSsn();
+				row[2] = " " + appointment.getName();
+				row[3] = " " + appointment.getDate(); 
+				row[4] = " " + appointment.getStatus();
+				
+				model.addRow(row);
+			}
 		}
 	}
 
