@@ -80,7 +80,7 @@ public class CreateAppointment extends JDialog {
 	
 			txtCode = new JTextField();
 			txtCode.setEditable(false);
-			txtCode.setText(getCodeAppoinment((Clinic.getInstance().codeAppoinment)));
+			txtCode.setText(getCodeAppoinment((Clinic.getInstance().getCodeAppoinment())));
 			txtCode.setColumns(10);
 			txtCode.setBounds(116, 115, 120, 20);
 			contentPanel.add(txtCode);

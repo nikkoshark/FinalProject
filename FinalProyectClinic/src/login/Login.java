@@ -142,8 +142,6 @@ public class Login extends JFrame {
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				login();
-				//btnLogin.doClick();
-				
 			}
 		});
 		btnLogin.setBounds(192, 220, 89, 23);

@@ -55,11 +55,11 @@ public class CreateDiseaseVaccine extends JDialog {
 		if(type.equalsIgnoreCase("disease")) {
 			lblTitle = new JLabel("REGISTRO ENFERMEDAD");
 			chckbxIsWatched.setVisible(true);
-			txtCode.setText(getCodeDisease(Clinic.getInstance().codeDisease));
+			txtCode.setText(getCodeDisease(Clinic.getInstance().getCodeDisease()));
 		}else {
 			lblTitle = new JLabel("REGISTRO VACUNA");
 			chckbxIsWatched.setVisible(false);
-			txtCode.setText(getCodeVaccine(Clinic.getInstance().codeVaccine));
+			txtCode.setText(getCodeVaccine(Clinic.getInstance().getCodeVaccine()));
 		}
 		
 		setBounds(100, 100, 450, 300);
@@ -177,12 +177,16 @@ public class CreateDiseaseVaccine extends JDialog {
 	}
 
 	private void clear() {
-		txtCode.setText("");
+		
 		txtName.setText("");
 		txtDesc.setText("");	
 		
 		if (type.equalsIgnoreCase("disease")) {
 			chckbxIsWatched.setSelected(false);
+			txtCode.setText(getCodeDisease(Clinic.getInstance().getCodeDisease()));
+		}
+		else {
+			txtCode.setText(getCodeVaccine(Clinic.getInstance().getCodeVaccine()));			
 		}
 	}
 	

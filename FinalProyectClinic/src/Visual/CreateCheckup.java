@@ -35,6 +35,7 @@ import javax.swing.JTextArea;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFormattedTextField;
+import javax.swing.JSeparator;
 
 public class CreateCheckup extends JDialog {
 
@@ -250,7 +251,7 @@ public class CreateCheckup extends JDialog {
 		infoP.add(medicalRecordPanel);
 		infoP.add(checkupsRecord);
 			
-		menuclicked(infoPanel); //default
+		menuclicked(infoPanel);
 			
 		
 		{

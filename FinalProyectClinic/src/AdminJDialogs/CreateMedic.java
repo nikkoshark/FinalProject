@@ -34,6 +34,10 @@ import com.toedter.calendar.JDateChooser;
 
 import AdminPanels.ListMedic;
 import javax.swing.JFormattedTextField;
+import com.toedter.components.JLocaleChooser;
+import com.toedter.calendar.JDayChooser;
+import com.toedter.calendar.JYearChooser;
+import com.toedter.components.JSpinField;
 
 public class CreateMedic extends JDialog {
 
@@ -85,7 +89,7 @@ public class CreateMedic extends JDialog {
 
 			txtCode = new JTextField();
 			txtCode.setEditable(false);
-			txtCode.setText(getCodePerson(Clinic.getInstance().codePerson));
+			txtCode.setText(getCodePerson(Clinic.getInstance().getCodePerson()));
 			txtCode.setColumns(10);
 			txtCode.setBounds(39, 77, 85, 20);
 			contentPanel.add(txtCode);
@@ -113,7 +117,7 @@ public class CreateMedic extends JDialog {
 
 			txtLastName = new JTextField();
 			txtLastName.setColumns(10);
-			txtLastName.setBounds(247, 128, 212, 20);
+			txtLastName.setBounds(247, 130, 212, 20);
 			contentPanel.add(txtLastName);
 
 			JLabel lblNombre = new JLabel("Nombre[s]");
@@ -294,19 +298,19 @@ public class CreateMedic extends JDialog {
 		int total = codePerson / 10;
 		String code = null;
 		
-		code = "C-0000" + codePerson;
+		code = "P-0000" + codePerson;
 		
 		if (total >= 1 && total < 10) {
-			code = "C-000" + codePerson;
+			code = "P-000" + codePerson;
 		}
 		else if (total >= 10 && total < 100) {
-			code = "C-00" + codePerson;
+			code = "P-00" + codePerson;
 		}
 		else if (total >= 100 && total < 1000) {
-			code = "C-0" + codePerson;
+			code = "P-0" + codePerson;
 		}
 		else if (total >= 1000) {
-			code = "C-" + codePerson;
+			code = "P-" + codePerson;
 		}
 		
 		return code;
@@ -315,7 +319,7 @@ public class CreateMedic extends JDialog {
 
 	private void clean(){
 		txtAAddress.setText("");
-		txtCode.setText(""+getCodePerson(Clinic.getInstance().codePerson));
+		txtCode.setText(""+getCodePerson(Clinic.getInstance().getCodePerson()));
 		txtLastName.setText("");
 		txtName.setText("");
 		ftxtPhone.setText("");
@@ -339,13 +343,6 @@ public class CreateMedic extends JDialog {
 			ftxtSSN.setText(medic.getSsn());
 			cbSex.setSelectedItem(medic.getSex());
 			dateChooser.setDate(medic.getBirthdate());
-			//chbxAvailable.setSelected(medic.isAvailable());
-			//spnEntry
-			//spnExit
-			//txtUser.setText();
-			//txtPsw.setText();
 		}
-		
-		
 	}
 }

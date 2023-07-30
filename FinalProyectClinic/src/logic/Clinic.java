@@ -18,11 +18,11 @@ public class Clinic implements Serializable{
 	private ArrayList<User> myUsers = null;
 	private static Clinic clinic = null;
 	private static User loginUser = null;
-	public static int codePerson = 1;
-	public static int codeCheckUp = 1;
-	public static int codeAppoinment = 1;
-	public static int codeVaccine = 1;
-	public static int codeDisease = 1;
+	private Integer codePerson = null;
+	private Integer codeCheckUp = null;
+	private Integer codeAppoinment = null;
+	private Integer codeVaccine = null;
+	private Integer codeDisease = null;
 	
 	private Clinic() {
 		this.myPersons = new ArrayList<Person>();
@@ -31,6 +31,13 @@ public class Clinic implements Serializable{
 		this.myVaccines = new ArrayList<Vaccine>();
 		this.myDiseases = new ArrayList<Disease>();
 		this.myUsers = new ArrayList<User>();
+		
+		this.codePerson = new Integer(1);
+		this.codeCheckUp = new Integer(1);
+		this.codeAppoinment = new Integer(1);
+		this.codeVaccine = new Integer(1);
+		this.codeDisease = new Integer(1);
+		
 	}
 	
 	public static Clinic getInstance() {
@@ -38,6 +45,25 @@ public class Clinic implements Serializable{
 			clinic = new Clinic();
 		}
 		return clinic;
+	}
+	public Integer getCodePerson() {
+		return codePerson;
+	}
+	
+	public Integer getCodeCheckUp() {
+		return codeCheckUp;
+	}
+	
+	public Integer getCodeAppoinment() {
+		return codeAppoinment;
+	}
+	
+	public Integer getCodeVaccine() {
+		return codeVaccine;
+	}
+	
+	public Integer getCodeDisease() {
+		return codeDisease;
 	}
 
 	public ArrayList<Person> getMyPersons() {

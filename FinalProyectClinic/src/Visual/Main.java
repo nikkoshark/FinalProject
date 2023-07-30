@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -51,6 +52,8 @@ public class Main extends JFrame {
 					objectOutputStream.writeObject(Clinic.getInstance());
 				} catch (Exception e) {
 					// TODO: handle exception
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "El programa no ha cerrado adecuadamente.", "Error en guardado", JOptionPane.ERROR_MESSAGE);
 				}   
 		    }
 		});
