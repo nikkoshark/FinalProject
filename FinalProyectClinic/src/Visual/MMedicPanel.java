@@ -32,7 +32,7 @@ public class MMedicPanel extends JPanel {
 	private static DefaultTableModel model;
 	private static Object[] row;
 	private JButton btnConsultar;
-	private Appoinment selPatient = null;
+	private Appoinment selAppoinment = null;
 	private GenderInfo ginfo;
 	private AppointmentInfo appinfo;
 	private JComboBox cbDash;
@@ -75,8 +75,8 @@ public class MMedicPanel extends JPanel {
 				
 				if (index >= 0) {
 					btnConsultar.setEnabled(true);
-					String ssn = (String) table.getModel().getValueAt(index, 0);
-					selPatient = Clinic.getInstance().searchAppoinment(ssn);
+					String code = (String) table.getModel().getValueAt(index, 0);
+					selAppoinment = Clinic.getInstance().searchAppoinment(code);
 				}
 			}
 		});
@@ -110,7 +110,7 @@ public class MMedicPanel extends JPanel {
 		btnConsultar.setEnabled(false);
 		btnConsultar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CreateCheckup createCheck = new CreateCheckup(selPatient);
+				CreateCheckup createCheck = new CreateCheckup(selAppoinment);
 				createCheck.setModal(true);
 				createCheck.setVisible(true);
 				btnConsultar.setEnabled(false);
@@ -182,7 +182,7 @@ public class MMedicPanel extends JPanel {
 
 		for(Appoinment appointment : Clinic.getInstance().getMyAppoinments()) {
 			if (true) {				
-				row[0] = " " + appointment.getCode(); 
+				row[0] = appointment.getCode(); 
 				row[1] = " " + appointment.getSsn();
 				row[2] = " " + appointment.getName();
 				row[3] = " " + appointment.getDate(); 

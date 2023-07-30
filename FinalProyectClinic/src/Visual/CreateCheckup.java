@@ -67,6 +67,7 @@ public class CreateCheckup extends JDialog {
 	 */
 	public CreateCheckup(Appoinment app) { //sends AN APPOINTMENT, if ssn exists, autofill. else, save ssn, name and phone
 		appinfo = app;
+		
 		patient = Clinic.getInstance().searchPerson(appinfo.getSsn());
 		
 		if(patient == null) {
