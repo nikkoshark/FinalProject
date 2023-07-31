@@ -24,8 +24,9 @@ public class GenderInfo extends JPanel {
 		add(panel);
 		
 		dataset = new DefaultPieDataset();
-		
-		refreshChart();
+
+		dataset.setValue("Femenino", Clinic.getInstance().totalPacienteGenero('F'));
+		dataset.setValue("Masculino", Clinic.getInstance().totalPacienteGenero('M'));
 		
 		JFreeChart chart = ChartFactory.createPieChart("GÉNERO" , dataset);
 		

@@ -244,7 +244,7 @@ public class CreateAppointment extends JDialog {
 	
 
 	private void clean() {
-		txtCode.setText(getCodeAppoinment((Clinic.getInstance().getCodeAppoinment())));
+		txtCode.setText(getCodeAppoinment(Clinic.getInstance().getCodeAppoinment()));
 		txtNamePatient.setText("");
 		txtaDescription.setText("");
 		ftxtPhone.setText("");

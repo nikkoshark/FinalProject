@@ -82,13 +82,14 @@ public class MSecretaryPanel extends JPanel {
 				if(index>=0) {
 					btnEdit.setEnabled(true);
 					btnDelete.setEnabled(true);
-					selAppoinment = Clinic.getInstance().getMyAppoinments().get(index);
+					String code = (String) table.getModel().getValueAt(index, 0);
+					selAppoinment = Clinic.getInstance().searchAppoinment(code);
 				}
 			}
 		});
 		scrollPane.setViewportView(table);
 		model = new DefaultTableModel();
-		String[] headers = {"Cédula", "Nombre Paciente", "Hora", "Doctor", "Status"};
+		String[] headers = {"Código", "Cédula", "Nombre Paciente", "Hora", "Doctor", "Status"};
 		model.setColumnIdentifiers(headers);
 		table.setModel(model);
 		
@@ -201,11 +202,12 @@ public class MSecretaryPanel extends JPanel {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
 		
 		for(Appoinment appointment : Clinic.getInstance().getMyAppoinments()) {
-			row[0] = " " + appointment.getSsn();
-			row[1] = " " + appointment.getName();
-			row[2] = " " + appointment.getDate().format(dateTimeFormatter);
-			row[3] = " " + appointment.getMedic().getName(); 
-			row[4] = " " + appointment.getStatus();
+			row[0] = appointment.getCode();
+			row[1] = " " + appointment.getSsn();
+			row[2] = " " + appointment.getName();
+			row[3] = " " + appointment.getDate().format(dateTimeFormatter);
+			//row[4] = " " + appointment.getMedic().getName(); 
+			row[5] = " " + appointment.getStatus();
 			
 			model.addRow(row);
 		}

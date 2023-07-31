@@ -18,6 +18,9 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
@@ -40,6 +43,7 @@ public class MMedicPanel extends JPanel {
 	private GenderInfo ginfo;
 	private AppointmentInfo appinfo;
 	private JComboBox cbDash;
+	private static JDateChooser dateChooser;
 
 	/**
 	 * Create the panel.
@@ -133,7 +137,12 @@ public class MMedicPanel extends JPanel {
 		label.setBounds(10, 23, 225, 27);
 		panel.add(label);
 		
-		JDateChooser dateChooser = new JDateChooser();
+		dateChooser = new JDateChooser();
+		dateChooser.getCalendarButton().addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				loadAppointments();
+			}
+		});
 		dateChooser.setBounds(650, 23, 117, 20);
 		panel.add(dateChooser);
 
@@ -222,17 +231,17 @@ public class MMedicPanel extends JPanel {
 	public static void loadAppointments() {
 		model.setRowCount(0);
 		row = new Object[table.getColumnCount()];
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
 
 		for(Appoinment appointment : Clinic.getInstance().getMyAppoinments()) {
-			if (true) {				
-				row[0] =  appointment.getCode(); 
+	        	row[0] =  appointment.getCode(); 
 				row[1] = " " + appointment.getSsn();
 				row[2] = " " + appointment.getName();
-				row[3] = " " + appointment.getDate(); 
+				row[3] = " " + appointment.getDate().format(dateTimeFormatter); 
 				row[4] = " " + appointment.getStatus();
 				
 				model.addRow(row);
-			}
 		}
 	}
 

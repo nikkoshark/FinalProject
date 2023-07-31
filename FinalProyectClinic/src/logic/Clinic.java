@@ -387,7 +387,7 @@ public class Clinic implements Serializable{
 		int total = 0;
 		
 		for (Appoinment app : myAppoinments) {
-			if (app instanceof Appoinment && app.getStatus().equalsIgnoreCase(status)) {
+			if (app.getStatus().equalsIgnoreCase(status)) {
 				total++;
 			}
 		}

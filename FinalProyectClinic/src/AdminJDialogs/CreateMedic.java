@@ -43,13 +43,9 @@ public class CreateMedic extends JDialog {
 	private JTextField txtLastName;
 	private JTextField txtName;
 	private JFormattedTextField ftxtPhone;
-	private JTextField txtUser;
-	private JTextField txtPsw;
 	private JTextArea txtAAddress;
 	private JComboBox cbSex;
 	private JComboBox cbSpeciality;
-	private JSpinner spnEntry;
-	private JSpinner spnExit;
 	private JDateChooser dateChooser;
 	private JCheckBox chbxAvailable;
 	private Person medic;
@@ -141,7 +137,7 @@ public class CreateMedic extends JDialog {
 
 			txtAAddress = new JTextArea();
 			txtAAddress.setLineWrap(true);
-			txtAAddress.setBounds(38, 238, 182, 68);
+			txtAAddress.setBounds(38, 238, 421, 68);
 			contentPanel.add(txtAAddress);
 
 			JLabel lblTel = new JLabel("Tel\u00E9fono");
@@ -169,42 +165,6 @@ public class CreateMedic extends JDialog {
 			cbSex.setModel(new DefaultComboBoxModel(new String[] {"<SELECCIONAR>", "Femenino", "Masculino"}));
 			cbSex.setBounds(243, 77, 120, 20);
 			contentPanel.add(cbSex);
-
-			JLabel lblUsuario = new JLabel("Usuario");
-			lblUsuario.setBounds(228, 223, 120, 14);
-			contentPanel.add(lblUsuario);
-
-			txtUser = new JTextField();
-			txtUser.setColumns(10);
-			txtUser.setBounds(228, 238, 110, 20);
-			contentPanel.add(txtUser);
-
-			JLabel lblContrasea = new JLabel("Contrase\u00F1a");
-			lblContrasea.setBounds(230, 271, 120, 14);
-			contentPanel.add(lblContrasea);
-			
-			txtPsw = new JTextField();
-			txtPsw.setColumns(10);
-			txtPsw.setBounds(228, 286, 110, 20);
-			contentPanel.add(txtPsw);
-			
-			JLabel lblHorarioEntrada = new JLabel("Horario Entrada");
-			lblHorarioEntrada.setBounds(346, 223, 120, 14);
-			contentPanel.add(lblHorarioEntrada);
-
-			spnEntry = new JSpinner();
-			spnEntry.setModel(new SpinnerListModel(new String[] {"08:00 AM", "08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM"}));
-			spnEntry.setBounds(346, 238, 110, 20);
-			contentPanel.add(spnEntry);
-
-			JLabel lblHorarioSalida = new JLabel("Horario Salida");
-			lblHorarioSalida.setBounds(346, 271, 120, 14);
-			contentPanel.add(lblHorarioSalida);
-			
-			spnExit = new JSpinner();
-			spnExit.setModel(new SpinnerListModel(new String[] {"08:00 AM", "08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM"}));
-			spnExit.setBounds(346, 286, 110, 20);
-			contentPanel.add(spnExit);
 			
 			JLabel lblDate = new JLabel("Fecha de Nacimiento");
 			lblDate.setBounds(39, 171, 143, 14);
@@ -320,11 +280,9 @@ public class CreateMedic extends JDialog {
 		txtLastName.setText("");
 		txtName.setText("");
 		ftxtPhone.setText("");
-		txtPsw.setText("");
 		cbSex.setSelectedIndex(0);
 		cbSpeciality.setSelectedIndex(0);
 		ftxtSSN.setText("");
-		txtUser.setText("");
 		chbxAvailable.setSelected(false);
 		dateChooser.setDate(null);
 	}

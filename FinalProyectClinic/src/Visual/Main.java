@@ -24,7 +24,7 @@ public class Main extends JFrame {
 
 	private JPanel contentPane;
 	private Dimension dim;
-	//private MSecretaryPanel secretaryPanel;
+	private MSecretaryPanel secretaryPanel;
 	private MMedicPanel medicPanel;
 	private MAdminPanel adminPanel;
 	private JButton btnNewButton;
@@ -59,12 +59,12 @@ public class Main extends JFrame {
 		
 		user = loginUser;
 		
-		//secretaryPanel = new MSecretaryPanel();
+		secretaryPanel = new MSecretaryPanel();
 		medicPanel = new MMedicPanel();
 		adminPanel = new MAdminPanel();
 		
 		if(user.getType().equals("Secretaria")) {
-			//menuclicked(secretaryPanel);
+			menuclicked(secretaryPanel);
 		}else if(user.getType().equals("Medico")) {
 			menuclicked(medicPanel);
 		}else {
@@ -83,7 +83,7 @@ public class Main extends JFrame {
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-		//panel.add(secretaryPanel);
+		panel.add(secretaryPanel);
 		panel.add(medicPanel);
 		panel.add(adminPanel);
 		
@@ -113,7 +113,7 @@ public class Main extends JFrame {
 	
 
 	private void menuclicked(JPanel panel) {
-		//secretaryPanel.setVisible(false);
+		secretaryPanel.setVisible(false);
 		medicPanel.setVisible(false);
 		adminPanel.setVisible(false);
 		panel.setVisible(true);
