@@ -33,16 +33,14 @@ public class ListVaccine extends JPanel {
 	private JButton btnEdit;
 	private VaccinesInfo vacin;
 
-	/**
-	 * Create the panel.
-	 */
+
 	public ListVaccine() {
 		setBackground(SystemColor.activeCaption);
 		setSize(1320, 551);
 		setLayout(null);
 		setVisible(false);
 		
-		//vacin = new VaccinesInfo(selVaccine);
+		vacin = new VaccinesInfo();
 		
 		JLabel lblTitle = new JLabel("LISTAR VACUNAS");
 		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -57,21 +55,22 @@ public class ListVaccine extends JPanel {
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		panel.add(scrollPane, BorderLayout.CENTER);
-		
-		table = new JTable();
+
+		table = new JTable(){
+			public boolean editCellAt(int row, int column, java.util.EventObject e) {
+				return false;
+			}
+		};
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int index = table.getSelectedRow();
 				
-				System.out.println(index);
-				
 				if(index>=0) {
-					System.out.println("paso");
 					btnEdit.setEnabled(true);
 					btnDelete.setEnabled(true);
 					selVaccine = Clinic.getInstance().getMyVaccines().get(index);
-					//VaccinesInfo.loadVacc();
+					VaccinesInfo.refreshChart(selVaccine);
 				}
 			}
 		});
@@ -119,7 +118,7 @@ public class ListVaccine extends JPanel {
 		dash.setBounds(743, 80, 431, 415);
 		add(dash);
 		
-		//dash.add(vacin);
+		dash.add(vacin);
 		
 		loadVaccine();
 	}

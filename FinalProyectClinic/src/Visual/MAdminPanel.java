@@ -25,6 +25,11 @@ import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.Socket;
+
 public class MAdminPanel extends JPanel {
 
 	private ListDisease listDisease;
@@ -138,7 +143,27 @@ public class MAdminPanel extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				int option = JOptionPane.showConfirmDialog(null, "¿Desea hacer un respaldo de todo el sistema?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
 				if(option == JOptionPane.OK_OPTION) {
-					JOptionPane.showMessageDialog(null, "¡Se ha creado un respaldo del sistema exitosamente!", "Respaldo EXitoso", JOptionPane.INFORMATION_MESSAGE);
+					try {
+						  File file = new File("clinic_data.dat");
+						  FileInputStream fileInputStream = new FileInputStream(file);
+						  
+						  Socket socket = new Socket("localhost", 7000);
+						  
+						  DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+						  					  
+					      int bytes = 0;
+					      dataOutputStream.writeLong(file.length());  
+					      byte[] buffer = new byte[4*1024];
+					      while ((bytes = fileInputStream.read(buffer))!= -1){
+					    	  dataOutputStream.write(buffer,0,bytes);
+					    	  dataOutputStream.flush();
+					      }
+					      fileInputStream.close();
+					      
+					  } catch (Exception e2) {
+						  System.out.println(e2);
+					  }
+					JOptionPane.showMessageDialog(null, "¡Se ha creado un respaldo del sistema exitosamente!", "Respaldo Exitoso", JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
 		});
@@ -146,6 +171,7 @@ public class MAdminPanel extends JPanel {
 		
 		JPanel InfoP = new JPanel();
 		InfoP.setBounds(10, 67, 1320, 551);
+		InfoP.setOpaque(false);
 		add(InfoP);
 		setVisible(false);
 		InfoP.setLayout(null);
@@ -158,12 +184,6 @@ public class MAdminPanel extends JPanel {
 		});
 		btnNewButton.setBounds(1241, 33, 89, 23);
 		add(btnNewButton);
-		
-		
-		JLabel lblNewLabel = new JLabel("EXAMPLE OF ADMIN (HUGE DASHBOARD)");
-		lblNewLabel.setBounds(239, 17, 426, 47);
-		add(lblNewLabel);
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		InfoP.add(defDash);
 		InfoP.add(listDisease);

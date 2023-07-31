@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import AdminPanels.ListUsers;
+import Dashboards.UserInfo;
 import logic.Clinic;
 import login.User;
 import sun.misc.Cleaner;
@@ -113,7 +114,7 @@ public class CreateUser extends JDialog {
 									dispose();
 								}
 								ListUsers.loadUsers();
-								
+								UserInfo.refreshUser();
 							}
 							else {
 								JOptionPane.showMessageDialog(null, "¡Parámetro(s) sin completar!\nPor favor completar los campos.", "Información Vacía", JOptionPane.ERROR_MESSAGE);								

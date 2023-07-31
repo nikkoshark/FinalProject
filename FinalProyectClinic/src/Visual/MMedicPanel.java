@@ -7,6 +7,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 
 import javax.swing.JButton;
@@ -32,7 +34,9 @@ public class MMedicPanel extends JPanel {
 	private static DefaultTableModel model;
 	private static Object[] row;
 	private JButton btnConsultar;
-	private Appoinment selPatient = null;
+	private JButton btnEdit;
+	private JButton btnDelete;
+	private Appoinment selAppoinment = null;
 	private GenderInfo ginfo;
 	private AppointmentInfo appinfo;
 	private JComboBox cbDash;
@@ -75,8 +79,10 @@ public class MMedicPanel extends JPanel {
 				
 				if (index >= 0) {
 					btnConsultar.setEnabled(true);
-					String ssn = (String) table.getModel().getValueAt(index, 0);
-					selPatient = Clinic.getInstance().searchAppoinment(ssn);
+					btnDelete.setEnabled(true);
+					btnEdit.setEnabled(true);
+					String code = (String) table.getModel().getValueAt(index, 0);
+					selAppoinment = Clinic.getInstance().searchAppoinment(code);
 				}
 			}
 		});
@@ -89,7 +95,7 @@ public class MMedicPanel extends JPanel {
 		JPanel dashboardP = new JPanel();
 		dashboardP.setLayout(null);
 		dashboardP.setBackground(SystemColor.activeCaption);
-		dashboardP.setBounds(803, 49, 528, 426);
+		dashboardP.setBounds(803, 49, 528, 398);
 		panel.add(dashboardP);
 		
 		
@@ -102,22 +108,24 @@ public class MMedicPanel extends JPanel {
 				createApp.setVisible(true);
 			}
 		});
-		button.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		button.setBounds(803, 548, 528, 49);
+		button.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 20));
+		button.setBounds(803, 556, 510, 41);
 		panel.add(button);
 		
 		btnConsultar = new JButton("CONSULTAR");
 		btnConsultar.setEnabled(false);
 		btnConsultar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CreateCheckup createCheck = new CreateCheckup(selPatient);
+				CreateCheckup createCheck = new CreateCheckup(selAppoinment, null);
 				createCheck.setModal(true);
 				createCheck.setVisible(true);
 				btnConsultar.setEnabled(false);
+				btnDelete.setEnabled(false);
+				btnEdit.setEnabled(false);
 			}
 		});
-		btnConsultar.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		btnConsultar.setBounds(803, 486, 528, 49);
+		btnConsultar.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 20));
+		btnConsultar.setBounds(803, 458, 510, 41);
 		panel.add(btnConsultar);
 		
 		JLabel label = new JLabel("LISTA DE ESPERA");
@@ -153,17 +161,52 @@ public class MMedicPanel extends JPanel {
 			}
 		});
 		cbDash.setModel(new DefaultComboBoxModel(new String[] {"Status de Personas", "Sexo"}));
+		cbDash.setSelectedIndex(0);
 		cbDash.setBounds(133, 11, 292, 20);
 		dashboardP.add(cbDash);
 
 		JPanel dash = new JPanel();
-		dash.setBounds(102, 50, 350, 350);
+		dash.setBounds(95, 40, 350, 350);
 		dashboardP.add(dash);
 		dash.setLayout(null);
 		
 		dash.add(ginfo);
 		dash.add(appinfo);
 		menuclicked(appinfo);
+		
+		btnEdit = new JButton("EDITAR CITA");
+		btnEdit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CreateAppointment regApp = new CreateAppointment(selAppoinment);
+				regApp.setModal(true);
+				regApp.setVisible(true);
+				btnEdit.setEnabled(false);
+				btnDelete.setEnabled(false);
+			}
+		});
+		btnEdit.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 20));
+		btnEdit.setEnabled(false);
+		btnEdit.setBounds(803, 510, 248, 41);
+		panel.add(btnEdit);
+		
+		btnDelete = new JButton("ELIMINAR CITA");
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(selAppoinment != null) {
+					int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar la cita de: " + selAppoinment.getName() + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
+					if (option == JOptionPane.OK_OPTION) {
+						Clinic.getInstance().removeAppoinment(selAppoinment);
+						btnEdit.setEnabled(false);
+						btnDelete.setEnabled(false);
+						loadAppointments();
+					}
+				}
+			}
+		});
+		btnDelete.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 20));
+		btnDelete.setEnabled(false);
+		btnDelete.setBounds(1065, 510, 248, 41);
+		panel.add(btnDelete);
 
 		loadAppointments();
 	}
@@ -182,7 +225,7 @@ public class MMedicPanel extends JPanel {
 
 		for(Appoinment appointment : Clinic.getInstance().getMyAppoinments()) {
 			if (true) {				
-				row[0] = " " + appointment.getCode(); 
+				row[0] =  appointment.getCode(); 
 				row[1] = " " + appointment.getSsn();
 				row[2] = " " + appointment.getName();
 				row[3] = " " + appointment.getDate(); 
@@ -216,5 +259,4 @@ public class MMedicPanel extends JPanel {
 			sPatient.setVisible(true);
 		}
 	}
-	
 }

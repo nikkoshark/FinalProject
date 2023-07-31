@@ -89,6 +89,17 @@ public class SearchPatient extends JDialog {
 						public void mouseClicked(MouseEvent e) {
 							if (e.getClickCount() == 2) {
 								System.out.println("dos click");
+								int index = table.getSelectedRow();
+								if(index>=0) {
+									String ssn = (String) table.getModel().getValueAt(index, 1); 
+									System.out.println(ssn);
+									Person patient = Clinic.getInstance().searchPerson(ssn);
+									System.out.println(patient.getName() + patient.getSsn());
+									
+									CreateCheckup createCheck = new CreateCheckup(null, patient);
+									createCheck.setModal(true);
+									createCheck.setVisible(true);
+								}
 							}
 						}
 					});

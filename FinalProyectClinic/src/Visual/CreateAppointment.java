@@ -29,6 +29,7 @@ import javax.swing.JFormattedTextField;
 
 import com.toedter.calendar.JDateChooser;
 
+import Dashboards.AppointmentInfo;
 import logic.Appoinment;
 import logic.Clinic;
 import logic.Medic;
@@ -213,9 +214,10 @@ public class CreateAppointment extends JDialog {
 								
 								Clinic.getInstance().modifiedAppoinment(appoinment);
 								dispose();
-								MSecretaryPanel.loadAppointments();
-								MMedicPanel.loadAppointments();
 							}
+							MSecretaryPanel.loadAppointments();
+							MMedicPanel.loadAppointments();
+							AppointmentInfo.refreshChart();
 						}
 						else {
 							JOptionPane.showMessageDialog(null, "¡Parámetro(s) sin completar!\nPor favor completar los campos.", "Información Vacía", JOptionPane.ERROR_MESSAGE);
@@ -242,7 +244,7 @@ public class CreateAppointment extends JDialog {
 	
 
 	private void clean() {
-		txtCode.setText("");
+		txtCode.setText(getCodeAppoinment((Clinic.getInstance().getCodeAppoinment())));
 		txtNamePatient.setText("");
 		txtaDescription.setText("");
 		ftxtPhone.setText("");

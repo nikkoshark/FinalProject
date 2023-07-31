@@ -1,6 +1,5 @@
 package Visual;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.JFrame;
@@ -25,19 +24,12 @@ public class Main extends JFrame {
 
 	private JPanel contentPane;
 	private Dimension dim;
-	private MSecretaryPanel secretaryPanel;
+	//private MSecretaryPanel secretaryPanel;
 	private MMedicPanel medicPanel;
 	private MAdminPanel adminPanel;
 	private JButton btnNewButton;
 	private User user = null;
 
-	/**
-	 * Launch the application.
-	 */
-
-	/**
-	 * Create the frame.
-	 */
 	public Main(User loginUser) {
 		addWindowListener(new java.awt.event.WindowAdapter() {
 		    @Override
@@ -67,12 +59,12 @@ public class Main extends JFrame {
 		
 		user = loginUser;
 		
-		secretaryPanel = new MSecretaryPanel();
+		//secretaryPanel = new MSecretaryPanel();
 		medicPanel = new MMedicPanel();
 		adminPanel = new MAdminPanel();
 		
 		if(user.getType().equals("Secretaria")) {
-			menuclicked(secretaryPanel);
+			//menuclicked(secretaryPanel);
 		}else if(user.getType().equals("Medico")) {
 			menuclicked(medicPanel);
 		}else {
@@ -82,15 +74,16 @@ public class Main extends JFrame {
 		contentPane = new JPanel();
 		contentPane.setBackground(SystemColor.activeCaption);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+		contentPane.setLayout(null);
 		
 		JPanel panel = new JPanel();
+		panel.setBounds(0, 0, 1360, 689);
 		panel.setBackground(SystemColor.activeCaption);
-		contentPane.add(panel, BorderLayout.CENTER);
+		contentPane.add(panel);
 		panel.setLayout(null);
 		
-		panel.add(secretaryPanel);
+		//panel.add(secretaryPanel);
 		panel.add(medicPanel);
 		panel.add(adminPanel);
 		
@@ -120,7 +113,7 @@ public class Main extends JFrame {
 	
 
 	private void menuclicked(JPanel panel) {
-		secretaryPanel.setVisible(false);
+		//secretaryPanel.setVisible(false);
 		medicPanel.setVisible(false);
 		adminPanel.setVisible(false);
 		panel.setVisible(true);

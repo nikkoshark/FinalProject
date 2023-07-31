@@ -13,7 +13,6 @@ import javax.swing.text.MaskFormatter;
 import logic.Clinic;
 import logic.Medic;
 import logic.Person;
-import login.User;
 
 import java.awt.SystemColor;
 import javax.swing.JLabel;
@@ -26,6 +25,7 @@ import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.JSpinner;
@@ -34,10 +34,6 @@ import com.toedter.calendar.JDateChooser;
 
 import AdminPanels.ListMedic;
 import javax.swing.JFormattedTextField;
-import com.toedter.components.JLocaleChooser;
-import com.toedter.calendar.JDayChooser;
-import com.toedter.calendar.JYearChooser;
-import com.toedter.components.JSpinField;
 
 public class CreateMedic extends JDialog {
 
@@ -57,6 +53,7 @@ public class CreateMedic extends JDialog {
 	private JDateChooser dateChooser;
 	private JCheckBox chbxAvailable;
 	private Person medic;
+	private ArrayList<String> optionString;
 
 
 	/**
@@ -134,7 +131,7 @@ public class CreateMedic extends JDialog {
 			contentPanel.add(lblEspecialidad);
 			
 			cbSpeciality = new JComboBox();
-			cbSpeciality.setModel(new DefaultComboBoxModel(new String[] {"<SELECCIONAR>", "Psic\u00F3logo", "Ginec\u00F3logo", "Otra Opci\u00F3n (add)"}));
+			cbSpeciality.setModel(new DefaultComboBoxModel(new String[] {"<SELECCIONAR>", "Psic\u00F3logo", "Ginec\u00F3logo", "[AGREGAR]"}));
 			cbSpeciality.setBounds(174, 183, 161, 20);
 			contentPanel.add(cbSpeciality);
 
@@ -248,7 +245,7 @@ public class CreateMedic extends JDialog {
 							Date date = dateChooser.getDate();
 							char sex = String.valueOf(cbSex.getSelectedItem()).charAt(0);
 							String speciality = String.valueOf(cbSpeciality.getSelectedItem());
-							boolean available = true;
+							boolean available = chbxAvailable.isSelected();
 							//User insUser = new User("Medico", txtUser.getText(), txtPsw.getText());
 							if(medic == null) {
 								Medic insmedic = new Medic(code, ssn, name, lastName, phone, address, date, sex, speciality, available);
@@ -319,7 +316,7 @@ public class CreateMedic extends JDialog {
 
 	private void clean(){
 		txtAAddress.setText("");
-		txtCode.setText(""+getCodePerson(Clinic.getInstance().getCodePerson()));
+		txtCode.setText(getCodePerson(Clinic.getInstance().getCodePerson()));
 		txtLastName.setText("");
 		txtName.setText("");
 		ftxtPhone.setText("");
@@ -341,8 +338,13 @@ public class CreateMedic extends JDialog {
 			ftxtPhone.setText(medic.getPhoneNumber());
 			cbSpeciality.setSelectedItem(((Medic)medic).getSpeciality());
 			ftxtSSN.setText(medic.getSsn());
-			cbSex.setSelectedItem(medic.getSex());
 			dateChooser.setDate(medic.getBirthdate());
+			if(medic.getSex() == 'F') {
+				cbSex.setSelectedIndex(1);
+			} else {
+				cbSex.setSelectedIndex(2);
+			}
+			chbxAvailable.setSelected(((Medic)medic).isAvailable());
 		}
 	}
 }
