@@ -293,9 +293,6 @@ public class Clinic implements Serializable{
 	}
 	
 	public void modifiedPerson(Person person) {
-		System.out.println(person.getCode());
-		System.out.println(getIndexPerson(person.getCode()));
-		System.out.println(myPersons.size());
 		myPersons.set(getIndexPerson(person.getCode()), person);
 	}
 	
@@ -339,31 +336,14 @@ public class Clinic implements Serializable{
 		return total;
 	}
 	
-	public int totalPatientsWithDisease(String code) {
+	public int totalPatientDiseaseWith(String code) {
 		int total = 0;
 		
 		for (Person per : myPersons) {
 			if (per instanceof Patient) {
 				Patient pat = (Patient) per;
 				for (int i = 0; i < pat.getMyDiseases().size(); i++) {
-					if (pat.getMyDiseases().get(i).getCode().equalsIgnoreCase(code)) {
-						total++;
-					}
-				}
-			}
-		}
-		
-		return total;
-	}
-	
-	public int totalPatientsWithVaccine(String code) {
-		int total = 0;
-		
-		for (Person per : myPersons) {
-			if (per instanceof Patient) {
-				Patient pat = (Patient) per;
-				for (int i = 0; i < pat.getMyVaccines().size(); i++) {
-					if (pat.getMyVaccines().get(i).getCode().equalsIgnoreCase(code)) {
+					if (pat.getMyDiseases().get(i).getCode().equalsIgnoreCase(code) && pat.getMyDiseases().get(i).isWatched()) {
 						total++;
 					}
 				}

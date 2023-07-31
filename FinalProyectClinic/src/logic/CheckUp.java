@@ -9,19 +9,21 @@ public class CheckUp implements Serializable{
 	private static final long serialVersionUID = -909052395961762239L;
 	private String code;
 	private String diagnosis;
-	private String symptoms;
+	private String weight;
+	private String height;
 	private LocalDateTime date = null;
 	private Medic medic = null;
 	private Patient patient = null;
 	private ArrayList<Disease> myDiseases = new ArrayList<>();
 	private boolean medicalRecord;
 	
-	public CheckUp(String code, String diagnosis, String symptoms, LocalDateTime date, Medic medic,
+	public CheckUp(String code, String diagnosis, String weight, String height, LocalDateTime date, Medic medic,
 			Patient patient, ArrayList<Disease> myDiseases, boolean medicalRecord) {
 		super();
 		this.code = code;
 		this.diagnosis = diagnosis;
-		this.symptoms = symptoms;
+		this.weight = weight;
+		this.height = height;
 		this.date = date;
 		this.medic = medic;
 		this.patient = patient;
@@ -45,14 +47,21 @@ public class CheckUp implements Serializable{
 		this.diagnosis = diagnosis;
 	}
 
-	public String getSymptoms() {
-		return symptoms;
+	public String getWeight() {
+		return weight;
 	}
 
-	public void setSymptoms(String symptoms) {
-		this.symptoms = symptoms;
+	public void setWeight(String weight) {
+		this.weight = weight;
 	}
 
+	public String getHeight() {
+		return height;
+	}
+
+	public void setHeight(String height) {
+		this.height = height;
+	}
 
 	public LocalDateTime getDate() {
 		return date;

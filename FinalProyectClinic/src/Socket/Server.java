@@ -1,44 +1,50 @@
 package Socket;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import javax.swing.JOptionPane;
+
+import logic.Clinic;
+
 public class Server extends Thread{
 
-	public static void main(String[] args) {
-        try {
-        	
-        	ServerSocket serverSocket = new ServerSocket(7000);
-        	
-            System.out.println("listening to port: 7000");
-            Socket clientSocket = serverSocket.accept();
-            System.out.println(clientSocket + " connected.");
-            
-            DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
-            DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
-            
-            int bytes = 0;
-            File file = new File("clinic_data_backup.dat");
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            
-            long size = dataInputStream.readLong();     
-            byte[] buffer = new byte[4*1024];
-            while (size > 0 && (bytes = dataInputStream.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1) {
-                fileOutputStream.write(buffer, 0, bytes);
-                size -= bytes;
-            }
-            fileOutputStream.close();
-
-            dataInputStream.close();
-            dataOutputStream.close();
-            clientSocket.close();
-            
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
+	public void run(){
+		while (true) {			
+			try {
+				ServerSocket serverSocket = new ServerSocket(8000);
+				System.out.println("connecting to server socket..");
+				
+				Socket socket = serverSocket.accept();
+				System.out.println("connected to: " + socket.getInetAddress());
+				
+				InputStream inputStream = socket.getInputStream();
+				ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+				
+			
+				File file = new File("clinic_data_respaldo.dat");
+		        FileOutputStream outputStream;
+		        ObjectOutputStream objectOutputStream;
+		        
+		        try {
+					outputStream = new FileOutputStream(file);
+					objectOutputStream = new ObjectOutputStream(outputStream);
+					objectOutputStream.writeObject(objectInputStream);
+				} catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "El programa no ha cerrado adecuadamente.", "Error en guardado", JOptionPane.ERROR_MESSAGE);
+				}
+		        
+			}catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "El programa no ha cerrado adecuadamente.", "Error en guardado", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
 }

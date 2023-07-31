@@ -1,3 +1,4 @@
+
 package Dashboards;
 
 import java.awt.Dimension;
@@ -11,45 +12,38 @@ import org.jfree.data.general.DefaultPieDataset;
 
 import logic.Clinic;
 import logic.Disease;
+import login.User;
 
 public class DiseaseInfo extends JPanel {
 
-	private static DefaultPieDataset dataset;
-	private static JFreeChart chart;
-	private static int cantSick = 0;
-	
+	/**
+	 * Create the panel.
+	 */
 	public DiseaseInfo() {
 		setSize(350,350);
 		setLayout(null);
+		//setVisible(false);
 		
 		JPanel panel = new JPanel();
 		panel.setBounds(0, 0, 350, 350);
 		add(panel);
 
-		dataset = new DefaultPieDataset();
-
-		dataset.setValue("Enfermedades", Clinic.getInstance().getMyDiseases().size());
+		DefaultPieDataset dataset = new DefaultPieDataset();
 		
-		chart = ChartFactory.createPieChart("Enfermedades en el sistema" , dataset);
+		dataset.setValue("To be determined", 1);
+		
+		JFreeChart chart = ChartFactory.createPieChart("DISEASE PIE CHART" , dataset);
+		
 		ChartPanel chartPanel = new ChartPanel(chart); 
-		chartPanel.setOpaque(false);
-		chartPanel.setBounds(0, 0, 350, 350);
+		chartPanel.setBounds(25, 23, 300, 300);
 
+		Dimension dimension = new Dimension(300, 300);
 		panel.setLayout(null);
-		chartPanel.setPreferredSize(new Dimension(350, 350));
+		chartPanel.setPreferredSize(dimension);
 
 		panel.add(chartPanel);
 	}
 	
-	public static void refreshChart(Disease selDisease) {
-		dataset.clear();
-		
-		cantSick = Clinic.getInstance().totalPatientsWithDisease(selDisease.getCode());
-		String titlet = selDisease.getName();
-		
-		dataset.setValue("Enfermos", cantSick);
-		dataset.setValue("Sanos", Clinic.getInstance().getMyPersons().size() - cantSick); 
 
-		chart.setTitle("Enfermos de: "+titlet);
-	}
+
 }

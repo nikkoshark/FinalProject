@@ -10,11 +10,12 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
-import Dashboards.GenderInfo;
+import CheckupPanels.CheckupsRecord;
+import CheckupPanels.DiseasePanel;
+import CheckupPanels.InfoPanel;
+import CheckupPanels.MedicalRecordPanel;
 import logic.Appoinment;
-import logic.CheckUp;
 import logic.Clinic;
-import logic.Disease;
 import logic.Patient;
 import logic.Person;
 
@@ -22,7 +23,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 import java.awt.SystemColor;
@@ -42,7 +42,9 @@ public class CreateCheckup extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JTextField txtName;
 	private JTextField txtLastName;
-	private CheckupInfoPanel checkupInfoPanel;
+	private InfoPanel infoPanel;
+	private DiseasePanel diseasePanel;
+	private MedicalRecordPanel medicalRecordPanel;
 	private CheckupsRecord checkupsRecord;
 	private JTextField txtAge;
 	private JTextField txtCode;
@@ -55,7 +57,6 @@ public class CreateCheckup extends JDialog {
 	private JComboBox cbBloodType;
 	private JButton btnEdit;
 	private Person patient = null;
-	private Person searchPerson = null;
 	private Appoinment appinfo = null;
 	private int patientVer = 0;
 	private char ch;
@@ -64,17 +65,13 @@ public class CreateCheckup extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public CreateCheckup(Appoinment app, Person patientRecord) {
-		searchPerson = patientRecord;
-		if(searchPerson == null) {
-			appinfo = app;
-			//System.out.println(appinfo.getSsn());
-			patient = Clinic.getInstance().searchPerson(appinfo.getSsn().toString());
-			if(patient == null) {
-				patient = new Patient(null, appinfo.getSsn(), appinfo.getName(), null, appinfo.getPhoneNumber(), null, null, ch, null, null);
-			}
-		} else {
-			patient = patientRecord;
+	public CreateCheckup(Appoinment app) { //sends AN APPOINTMENT, if ssn exists, autofill. else, save ssn, name and phone
+		appinfo = app;
+		patient = Clinic.getInstance().searchPerson(appinfo.getSsn());
+		
+		if(patient == null) {
+			patient = new Patient(null, appinfo.getSsn(), appinfo.getName(), null, appinfo.getPhoneNumber(), null, null, ch, null, null);
+			//changeEditable(true, 1, "Establecer Paciente");
 		}
 		
 		setBounds(100, 100, 915, 546);
@@ -84,12 +81,11 @@ public class CreateCheckup extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		setResizable(false);
 		setLocationRelativeTo(null);
-
-		if(searchPerson == null) {
-			checkupInfoPanel = new CheckupInfoPanel(appinfo.getDate(), patient);
-		}
-		checkupsRecord = new CheckupsRecord(patient);
-
+		
+		infoPanel = new InfoPanel();
+		diseasePanel = new DiseasePanel();
+		medicalRecordPanel = new MedicalRecordPanel();
+		checkupsRecord = new CheckupsRecord();
 		
 		contentPanel.setLayout(null);
 		
@@ -111,7 +107,6 @@ public class CreateCheckup extends JDialog {
 				txtCode = new JTextField();
 				txtCode.setEditable(false);
 				txtCode.setColumns(10);
-				txtCode.setText(getCodePatient(Clinic.getInstance().getCodePerson()));
 				txtCode.setBounds(10, 43, 120, 20);
 				patientP.add(txtCode);
 				
@@ -251,6 +246,13 @@ public class CreateCheckup extends JDialog {
 		infoP.setLayout(null);
 			
 			
+		infoP.add(infoPanel);
+		infoP.add(diseasePanel);
+		infoP.add(medicalRecordPanel);
+		infoP.add(checkupsRecord);
+			
+		menuclicked(infoPanel);
+			
 		
 		{
 			JPanel buttonPane = new JPanel();
@@ -271,9 +273,10 @@ public class CreateCheckup extends JDialog {
 					Date date = dateChooser.getDate();
 					char sex= String.valueOf(cbSex.getSelectedItem()).charAt(0);
 					String bloodType = String.valueOf(cbBloodType.getSelectedItem());
-					if(patient.getCode() == null) {
+					if(patient == null) {
 						Patient insPatient = new Patient(code, ssn, name, lastName, phone, address, date, sex, bloodType, email);
 						Clinic.getInstance().insertPerson(insPatient);
+						JOptionPane.showMessageDialog(null, "Registro hecho.", "Registro", JOptionPane.INFORMATION_MESSAGE);
 					} else {
 						patient.setCode(code);
 						patient.setSsn(ssn);
@@ -284,37 +287,15 @@ public class CreateCheckup extends JDialog {
 						patient.setBirthdate(date);
 						((Patient)patient).setBloodType(bloodType);
 						((Patient)patient).setEmail(email);
-						System.out.println(patient.getCode());
+						
 						Clinic.getInstance().modifiedPerson(patient);
+						dispose();
 					}
-					JOptionPane.showMessageDialog(null, "Ha guardado al paciente.", "Registro", JOptionPane.INFORMATION_MESSAGE);
-					GenderInfo.refreshChart();
 				}
 			});
 			buttonPane.add(btnPatient);
 			{
 				JButton btnRegister = new JButton("REGISTRAR");
-				btnRegister.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						appinfo.setStatus("Visto");
-						Clinic.getInstance().modifiedAppoinment(appinfo);
-						CheckUp checkUp = CheckupInfoPanel.sendCheckUp(patient, appinfo.getMedic());
-						if(checkUp.isMedicalRecord()==true) {
-							((Patient)patient).getMyMedicalRecord().add(checkUp); //                        **********
-						}
-						((Patient)patient).getMyCheckUpsRecord().add(checkUp);
-						((Patient)patient).getMyVaccines().add(CheckupInfoPanel.sendVaccine());
-						ArrayList<Disease> diz = CheckupInfoPanel.sendDisease();
-						for(Disease aux: diz) {
-							((Patient)patient).getMyDiseases().add(aux);
-						}
-						Clinic.getInstance().insertCheckUp(checkUp);
-						Clinic.getInstance().modifiedPerson(patient);
-						JOptionPane.showMessageDialog(null, "Se ha guardado la cita.", "Registro", JOptionPane.INFORMATION_MESSAGE);
-						
-						dispose();
-					}
-				});
 				buttonPane.add(btnRegister);
 				getRootPane().setDefaultButton(btnRegister);
 			
@@ -329,24 +310,11 @@ public class CreateCheckup extends JDialog {
 				});
 				buttonPane.add(btnClose);
 			}
-			
-			infoP.add(checkupsRecord);
-			menuclicked(checkupsRecord);
-			if(searchPerson == null) {
-				infoP.add(checkupInfoPanel);
-				menuclicked(checkupInfoPanel);
-			}
-			
-			
-			
 		}
 		
 		JPanel infP = new JPanel();
-		infP.setBounds(396, 40, 110, 33);
+		infP.setBounds(285, 40, 110, 33);
 		contentPanel.add(infP);
-		if(searchPerson != null) {
-			infP.setVisible(false);
-		}
 		infP.addMouseListener(new PanelButtonMouseAdapter(infP, 1));
 		infP.setLayout(null);
 		
@@ -356,7 +324,7 @@ public class CreateCheckup extends JDialog {
 		infP.add(lblInf);
 		
 		JPanel hisP = new JPanel();
-		hisP.setBounds(285, 40, 110, 33);
+		hisP.setBounds(396, 40, 110, 33);
 		contentPanel.add(hisP);
 		hisP.addMouseListener(new PanelButtonMouseAdapter(hisP, 2));
 		hisP.setLayout(null);
@@ -395,9 +363,9 @@ public class CreateCheckup extends JDialog {
 	}
 
 	private void menuclicked(JPanel panel) {
-		if(searchPerson == null) {
-			checkupInfoPanel.setVisible(false);
-		}
+		infoPanel.setVisible(false);
+		diseasePanel.setVisible(false);
+		medicalRecordPanel.setVisible(false);
 		checkupsRecord.setVisible(false);
 		
 		panel.setVisible(true);
@@ -424,35 +392,10 @@ public class CreateCheckup extends JDialog {
 		public void mousePressed(MouseEvent e) {
 			panel.setBackground(new Color(192, 192, 192));
 			if(typo == 1) {
-				menuclicked(checkupInfoPanel);
+				menuclicked(infoPanel);
 			} else {
-				menuclicked(checkupsRecord);
+				menuclicked(medicalRecordPanel);
 			}
 		}
 	}
-
-	private static String getCodePatient(int codePat) {
-		int total = codePat / 10;
-		String code = null;
-		
-		code = "P-0000" + codePat;
-		
-		if (total >= 1 && total < 10) {
-			code = "P-000" + codePat;
-		}
-		else if (total >= 10 && total < 100) {
-			code = "P-00" + codePat;
-		}
-		else if (total >= 100 && total < 1000) {
-			code = "P-0" + codePat;
-		}
-		else if (total >= 1000) {
-			code = "P-" + codePat;
-		}
-		
-		return code;
-	}
-	
-
-	
 }

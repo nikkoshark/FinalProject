@@ -10,40 +10,38 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 
 import logic.Clinic;
+import login.User;
+import java.awt.Color;
 
 public class UserInfo extends JPanel {
 
-	private static DefaultPieDataset dataset;
-
+	/**
+	 * Create the panel.
+	 */
 	public UserInfo() {
 		setSize(350,350);
 		setLayout(null);
+		//setVisible(false);
 		
 		JPanel panel = new JPanel();
-		panel.setOpaque(false);
+		panel.setBackground(new Color(255, 255, 255));
 		panel.setBounds(0, 0, 350, 350);
 		add(panel);
 
-		dataset = new DefaultPieDataset();
-		
-		refreshUser();
-		
-		JFreeChart chart = ChartFactory.createPieChart("USER PIE CHART" , dataset);
-		
-		ChartPanel chartPanel = new ChartPanel(chart); 
-		chartPanel.setBounds(0, 0, 350, 350);
-		panel.setLayout(null);
-		chartPanel.setPreferredSize(new Dimension(350, 350));
-		panel.add(chartPanel);
-	}
-	
-	public static void refreshUser() {
-		dataset.clear();
+		DefaultPieDataset dataset = new DefaultPieDataset();
 		
 		dataset.setValue("Secretaria", Clinic.getInstance().totalUsers("Secretaria"));
 		dataset.setValue("Medico", Clinic.getInstance().totalUsers("Medico"));
 		dataset.setValue("Admin", Clinic.getInstance().totalUsers("Admin"));
+		JFreeChart chart = ChartFactory.createPieChart("USER PIE CHART" , dataset);
 		
+		ChartPanel chartPanel = new ChartPanel(chart); 
+		chartPanel.setBounds(25, 25, 300, 300);
+		Dimension dimension = new Dimension(300, 300);
+		panel.setLayout(null);
+		chartPanel.setPreferredSize(dimension);
+		panel.add(chartPanel);
 	}
+
 
 }

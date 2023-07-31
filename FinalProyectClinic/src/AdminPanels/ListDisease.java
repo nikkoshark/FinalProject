@@ -15,15 +15,19 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import com.sun.org.apache.xml.internal.utils.Trie;
 
 import AdminJDialogs.CreateDiseaseVaccine;
 import Dashboards.DiseaseInfo;
+import Dashboards.VaccinesInfo;
 import logic.Clinic;
 import logic.Disease;
+import logic.Vaccine;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.ScrollPaneConstants;
+import Dashboards.UserInfo;
 
 public class ListDisease extends JPanel {
 	private static JTable table;
@@ -59,11 +63,7 @@ public class ListDisease extends JPanel {
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		panel.add(scrollPane, BorderLayout.CENTER);
 		
-		table = new JTable(){
-			public boolean editCellAt(int row, int column, java.util.EventObject e) {
-				return false;
-			}
-		};
+		table = new JTable();
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -73,7 +73,6 @@ public class ListDisease extends JPanel {
 					btnEdit.setEnabled(true);
 					btnDelete.setEnabled(true);
 					selDisease = Clinic.getInstance().getMyDiseases().get(index);
-					DiseaseInfo.refreshChart(selDisease);
 				}
 			}
 		});
