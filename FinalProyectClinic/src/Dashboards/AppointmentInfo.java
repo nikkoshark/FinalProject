@@ -42,9 +42,11 @@ public class AppointmentInfo extends JPanel {
 	}
 	
 	public static void refreshChart() {
+		dataset.clear();
+		
 		dataset.setValue("No Presente", Clinic.getInstance().totalPatientsStatus("No Presente"));
 		dataset.setValue("En Espera", Clinic.getInstance().totalPatientsStatus("En Espera"));
-		dataset.setValue("Vista", Clinic.getInstance().totalPatientsStatus("Visto")); 
+		dataset.setValue("Visto", Clinic.getInstance().totalPatientsStatus("Visto")); 
 	}
 
 

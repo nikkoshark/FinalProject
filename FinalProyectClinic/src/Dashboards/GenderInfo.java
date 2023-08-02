@@ -39,6 +39,8 @@ public class GenderInfo extends JPanel {
 	}
 	
 	public static void refreshChart() {
+		dataset.clear();
+		
 		dataset.setValue("Femenino", Clinic.getInstance().totalPacienteGenero('F'));
 		dataset.setValue("Masculino", Clinic.getInstance().totalPacienteGenero('M'));
 	}
