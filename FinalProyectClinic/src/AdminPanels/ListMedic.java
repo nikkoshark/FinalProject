@@ -40,7 +40,7 @@ public class ListMedic extends JPanel {
 		setLayout(null);
 		setVisible(false);
 		
-		JLabel lblNewLabel = new JLabel("LIST MEDICS");
+		JLabel lblNewLabel = new JLabel("LISTAR MÉDICOS");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		lblNewLabel.setBounds(10, 11, 285, 42);
 		add(lblNewLabel);

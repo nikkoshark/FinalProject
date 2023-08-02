@@ -370,6 +370,8 @@ public class CreateCheckup extends JDialog {
 	}
 
 	private void loadperson() {
+		if(patient.getCode()!= null)
+			txtCode.setText(patient.getCode());
 		ftxtSSN.setText(patient.getSsn());	
 		txtName.setText(patient.getName());
 		txtLastName.setText(patient.getLastName());

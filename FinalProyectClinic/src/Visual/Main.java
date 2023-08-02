@@ -1,5 +1,6 @@
 package Visual;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
 
@@ -14,6 +15,8 @@ import login.User;
 
 import java.awt.SystemColor;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 
 import javax.swing.ImageIcon;
@@ -22,6 +25,7 @@ import javax.swing.JButton;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import javax.swing.JLabel;
 
 public class Main extends JFrame {
 
@@ -30,8 +34,8 @@ public class Main extends JFrame {
 	private MSecretaryPanel secretaryPanel;
 	private MMedicPanel medicPanel;
 	private MAdminPanel adminPanel;
-	private JButton btnNewButton;
 	private User user = null;
+	private JLabel lblWelcome;
 
 	public Main(User loginUser) {
 		addWindowListener(new java.awt.event.WindowAdapter() {
@@ -94,31 +98,55 @@ public class Main extends JFrame {
 		panel.add(medicPanel);
 		panel.add(adminPanel);
 		
-		btnNewButton = new JButton("LOG OUT");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Login login = new Login();
-				login.setVisible(true);
-				dispose();
-				
-				File file = new File("clinic_data.dat");
-		        FileOutputStream outputStream;
-		        ObjectOutputStream objectOutputStream;
-		        
-		        try {
-					outputStream = new FileOutputStream(file);
-					objectOutputStream = new ObjectOutputStream(outputStream);
-					objectOutputStream.writeObject(Clinic.getInstance());
-				} catch (Exception e1) {
-					// TODO: handle exception
-				} 
-			}
-		});
-		btnNewButton.setBounds(1257, 0, 93, 23);
-		panel.add(btnNewButton);
+		JPanel panel_1 = new JPanel();
+		panel_1.setBounds(1200, 0, 160, 21);
+		panel.add(panel_1);
+		panel_1.setLayout(null);
+		
+		lblWelcome = new JLabel("¡Bienvenido, "+user.getName()+"!");
+		lblWelcome.setBounds(10, 3, 121, 14);
+		panel_1.add(lblWelcome);
+		
+		panel_1.addMouseListener(new PanelButtonMouseAdapter(panel_1));
 	}
 	
 
+	private class PanelButtonMouseAdapter extends MouseAdapter{
+			
+		JPanel panel;
+		public PanelButtonMouseAdapter(JPanel panel) {
+			this.panel = panel;
+		}
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			panel.setBackground(new Color(119, 136, 153));
+		}
+		@Override
+		public void mouseExited(MouseEvent e) {
+			panel.setBackground(new Color(240, 240, 240));
+		}
+		@Override
+		public void mousePressed(MouseEvent e) {
+			panel.setBackground(new Color(192, 192, 192));
+			Login login = new Login();
+			login.setVisible(true);
+			dispose();
+			
+			File file = new File("clinic_data.dat");
+	        FileOutputStream outputStream;
+	        ObjectOutputStream objectOutputStream;
+	        
+	        try {
+				outputStream = new FileOutputStream(file);
+				objectOutputStream = new ObjectOutputStream(outputStream);
+				objectOutputStream.writeObject(Clinic.getInstance());
+			} catch (Exception e1) {
+				// TODO: handle exception
+			} 
+		}
+	}
+	
+	
 	private void menuclicked(JPanel panel) {
 		secretaryPanel.setVisible(false);
 		medicPanel.setVisible(false);

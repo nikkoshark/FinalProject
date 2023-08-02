@@ -52,8 +52,17 @@ public class MAdminPanel extends JPanel {
 		defDash = new DefaultDashboard();
 		
 		JMenuBar menuBar = new JMenuBar();
-		menuBar.setBounds(0, 0, 1259, 21);
+		menuBar.setBounds(0, 0, 1200, 21);
 		add(menuBar);
+		
+		JMenu mnP = new JMenu("Principal");
+		mnP.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				menuclicked(defDash);
+			}
+		});
+		menuBar.add(mnP);
 		
 		JMenu mnS = new JMenu("Usuarios");
 		menuBar.add(mnS);
@@ -170,20 +179,11 @@ public class MAdminPanel extends JPanel {
 		menuBar.add(nmR);
 		
 		JPanel InfoP = new JPanel();
-		InfoP.setBounds(10, 67, 1320, 551);
+		InfoP.setBounds(10, 32, 1320, 586);
 		InfoP.setOpaque(false);
 		add(InfoP);
 		setVisible(false);
 		InfoP.setLayout(null);
-		
-		JButton btnNewButton = new JButton("VOLVER");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				menuclicked(defDash);
-			}
-		});
-		btnNewButton.setBounds(1241, 33, 89, 23);
-		add(btnNewButton);
 		
 		InfoP.add(defDash);
 		InfoP.add(listDisease);
@@ -191,7 +191,7 @@ public class MAdminPanel extends JPanel {
 		InfoP.add(listUsers);
 		InfoP.add(listMedic);
 		
-		menuclicked(defDash); //default
+		menuclicked(defDash);
 	}
 	
 
