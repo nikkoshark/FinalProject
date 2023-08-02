@@ -1,6 +1,7 @@
 package Visual;
 
 import java.awt.Dimension;
+import java.awt.Image;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -14,6 +15,8 @@ import login.User;
 import java.awt.SystemColor;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import java.io.File;
@@ -56,6 +59,10 @@ public class Main extends JFrame {
 		setSize(dim.width, dim.height-50);
 		setResizable(false);
 		setLocationRelativeTo(null);
+		
+		setTitle("Benessere");
+		Image logo = new ImageIcon(getClass().getClassLoader().getResource("benessere- short.png")).getImage();
+		setIconImage(logo);
 		
 		user = loginUser;
 		

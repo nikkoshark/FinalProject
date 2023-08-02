@@ -142,6 +142,15 @@ public class Clinic implements Serializable{
 		return null;
 	}
 	
+	public Person searchPersonByCode(String code) {
+		for (Person per : myPersons) {
+			if (per.getCode().equalsIgnoreCase(code)) {
+				return per;
+			}
+		}
+		return null;
+	}
+	
 	public CheckUp searchCheckUp(String code) {
 		for (CheckUp che : myCheckUps) {
 			if (che.getCode().equalsIgnoreCase(code)) {
@@ -293,9 +302,6 @@ public class Clinic implements Serializable{
 	}
 	
 	public void modifiedPerson(Person person) {
-		System.out.println(person.getCode());
-		System.out.println(getIndexPerson(person.getCode()));
-		System.out.println(myPersons.size());
 		myPersons.set(getIndexPerson(person.getCode()), person);
 	}
 	

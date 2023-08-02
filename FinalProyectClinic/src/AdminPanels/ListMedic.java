@@ -62,13 +62,14 @@ public class ListMedic extends JPanel {
 				if(index>=0) {
 					btnEdit.setEnabled(true);
 					btnDelete.setEnabled(true);
-					selMedic = Clinic.getInstance().getMyPersons().get(index);
+					String code = (String) table.getModel().getValueAt(index, 0);
+					selMedic = Clinic.getInstance().searchPersonByCode(code);
 				}
 			}
 		});
 		scrollPane.setViewportView(table);
 		model = new DefaultTableModel();
-		String[] headers = {"Código", "Nombre", "Especialidad"/*, "Horario Entrada", "Horario Salida"*/}; //HEADERS FOR THE LIST
+		String[] headers = {"Código", "Nombre", "Especialidad"}; //HEADERS FOR THE LIST
 		model.setColumnIdentifiers(headers);
 		table.setModel(model);
 		
@@ -118,7 +119,6 @@ public class ListMedic extends JPanel {
 				row[0] = med.getCode();
 				row[1] = med.getName();
 				row[2] = ((Medic) med).getSpeciality();
-				//horarios not yet implemented.
 				model.addRow(row);
 			}
 		}

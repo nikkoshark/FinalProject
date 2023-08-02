@@ -46,10 +46,11 @@ public class CreateMedic extends JDialog {
 	private JTextArea txtAAddress;
 	private JComboBox cbSex;
 	private JComboBox cbSpeciality;
-	private JDateChooser dateChooser;
+	private JDateChooser dateChooserBirthday;
 	private JCheckBox chbxAvailable;
 	private Person medic;
 	private ArrayList<String> optionString;
+	private Date dateCompare = null;
 
 
 	/**
@@ -170,9 +171,11 @@ public class CreateMedic extends JDialog {
 			lblDate.setBounds(39, 171, 143, 14);
 			contentPanel.add(lblDate);
 			
-			dateChooser = new JDateChooser();
-			dateChooser.setBounds(39, 183, 128, 20);
-			contentPanel.add(dateChooser);
+			dateCompare = new Date();
+			dateChooserBirthday = new JDateChooser();
+			dateChooserBirthday.setDate(dateCompare);
+			dateChooserBirthday.setBounds(39, 183, 128, 20);
+			contentPanel.add(dateChooserBirthday);
 			
 			chbxAvailable = new JCheckBox("Disponible");
 			chbxAvailable.setBackground(SystemColor.activeCaption);
@@ -195,43 +198,52 @@ public class CreateMedic extends JDialog {
 				}
 				btnAdd.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(Clinic.getInstance().isUniqueSsnNumber(ftxtSSN.getText()) || medic != null) {
-							String code = txtCode.getText();
-							String ssn =  ftxtSSN.getText();
-							String name = txtName.getText();
-							String lastName = txtLastName.getText();
-							String phone = ftxtPhone.getText();
-							String address = txtAAddress.getText();
-							Date date = dateChooser.getDate();
-							char sex = String.valueOf(cbSex.getSelectedItem()).charAt(0);
-							String speciality = String.valueOf(cbSpeciality.getSelectedItem());
-							boolean available = chbxAvailable.isSelected();
-							//User insUser = new User("Medico", txtUser.getText(), txtPsw.getText());
-							if(medic == null) {
-								Medic insmedic = new Medic(code, ssn, name, lastName, phone, address, date, sex, speciality, available);
-								Clinic.getInstance().insertPerson(insmedic);
-								//Clinic.getInstance().insertUser(insUser);
-								JOptionPane.showMessageDialog(null, "Registro hecho.", "Registro", JOptionPane.INFORMATION_MESSAGE);
-								clean();
+						if (!ftxtSSN.getText().isEmpty() && !txtName.getText().isEmpty() && !txtLastName.getText().isEmpty() && cbSpeciality.getSelectedIndex() > 0 && !ftxtPhone.getText().isEmpty() && dateChooserBirthday.getDate().getYear() < dateCompare.getYear() - 20) {
+							if(Clinic.getInstance().isUniqueSsnNumber(ftxtSSN.getText()) || medic != null) {
+								String code = txtCode.getText();
+								String ssn =  ftxtSSN.getText();
+								String name = txtName.getText();
+								String lastName = txtLastName.getText();
+								String phone = ftxtPhone.getText();
+								String address = txtAAddress.getText();
+								Date date = dateChooserBirthday.getDate();
+								char sex = String.valueOf(cbSex.getSelectedItem()).charAt(0);
+								String speciality = String.valueOf(cbSpeciality.getSelectedItem());
+								boolean available = chbxAvailable.isSelected();
+								if(medic == null) {
+									Medic insmedic = new Medic(code, ssn, name, lastName, phone, address, date, sex, speciality, available);
+									Clinic.getInstance().insertPerson(insmedic);
+									JOptionPane.showMessageDialog(null, "Registro hecho.", "Registro", JOptionPane.INFORMATION_MESSAGE);
+									clean();
+								} else {
+									medic.setCode(code);
+									medic.setSsn(ssn);
+									medic.setName(name);
+									medic.setLastName(lastName);
+									medic.setPhoneNumber(phone);
+									medic.setAddress(address);
+									medic.setBirthdate(date);
+									medic.setSex(sex);
+									((Medic)medic).setAvailable(available);
+									((Medic)medic).setSpeciality(speciality);
+									
+									Clinic.getInstance().modifiedPerson(medic);
+									dispose();
+								}
+								ListMedic.loadMedic();
 							} else {
-								medic.setCode(code);
-								medic.setSsn(ssn);
-								medic.setName(name);
-								medic.setLastName(lastName);
-								medic.setPhoneNumber(phone);
-								medic.setAddress(address);
-								medic.setBirthdate(date);
-								medic.setSex(sex);
-								((Medic)medic).setAvailable(available);
-								((Medic)medic).setSpeciality(speciality);
-								
-								Clinic.getInstance().modifiedPerson(medic);
-								dispose();
+								JOptionPane.showMessageDialog(null, "Este médico ya ha sido registrado.", "Médico Inválido", JOptionPane.ERROR_MESSAGE);
 							}
-							ListMedic.loadMedic();
-						} else {
-							JOptionPane.showMessageDialog(null, "Este médico ya ha sido registrado.", "Médico Inválido", JOptionPane.ERROR_MESSAGE);
+
+						}else {
+							if (dateChooserBirthday.getDate().getYear() < dateCompare.getYear() - 20) {
+								JOptionPane.showMessageDialog(null, "¡Parámetro(s) sin completar!\nPor favor completar los campos.", "Información Vacía", JOptionPane.ERROR_MESSAGE);
+							}
+							else {								
+								JOptionPane.showMessageDialog(null, "El medico no cumple la edad requeridad por la organizacion (20 años minimo).", "Información Invalida", JOptionPane.ERROR_MESSAGE);
+							}
 						}
+						
 					}
 				});
 				buttonPane.add(btnAdd);
@@ -284,11 +296,12 @@ public class CreateMedic extends JDialog {
 		cbSpeciality.setSelectedIndex(0);
 		ftxtSSN.setText("");
 		chbxAvailable.setSelected(false);
-		dateChooser.setDate(null);
+		dateChooserBirthday.setDate(null);
 	}
 	
 	private void loadMedic() {
 		if(medic != null) {
+			
 			txtAAddress.setText(medic.getAddress());
 			txtCode.setText(medic.getCode());
 			txtLastName.setText(medic.getLastName());
@@ -296,7 +309,7 @@ public class CreateMedic extends JDialog {
 			ftxtPhone.setText(medic.getPhoneNumber());
 			cbSpeciality.setSelectedItem(((Medic)medic).getSpeciality());
 			ftxtSSN.setText(medic.getSsn());
-			dateChooser.setDate(medic.getBirthdate());
+			dateChooserBirthday.setDate(medic.getBirthdate());
 			if(medic.getSex() == 'F') {
 				cbSex.setSelectedIndex(1);
 			} else {

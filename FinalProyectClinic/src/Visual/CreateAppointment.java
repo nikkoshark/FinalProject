@@ -197,7 +197,7 @@ public class CreateAppointment extends JDialog {
 									}
 								}
 								
-								Appoinment insApp = new Appoinment(txtCode.getText(), txtNamePatient.getText(), ftxtSSN.getText(), ftxtPhone.getText(), txtaDescription.getText(), LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()), /*Clinic.getInstance().searchPerson(txtDoctor.getText())*/ medic, String.valueOf(cbStatus.getSelectedItem()));
+								Appoinment insApp = new Appoinment(txtCode.getText(), txtNamePatient.getText(), ftxtSSN.getText(), ftxtPhone.getText(), txtaDescription.getText(), LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()), medic, String.valueOf(cbStatus.getSelectedItem()));
 								Clinic.getInstance().insertAppoinment(insApp);
 								JOptionPane.showMessageDialog(null, "Cita apuntada.", "Registrar Cita", JOptionPane.INFORMATION_MESSAGE);
 								clean();

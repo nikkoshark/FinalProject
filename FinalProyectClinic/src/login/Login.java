@@ -20,8 +20,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.Image;
+
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -96,6 +99,10 @@ public class Login extends JFrame {
 		contentPane.setLayout(null);
 		setResizable(false);
 		setLocationRelativeTo(null);
+		
+		setTitle("Benessere");
+		Image logo = new ImageIcon(getClass().getClassLoader().getResource("benessere- short.png")).getImage();
+		setIconImage(logo);
 		
 		JLabel lblNewLabel = new JLabel("\u00A1BIENVENIDO!");
 		lblNewLabel.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 20));
