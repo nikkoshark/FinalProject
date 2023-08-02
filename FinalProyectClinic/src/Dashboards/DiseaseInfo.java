@@ -1,6 +1,7 @@
 package Dashboards;
 
 import java.awt.Dimension;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -11,6 +12,8 @@ import org.jfree.data.general.DefaultPieDataset;
 
 import logic.Clinic;
 import logic.Disease;
+import logic.Patient;
+import logic.Person;
 
 public class DiseaseInfo extends JPanel {
 
@@ -27,10 +30,30 @@ public class DiseaseInfo extends JPanel {
 		add(panel);
 
 		dataset = new DefaultPieDataset();
-
-		dataset.setValue("Enfermedades", Clinic.getInstance().getMyDiseases().size());
 		
-		chart = ChartFactory.createPieChart("Enfermedades en el sistema" , dataset);
+		
+		int count = 0;
+		int countPatient = 0;
+		
+		for (Person per : Clinic.getInstance().getMyPersons()) {
+			if (per instanceof Patient) {
+				count++;
+			}
+		}
+		
+		for (Person per : Clinic.getInstance().getMyPersons()) {
+			if (per instanceof Patient) {
+				Patient patient = (Patient) per;
+				if (patient.getMyDiseases().size() > 0) {
+					countPatient++;
+				}
+			}
+		}
+		
+		dataset.setValue("Total Pacientes", count);
+		dataset.setValue("Total Pacientes con Enfermedades", countPatient);
+		
+		chart = ChartFactory.createPieChart("Porcentaje de pacientes enfermos" , dataset);
 		ChartPanel chartPanel = new ChartPanel(chart); 
 		chartPanel.setOpaque(false);
 		chartPanel.setBounds(0, 0, 350, 350);
@@ -50,6 +73,6 @@ public class DiseaseInfo extends JPanel {
 		dataset.setValue("Enfermos", cantSick);
 		dataset.setValue("Sanos", Clinic.getInstance().getMyPersons().size() - cantSick); 
 
-		chart.setTitle("Enfermos de: "+titlet);
+		chart.setTitle("Enfermos de: " + titlet);
 	}
 }

@@ -293,14 +293,14 @@ public class CreateCheckup extends JDialog {
 			});
 			buttonPane.add(btnPatient);
 			{
-				JButton btnRegister = new JButton("REGISTRAR");
+				JButton btnRegister = new JButton("FINALIZAR");
 				btnRegister.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						appinfo.setStatus("Visto");
 						Clinic.getInstance().modifiedAppoinment(appinfo);
 						CheckUp checkUp = CheckupInfoPanel.sendCheckUp(patient, appinfo.getMedic());
 						if(checkUp.isMedicalRecord()==true) {
-							((Patient)patient).getMyMedicalRecord().add(checkUp); //                        **********
+							((Patient)patient).getMyMedicalRecord().add(checkUp);
 						}
 						((Patient)patient).getMyCheckUpsRecord().add(checkUp);
 						((Patient)patient).getMyVaccines().add(CheckupInfoPanel.sendVaccine());
@@ -371,7 +371,9 @@ public class CreateCheckup extends JDialog {
 
 	private void loadperson() {
 		if(patient.getCode()!= null)
+		{			
 			txtCode.setText(patient.getCode());
+		}
 		ftxtSSN.setText(patient.getSsn());	
 		txtName.setText(patient.getName());
 		txtLastName.setText(patient.getLastName());

@@ -184,8 +184,7 @@ public class CreateAppointment extends JDialog {
 				btnSave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if (cbDoctor.getSelectedIndex() != 0 && !ftxtSSN.getText().contains("   -       - ") && !txtNamePatient.getText().isEmpty()) {
-							if(appoinment == null) {
-								
+							
 								int i = 1;
 								for (Person per : Clinic.getInstance().getMyPersons()) {
 									if (per instanceof Medic) {
@@ -196,13 +195,17 @@ public class CreateAppointment extends JDialog {
 										i++;
 									}
 								}
-								
+							
+							if(appoinment == null) {
+									
 								Appoinment insApp = new Appoinment(txtCode.getText(), txtNamePatient.getText(), ftxtSSN.getText(), ftxtPhone.getText(), txtaDescription.getText(), LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()), medic, String.valueOf(cbStatus.getSelectedItem()));
 								Clinic.getInstance().insertAppoinment(insApp);
 								JOptionPane.showMessageDialog(null, "Cita apuntada.", "Registrar Cita", JOptionPane.INFORMATION_MESSAGE);
 								clean();
 								MSecretaryPanel.loadAppointments();
+								
 							} else {
+								
 								appoinment.setCode(txtCode.getText());
 								appoinment.setName(txtNamePatient.getText());
 								appoinment.setSsn(ftxtSSN.getText());
@@ -268,6 +271,7 @@ public class CreateAppointment extends JDialog {
 			for (Person per : Clinic.getInstance().getMyPersons()) {
 				if (per instanceof Medic) {
 					Medic med = (Medic) per;
+					
 					if (appoinment.getMedic().getCode().equalsIgnoreCase(med.getCode())) {
 						cbDoctor.setSelectedIndex(i);
 					}

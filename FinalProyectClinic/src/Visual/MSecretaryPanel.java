@@ -146,11 +146,16 @@ public class MSecretaryPanel extends JPanel {
 		btnEdit.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 20));
 		btnEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CreateAppointment regApp = new CreateAppointment(selAppoinment);
-				regApp.setModal(true);
-				regApp.setVisible(true);
-				btnEdit.setEnabled(false);
-				btnDelete.setEnabled(false);
+				if (selAppoinment.getStatus().equalsIgnoreCase("Visto")) {
+					JOptionPane.showMessageDialog(null, "Esta consulta ya fue realizada.", "Consulta hecha", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else {
+					CreateAppointment regApp = new CreateAppointment(selAppoinment);
+					regApp.setModal(true);
+					regApp.setVisible(true);
+					btnEdit.setEnabled(false);
+					btnDelete.setEnabled(false);
+				}
 			}
 		});
 		btnEdit.setEnabled(false);
@@ -162,12 +167,17 @@ public class MSecretaryPanel extends JPanel {
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(selAppoinment != null) {
-					int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar la cita de: " + selAppoinment.getName() + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
-					if (option == JOptionPane.OK_OPTION) {
-						Clinic.getInstance().removeAppoinment(selAppoinment);
-						btnEdit.setEnabled(false);
-						btnDelete.setEnabled(false);
-						loadAppointments();
+					if (selAppoinment.getStatus().equalsIgnoreCase("Visto")) {
+						JOptionPane.showMessageDialog(null, "Esta consulta ya fue realizada.", "Consulta hecha", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else {
+						int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar la cita de: " + selAppoinment.getName() + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
+						if (option == JOptionPane.OK_OPTION) {
+							Clinic.getInstance().removeAppoinment(selAppoinment);
+							btnEdit.setEnabled(false);
+							btnDelete.setEnabled(false);
+							loadAppointments();
+						}
 					}
 				}
 			}
@@ -206,7 +216,7 @@ public class MSecretaryPanel extends JPanel {
 			row[1] = " " + appointment.getSsn();
 			row[2] = " " + appointment.getName();
 			row[3] = " " + appointment.getDate().format(dateTimeFormatter);
-			//row[4] = " " + appointment.getMedic().getName(); 
+			row[4] = " " + appointment.getMedic().getName(); 
 			row[5] = " " + appointment.getStatus();
 			
 			model.addRow(row);

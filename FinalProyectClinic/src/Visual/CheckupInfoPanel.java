@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import com.toedter.calendar.JDateChooser;
 
@@ -37,15 +39,21 @@ public class CheckupInfoPanel extends JPanel {
 	private static JTable tableAv;
 	private static JTable tablePat;
 	private static DefaultTableModel model;
+	private static DefaultTableModel modelPatient;
 	private static Object[] row;
 	private static LocalDateTime localDateTime;
 	private static JComboBox cbVaccine;
+	private static Patient patient  = null;
+	private static ArrayList<Disease> patientsDiseases = new ArrayList<>();
+	private static ArrayList<Disease> avaibleDiseases = new ArrayList<>();
 
 	/**
 	 * Create the panel.
 	 */
-	public CheckupInfoPanel(LocalDateTime date, Person patient) {
+	public CheckupInfoPanel(LocalDateTime date, Person patientReceive) {
+		patient = (Patient) patientReceive;
 		localDateTime = date;
+		
 		setBackground(SystemColor.inactiveCaption);
 		setSize(614,403);
 		setLayout(null);
@@ -55,6 +63,9 @@ public class CheckupInfoPanel extends JPanel {
 		lblDate.setBounds(10, 11, 130, 14);
 		add(lblDate);
 		
+		for (Disease disease : Clinic.getInstance().getMyDiseases()) {
+			avaibleDiseases.add(disease);
+		}
 		
         ZoneId zoneId = ZoneId.systemDefault();
 		Date dateTime = Date.from(date.atZone(zoneId).toInstant());
@@ -64,7 +75,7 @@ public class CheckupInfoPanel extends JPanel {
 		add(dateChooser);
 		dateChooser.setEnabled(false);
 		
-		JLabel lblDiagnosis = new JLabel("Diagnosis");
+		JLabel lblDiagnosis = new JLabel("Diagnosis:");
 		lblDiagnosis.setBounds(10, 277, 130, 14);
 		add(lblDiagnosis);
 		
@@ -73,7 +84,7 @@ public class CheckupInfoPanel extends JPanel {
 		txtaDiagnosis.setBounds(10, 300, 594, 48);
 		add(txtaDiagnosis);
 		
-		JLabel lblSymptoms = new JLabel("S\u00EDntomas");
+		JLabel lblSymptoms = new JLabel("S\u00EDntomas:");
 		lblSymptoms.setBounds(10, 195, 130, 14);
 		add(lblSymptoms);
 		
@@ -117,7 +128,10 @@ public class CheckupInfoPanel extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
-					
+					patientsDiseases.add(avaibleDiseases.get(tableAv.getSelectedRow()));
+					avaibleDiseases.remove(avaibleDiseases.get(tableAv.getSelectedRow()));
+					loadDiseasePat();
+					loadDiseaseAv();
 				}
 			}
 		});
@@ -139,11 +153,25 @@ public class CheckupInfoPanel extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
-					
+					avaibleDiseases.add(patientsDiseases.get(tablePat.getSelectedRow()));
+					patientsDiseases.remove(patientsDiseases.get(tablePat.getSelectedRow()));
+					loadDiseaseAv();
+					loadDiseasePat();
 				}
 			}
 		});
 		scrollDiseasePat.setViewportView(tablePat);
+		
+		model = new DefaultTableModel();
+		String[] headers = {"Disponibles"};
+		model.setColumnIdentifiers(headers);
+		
+		modelPatient = new DefaultTableModel();
+		String[] headersPatieStrings = {"Paciente"};
+		modelPatient.setColumnIdentifiers(headersPatieStrings);
+				
+		tablePat.setModel(modelPatient);
+		tableAv.setModel(model);
 		
 		JLabel lblDis = new JLabel("Enfermedades");
 		lblDis.setBounds(107, 0, 87, 14);
@@ -155,34 +183,52 @@ public class CheckupInfoPanel extends JPanel {
 		add(chbxMedicalR);
 		
 		loadVaccines();
-	}
-	
+		loadDiseaseAv();
+		loadDiseasePat();
+	}	
+
 	private void loadVaccines() {
 		cbVaccine.removeAllItems();
+		cbVaccine.insertItemAt(new String("<SELECCIONAR>"), 0);
 		for(Vaccine aux : Clinic.getInstance().getMyVaccines()) {
+			
+			if (patient.getMyVaccines().size() > 0) {				
+				for (Vaccine vaccine : patient.getMyVaccines()) {
+					if (vaccine.getName() == aux.getName()) {
+						
+					}
+					else {
+						String name = new String(aux.getName());
+						cbVaccine.addItem(name);
+					}
+				}
+			}
+			
+			
 			String name = new String(aux.getName());
 			cbVaccine.addItem(name);
 		}
-		cbVaccine.insertItemAt(new String("<SELECCIONAR>"), 0);
+		
 		cbVaccine.setSelectedIndex(0);
-
 	}
 	
 	private void loadDiseaseAv() {
 		model.setRowCount(0);
 		row = new Object[tableAv.getColumnCount()];
-		for(Disease disease: Clinic.getInstance().getMyDiseases()) {
+		
+		for(Disease disease: avaibleDiseases) {				
 			row[0] = disease.getName();
-			model.addRow(row);
+			model.addRow(row);			
 		}
 	}
 	
 	private void loadDiseasePat() {
-		model.setRowCount(0);
+		modelPatient.setRowCount(0);
 		row = new Object[tablePat.getColumnCount()];
-		for(Disease disease: Clinic.getInstance().getMyDiseases()) {
+		for(Disease disease: patientsDiseases) {
 			row[0] = disease.getName();
-			model.addRow(row);
+			modelPatient.addRow(row);
+			
 			if(disease.isWatched()) {
 				chbxMedicalR.setSelected(true);
 			}
@@ -214,9 +260,23 @@ public class CheckupInfoPanel extends JPanel {
 		String diagnosis = txtaDiagnosis.getText();
 		String symptoms = txtaSymptoms.getText();
 		
-		CheckUp checkUp = new CheckUp(getCodeCheckup(Clinic.getInstance().getCodeCheckUp()), diagnosis, symptoms, localDateTime, aMedic , (Patient)aPatient, null/*myDiseases*/, chbxMedicalR.isSelected());
-		Clinic.getInstance().insertCheckUp(checkUp);
-		return checkUp;
+		if (!diagnosis.isEmpty() && !symptoms.isEmpty()) {
+			chbxMedicalR.setSelected(false);
+			for (Disease disease : patientsDiseases) {
+				if (disease.isWatched()) {
+					chbxMedicalR.setSelected(true);
+				}
+			}
+			
+			CheckUp checkUp = new CheckUp(getCodeCheckup(Clinic.getInstance().getCodeCheckUp()), diagnosis, symptoms, localDateTime, aMedic , (Patient)aPatient, null/*myDiseases*/, chbxMedicalR.isSelected());
+			Clinic.getInstance().insertCheckUp(checkUp);
+			return checkUp;
+		}
+		else {
+			JOptionPane.showMessageDialog(null, "¡Parámetro(s) sin completar!\nPor favor completar los campos.", "Información Vacía", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		return null;
 	}
 	
 	public static Vaccine sendVaccine() {
@@ -224,11 +284,10 @@ public class CheckupInfoPanel extends JPanel {
 	}
 
 	public static ArrayList<Disease> sendDisease() {
-		ArrayList<Disease> diz = new ArrayList<>();
 		for(Disease disease : Clinic.getInstance().getMyDiseases()) { // the ones added to the checkup
-			diz.add(disease);
+			patientsDiseases.add(disease);
 		}
-		return diz;
+		return patientsDiseases;
 	}
 	
 	

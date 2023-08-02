@@ -16,11 +16,13 @@ import logic.Person;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.format.DateTimeFormatter;
 
 public class CheckupsRecord extends JPanel {
 	private static JTable tableCheckup;
 	private static JTable tableMedicalR;
-	private static DefaultTableModel model;
+	private static DefaultTableModel modelCheckUp;
+	private static DefaultTableModel modelRecord;
 	private static Object[] row;
 	private static Person searchpatient = null;
 
@@ -48,42 +50,54 @@ public class CheckupsRecord extends JPanel {
 		scrollCheckup.setBounds(10, 52, 286, 340);
 		add(scrollCheckup);
 		
-		tableCheckup = new JTable();
+		tableCheckup = new JTable(){
+			public boolean editCellAt(int row, int column, java.util.EventObject e) {
+				return false;
+			}
+		};
 		tableCheckup.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				int index = tableCheckup.getSelectedRow();
-				if(index>=0) {
-					
+				if (e.getClickCount() == 2) {
+					int index = tableCheckup.getSelectedRow();
+					if(index >= 0) {
+						
+					}
 				}
 			}
 		});
 		scrollCheckup.setViewportView(tableCheckup);
-		model = new DefaultTableModel();
+		modelCheckUp = new DefaultTableModel();
 		String[] headerC = {"Código", "Fecha", "Diagnosis"};
-		model.setColumnIdentifiers(headerC);
-		tableCheckup.setModel(model);
+		modelCheckUp.setColumnIdentifiers(headerC);
+		tableCheckup.setModel(modelCheckUp);
 		scrollCheckup.setViewportView(tableCheckup);
 		
 		JScrollPane scrollMedicalR = new JScrollPane();
 		scrollMedicalR.setBounds(318, 52, 286, 340);
 		add(scrollMedicalR);
 		
-		tableMedicalR = new JTable();
+		tableMedicalR = new JTable(){
+			public boolean editCellAt(int row, int column, java.util.EventObject e) {
+				return false;
+			}
+		};
 		tableMedicalR.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				int index = tableMedicalR.getSelectedRow();
-				if(index>=0) {
-					
+				if (e.getClickCount() == 2) {
+					int index = tableCheckup.getSelectedRow();
+					if(index >= 0) {
+						
+					}
 				}
 			}
 		});
 		scrollMedicalR.setViewportView(tableMedicalR);
-		model = new DefaultTableModel();
+		modelRecord = new DefaultTableModel();
 		String[] headerM = {"Código", "Fecha", "Diagnosis"};
-		model.setColumnIdentifiers(headerM);
-		tableMedicalR.setModel(model);
+		modelRecord.setColumnIdentifiers(headerM);
+		tableMedicalR.setModel(modelRecord);
 		scrollMedicalR.setViewportView(tableMedicalR);
 		
 		loadCheckup();
@@ -92,24 +106,28 @@ public class CheckupsRecord extends JPanel {
 	}
 	
 	public static void loadCheckup() {
-		model.setRowCount(0);
+		modelCheckUp.setRowCount(0);
 		row = new Object[tableCheckup.getColumnCount()];
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
+		
 		for(CheckUp check : ((Patient)searchpatient).getMyCheckUpsRecord()) {
 			row[0] = check.getCode();
-			row[1] = check.getDate();
+			row[1] = check.getDate().format(formatter);
 			row[2] = check.getDiagnosis();
-			model.addRow(row);
+			modelCheckUp.addRow(row);
 		}
 	}
 
 	public static void loadMedicalR() {
-		model.setRowCount(0);
+		modelRecord.setRowCount(0);
 		row = new Object[tableCheckup.getColumnCount()];
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
+		
 		for(CheckUp check : ((Patient)searchpatient).getMyMedicalRecord()) {
 			row[0] = check.getCode();
-			row[1] = check.getDate();
+			row[1] = check.getDate().format(formatter);
 			row[2] = check.getDiagnosis();
-			model.addRow(row);
+			modelRecord.addRow(row);
 		}
 	}
 }
