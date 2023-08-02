@@ -15,9 +15,11 @@ import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
@@ -34,6 +36,8 @@ import logic.Appoinment;
 import logic.Clinic;
 import logic.Medic;
 import logic.Person;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerListModel;
 
 public class CreateAppointment extends JDialog {
 
@@ -41,12 +45,16 @@ public class CreateAppointment extends JDialog {
 	private JTextField txtNamePatient;
 	private JTextField txtCode;
 	private JDateChooser dateChooser;
+	private JSpinner spnTime;
 	private JComboBox cbStatus;
 	private JFormattedTextField ftxtPhone;
 	private JFormattedTextField ftxtSSN;
 	private JTextArea txtaDescription;
 	private JComboBox cbDoctor;
 	private Appoinment appoinment = null;
+	private String dateString;
+	private String timeString;
+	private LocalDateTime gettheDateTime;
 
 	private Medic medic = null;
 	private Date date = null;
@@ -59,7 +67,7 @@ public class CreateAppointment extends JDialog {
 		setTitle("Modificar");
 		if(appoinment == null) {
 			setTitle("Registrar");
-		}
+		} 
 		
 		setBounds(100, 100, 605, 401);
 		setResizable(false);
@@ -153,7 +161,7 @@ public class CreateAppointment extends JDialog {
 			contentPanel.add(lblFechaDeCita);
 	
 			dateChooser = new JDateChooser();
-			dateChooser.setBounds(438, 36, 94, 20);
+			dateChooser.setBounds(422, 36, 110, 20);
 			contentPanel.add(dateChooser);
 
 			date = new Date();
@@ -170,6 +178,11 @@ public class CreateAppointment extends JDialog {
 			contentPanel.add(cbStatus);
 		}
 		
+		spnTime = new JSpinner();
+		spnTime.setModel(new SpinnerListModel(new String[] {"08:00 AM", "08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM"}));
+		spnTime.setBounds(422, 56, 110, 20);
+		contentPanel.add(spnTime);
+		
 		
 		{
 			JPanel buttonPane = new JPanel();
@@ -184,6 +197,13 @@ public class CreateAppointment extends JDialog {
 				btnSave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if (cbDoctor.getSelectedIndex() != 0 && !ftxtSSN.getText().contains("   -       - ") && !txtNamePatient.getText().isEmpty()) {
+
+							SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+							dateString = simpleDateFormat.format(dateChooser.getDate());
+							timeString = spnTime.getValue().toString();
+							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
+							gettheDateTime = LocalDateTime.parse(dateString+" "+timeString, formatter);
+							System.out.println(gettheDateTime.format(formatter));
 							
 								int i = 1;
 								for (Person per : Clinic.getInstance().getMyPersons()) {
@@ -198,7 +218,7 @@ public class CreateAppointment extends JDialog {
 							
 							if(appoinment == null) {
 									
-								Appoinment insApp = new Appoinment(txtCode.getText(), txtNamePatient.getText(), ftxtSSN.getText(), ftxtPhone.getText(), txtaDescription.getText(), LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()), medic, String.valueOf(cbStatus.getSelectedItem()));
+								Appoinment insApp = new Appoinment(txtCode.getText(), txtNamePatient.getText(), ftxtSSN.getText(), ftxtPhone.getText(), txtaDescription.getText(), gettheDateTime, medic, String.valueOf(cbStatus.getSelectedItem()));
 								Clinic.getInstance().insertAppoinment(insApp);
 								JOptionPane.showMessageDialog(null, "Cita apuntada.", "Registrar Cita", JOptionPane.INFORMATION_MESSAGE);
 								clean();
@@ -212,7 +232,7 @@ public class CreateAppointment extends JDialog {
 								appoinment.setPhoneNumber(ftxtPhone.getText());
 								appoinment.setMedic(medic);
 								appoinment.setDescription(txtaDescription.getText());
-								appoinment.setDate(LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()));
+								appoinment.setDate(gettheDateTime);
 								appoinment.setStatus(String.valueOf(cbStatus.getSelectedItem()));
 								
 								Clinic.getInstance().modifiedAppoinment(appoinment);
@@ -264,8 +284,10 @@ public class CreateAppointment extends JDialog {
 			ftxtSSN.setText(appoinment.getSsn());
 			ftxtPhone.setText(appoinment.getPhoneNumber());
 			txtaDescription.setText(appoinment.getDescription());
-			ZonedDateTime zone = appoinment.getDate().atZone(ZoneId.systemDefault());
-			dateChooser.setDate(Date.from(zone.toInstant()));
+			
+			ZoneId zoneId = ZoneId.systemDefault();
+            Date dateTime = Date.from(appoinment.getDate().atZone(zoneId).toInstant());
+			dateChooser.setDate(dateTime);
 			
 			int i = 1;
 			for (Person per : Clinic.getInstance().getMyPersons()) {

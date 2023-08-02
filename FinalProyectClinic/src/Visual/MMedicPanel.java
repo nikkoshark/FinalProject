@@ -31,6 +31,8 @@ import Dashboards.AppointmentInfo;
 import Dashboards.GenderInfo;
 import logic.Appoinment;
 import logic.Clinic;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 
 public class MMedicPanel extends JPanel {
 	private static JTable table;
@@ -145,8 +147,8 @@ public class MMedicPanel extends JPanel {
 		panel.add(label);
 		
 		dateChooser = new JDateChooser();
-		dateChooser.getCalendarButton().addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		dateChooser.addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt) {
 				loadAppointments();
 			}
 		});
@@ -248,17 +250,20 @@ public class MMedicPanel extends JPanel {
 	public static void loadAppointments() {
 		model.setRowCount(0);
 		row = new Object[table.getColumnCount()];
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+		SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-		for(Appoinment appointment : Clinic.getInstance().getMyAppoinments()) {
-	        	row[0] =  appointment.getCode(); 
+		for (Appoinment appointment : Clinic.getInstance().getMyAppoinments()) {
+			if (appointment.getDate().format(formatter).equals(dayFormat.format(dateChooser.getDate()))) {
+				row[0] = appointment.getCode();
 				row[1] = " " + appointment.getSsn();
 				row[2] = " " + appointment.getName();
-				row[3] = " " + appointment.getDate().format(dateTimeFormatter); 
+				row[3] = " " + appointment.getDate().format(timeFormatter);
 				row[4] = " " + appointment.getStatus();
-				
 				model.addRow(row);
+
+			}
 		}
 	}
 

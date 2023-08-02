@@ -68,7 +68,6 @@ public class CreateCheckup extends JDialog {
 		searchPerson = patientRecord;
 		if(searchPerson == null) {
 			appinfo = app;
-			//System.out.println(appinfo.getSsn());
 			patient = Clinic.getInstance().searchPerson(appinfo.getSsn().toString());
 			if(patient == null) {
 				patient = new Patient(null, appinfo.getSsn(), appinfo.getName(), null, appinfo.getPhoneNumber(), null, null, ch, null, null);
@@ -85,8 +84,9 @@ public class CreateCheckup extends JDialog {
 		setResizable(false);
 		setLocationRelativeTo(null);
 
+		//** *******************************************************************************************
 		if(searchPerson == null) {
-			checkupInfoPanel = new CheckupInfoPanel(appinfo.getDate(), patient);
+			checkupInfoPanel = new CheckupInfoPanel(null, patient);
 		}
 		checkupsRecord = new CheckupsRecord(patient);
 
@@ -329,7 +329,7 @@ public class CreateCheckup extends JDialog {
 				});
 				buttonPane.add(btnClose);
 			}
-			
+
 			infoP.add(checkupsRecord);
 			menuclicked(checkupsRecord);
 			if(searchPerson == null) {
@@ -337,16 +337,14 @@ public class CreateCheckup extends JDialog {
 				menuclicked(checkupInfoPanel);
 			}
 			
-			
-			
 		}
 		
 		JPanel infP = new JPanel();
 		infP.setBounds(396, 40, 110, 33);
-		contentPanel.add(infP);
 		if(searchPerson != null) {
 			infP.setVisible(false);
 		}
+		contentPanel.add(infP);
 		infP.addMouseListener(new PanelButtonMouseAdapter(infP, 1));
 		infP.setLayout(null);
 		
@@ -400,7 +398,7 @@ public class CreateCheckup extends JDialog {
 
 	private void menuclicked(JPanel panel) {
 		if(searchPerson == null) {
-			checkupInfoPanel.setVisible(false);
+			checkupInfoPanel.setVisible(false);	
 		}
 		checkupsRecord.setVisible(false);
 		

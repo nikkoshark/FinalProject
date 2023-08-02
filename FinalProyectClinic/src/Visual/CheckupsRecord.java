@@ -25,6 +25,7 @@ public class CheckupsRecord extends JPanel {
 	private static DefaultTableModel modelRecord;
 	private static Object[] row;
 	private static Person searchpatient = null;
+	private CheckUp selCheckUp = null;
 
 	/**
 	 * Create the panel.
@@ -61,7 +62,10 @@ public class CheckupsRecord extends JPanel {
 				if (e.getClickCount() == 2) {
 					int index = tableCheckup.getSelectedRow();
 					if(index >= 0) {
-						
+						selCheckUp = Clinic.getInstance().getMyCheckUps().get(index);
+						showInfoP show = new showInfoP(selCheckUp);
+						show.setVisible(true);
+						show.setModal(true);
 					}
 				}
 			}
@@ -88,7 +92,10 @@ public class CheckupsRecord extends JPanel {
 				if (e.getClickCount() == 2) {
 					int index = tableCheckup.getSelectedRow();
 					if(index >= 0) {
-						
+						selCheckUp = Clinic.getInstance().getMyCheckUps().get(index);
+						showInfoP show = new showInfoP(selCheckUp);
+						show.setVisible(true);
+						show.setModal(true);
 					}
 				}
 			}

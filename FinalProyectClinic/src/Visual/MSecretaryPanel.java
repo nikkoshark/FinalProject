@@ -31,6 +31,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.beans.PropertyChangeListener;
+import java.text.SimpleDateFormat;
+import java.beans.PropertyChangeEvent;
 
 public class MSecretaryPanel extends JPanel {
 	private static JTable table;
@@ -133,6 +136,11 @@ public class MSecretaryPanel extends JPanel {
 		panel.add(lblWaiting);
 		
 		dateChooser = new JDateChooser();
+		dateChooser.addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt) {
+				loadAppointments();
+			}
+		});
 		dateChooser.setBounds(650, 23, 117, 20);
 		panel.add(dateChooser);
 
@@ -209,17 +217,22 @@ public class MSecretaryPanel extends JPanel {
 	public static void loadAppointments() {
 		model.setRowCount(0);
 		row = new Object[table.getColumnCount()];
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
-		
-		for(Appoinment appointment : Clinic.getInstance().getMyAppoinments()) {
-			row[0] = appointment.getCode();
-			row[1] = " " + appointment.getSsn();
-			row[2] = " " + appointment.getName();
-			row[3] = " " + appointment.getDate().format(dateTimeFormatter);
-			row[4] = " " + appointment.getMedic().getName(); 
-			row[5] = " " + appointment.getStatus();
-			
-			model.addRow(row);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+		SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+		for (Appoinment appointment : Clinic.getInstance().getMyAppoinments()) {
+			if (appointment.getDate().format(formatter).equals(dayFormat.format(dateChooser.getDate()))) {
+				row[0] = appointment.getCode();
+				row[1] = " " + appointment.getSsn();
+				row[2] = " " + appointment.getName();
+				row[3] = " " + appointment.getDate().format(timeFormatter);
+				// row[4] = " " + appointment.getMedic().getName();
+				row[5] = " " + appointment.getStatus();
+
+				model.addRow(row);
+
+			}
 		}
 	}
 }
