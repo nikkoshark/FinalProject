@@ -1,6 +1,9 @@
 package logic;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -23,6 +26,9 @@ public class Clinic implements Serializable{
 	private Integer codeAppoinment = null;
 	private Integer codeVaccine = null;
 	private Integer codeDisease = null;
+	private Connection con = SqlConnection.getConnection();
+	private PreparedStatement ps1;
+	private ResultSet rs1;
 	
 	private Clinic() {
 		this.myPersons = new ArrayList<Person>();
@@ -37,6 +43,9 @@ public class Clinic implements Serializable{
 		this.codeAppoinment = new Integer(1);
 		this.codeVaccine = new Integer(1);
 		this.codeDisease = new Integer(1);
+		
+		
+		
 		
 	}
 	

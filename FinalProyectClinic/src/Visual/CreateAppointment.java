@@ -265,7 +265,7 @@ public class CreateAppointment extends JDialog {
 		loadApp();
 	}
 	
-
+//STAYS
 	private void clean() {
 		txtCode.setText(getCodeAppoinment(Clinic.getInstance().getCodeAppoinment()));
 		txtNamePatient.setText("");
@@ -277,6 +277,7 @@ public class CreateAppointment extends JDialog {
 		dateChooser.setDate(new Date());
 	}
 	
+	//NEEDS FIXING.
 	private void loadApp() {
 		if(appoinment != null) {
 			txtCode.setText(appoinment.getCode());

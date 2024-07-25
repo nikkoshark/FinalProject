@@ -86,7 +86,7 @@ public class CreateCheckup extends JDialog {
 
 		//** *******************************************************************************************
 		if(searchPerson == null) {
-			checkupInfoPanel = new CheckupInfoPanel(null, patient);
+			checkupInfoPanel = new CheckupInfoPanel(appinfo.getDate(), patient);
 		}
 		checkupsRecord = new CheckupsRecord(patient);
 
@@ -309,7 +309,7 @@ public class CreateCheckup extends JDialog {
 							((Patient)patient).getMyDiseases().add(aux);
 						}
 						Clinic.getInstance().insertCheckUp(checkUp);
-						Clinic.getInstance().modifiedPerson(patient);
+						//Clinic.getInstance().modifiedPerson(patient);
 						JOptionPane.showMessageDialog(null, "Se ha guardado la cita.", "Registro", JOptionPane.INFORMATION_MESSAGE);
 						
 						dispose();

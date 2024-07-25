@@ -12,7 +12,11 @@ public class Server extends Thread{
 
 	private static LocalDate date = LocalDate.now();
 	
-	public static void main(String[] args) {
+	 public void run() {
+	        System.out.println("hola");
+	    }
+	
+	public Server(String file2) {
        while (true) {
     	   try {
            	
@@ -30,7 +34,7 @@ public class Server extends Thread{
                System.out.println(date.getDayOfMonth());
                
                int bytes = 0;
-               File file = new File("clinic_data_backup_" + date.getDayOfMonth() + "_" + date.getMonthValue() + "_"+ date.getYear() + ".dat");
+               File file = new File(file2 + "_" + date.getDayOfMonth() + "_" + date.getMonthValue() + "_"+ date.getYear() + ".dat");
                FileOutputStream fileOutputStream = new FileOutputStream(file);
                
                long size = dataInputStream.readLong();     
