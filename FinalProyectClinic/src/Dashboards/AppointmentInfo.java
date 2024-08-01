@@ -26,9 +26,9 @@ public class AppointmentInfo extends JPanel {
 
 		dataset = new DefaultPieDataset();
 		
-		dataset.setValue("No Presente", Clinic.getInstance().totalPatientsStatus("No Presente"));
-		dataset.setValue("En Espera", Clinic.getInstance().totalPatientsStatus("En Espera"));
-		dataset.setValue("Vista", Clinic.getInstance().totalPatientsStatus("Visto")); 
+		dataset.setValue("No Presente", Clinic.getInstance().totalSQLPatientsStatus("No Presente"));
+		dataset.setValue("En Espera", Clinic.getInstance().totalSQLPatientsStatus("En Espera"));
+		dataset.setValue("Vista", Clinic.getInstance().totalSQLPatientsStatus("Visto")); 
 
 		JFreeChart chart = ChartFactory.createPieChart("STATUS PACIENTES" , dataset);
 		
@@ -44,9 +44,9 @@ public class AppointmentInfo extends JPanel {
 	public static void refreshChart() {
 		dataset.clear();
 		
-		dataset.setValue("No Presente", Clinic.getInstance().totalPatientsStatus("No Presente"));
-		dataset.setValue("En Espera", Clinic.getInstance().totalPatientsStatus("En Espera"));
-		dataset.setValue("Visto", Clinic.getInstance().totalPatientsStatus("Visto")); 
+		dataset.setValue("No Presente", Clinic.getInstance().totalSQLPatientsStatus("No Presente"));
+		dataset.setValue("En Espera", Clinic.getInstance().totalSQLPatientsStatus("En Espera"));
+		dataset.setValue("Visto", Clinic.getInstance().totalSQLPatientsStatus("Visto")); 
 	}
 
 

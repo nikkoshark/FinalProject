@@ -102,7 +102,7 @@ public class CreateUser extends JDialog {
 				}
 				btnSave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if (Clinic.getInstance().isUniqueUserSQL(userSQL,txtUser.getText()) || userSQL != (-1))  {
+						if (Clinic.getInstance().isUniqueUserSQL(txtUser.getText()) || userSQL != (-1))  {
 							if (!txtUser.getText().isEmpty() && String.valueOf(txtPsw.getPassword()).length() > 0 && comboBox.getSelectedIndex() > 0) {
 								if (userSQL == (-1)) {									
 									
@@ -116,8 +116,8 @@ public class CreateUser extends JDialog {
 										ps.setInt(3, Integer.valueOf(comboBox.getSelectedIndex()));
 										ps.executeUpdate();
 										
-										
-										JOptionPane.showMessageDialog(null, "se ha guardado! wooo!");
+
+										JOptionPane.showMessageDialog(null, "¡Se ha guardado!");
 										ListUsers.loadSQLUsers();
 										clean();
 										
@@ -127,12 +127,6 @@ public class CreateUser extends JDialog {
 										e2.printStackTrace();
 									}
 									
-									/*
-									User insUser = new User(String.valueOf(comboBox.getSelectedItem()), txtUser.getText(), String.valueOf(txtPsw.getPassword()));
-									Clinic.getInstance().insertUser(insUser);
-									JOptionPane.showMessageDialog(null, "Registro hecho.", "Registro", JOptionPane.INFORMATION_MESSAGE);
-									clean();
-									*/
 								}
 								else {
 									
@@ -145,9 +139,8 @@ public class CreateUser extends JDialog {
 										ps.setInt(3, Integer.valueOf(comboBox.getSelectedIndex()));
 										ps.setInt(4, userSQL);
 										ps.executeUpdate();
-										
-										JOptionPane.showMessageDialog(null, "SE HA MODIFICADO LESSGOOO!");
-										
+
+										JOptionPane.showMessageDialog(null, "¡Se ha modificado!");
 										
 										
 									} catch (Exception e2) {
@@ -155,12 +148,6 @@ public class CreateUser extends JDialog {
 										e2.printStackTrace();
 									}
 									
-									/*
-									userSQL.setName(txtUser.getText());
-									userSQL.setPassword(String.valueOf(txtPsw.getPassword()));
-									userSQL.setType(String.valueOf(comboBox.getSelectedItem()));
-									
-									Clinic.getInstance().modifiedUser(user);*/
 									
 									ListUsers.loadSQLUsers();
 									dispose();
@@ -221,8 +208,6 @@ public class CreateUser extends JDialog {
 					txtPsw.setText(rs.getString("password"));
 					comboBox.setSelectedIndex(rs.getInt("id_user_position"));
 				}
-				//ps.executeUpdate();
-				JOptionPane.showMessageDialog(null, "ALM SE ESTA VIENDO");
 				
 				
 				
@@ -233,74 +218,6 @@ public class CreateUser extends JDialog {
 		}
 	}
 	
-	
-	
-	private void loadInCBUsers() {
-		comboBox.removeAllItems();
-		comboBox.insertItemAt(new String("<SELECCIONAR>"), 0);
-		
-		try {
-			Connection con = SqlConnection.getConnection();
-			PreparedStatement ps;
-			ResultSet rs;
-			
-			ps = con.prepareStatement("SELECT COUNT(*) FROM [user]");
-			rs = ps.executeQuery();
-			ResultSetMetaData rsmd= rs.getMetaData();
-			
-			
-			
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		
-		for(Vaccine aux : Clinic.getInstance().getMyVaccines()) {
-			/*
-			if (patient.getMyVaccines().size() > 0) {				
-				for (Vaccine vaccine : patient.getMyVaccines()) {
-					if (vaccine.getName() == aux.getName()) {
-						
-					}
-					else {
-						String name = new String(aux.getName());
-						cbVaccine.addItem(name);
-					}
-				}
-			}
-			
-			
-			String name = new String(aux.getName());
-			cbVaccine.addItem(name);
-			
-			*/
-		}
-		
-		comboBox.setSelectedIndex(0);
-		
-		
-		
-		
-	}
-	
-	
-	
-	/*
-	private void loadUser() {
-		if (user != null) {
-			txtUser.setText(user.getName());
-			txtPsw.setText(user.getPassword());
-			
-			if (user.getType().equalsIgnoreCase("Secretaria")) {
-				comboBox.setSelectedIndex(1);
-			}
-			else if (user.getType().equalsIgnoreCase("Medico")) {
-				comboBox.setSelectedIndex(2);
-			}
-			else {
-				comboBox.setSelectedIndex(3);
-			}
-		}
-	}*/
 	
 	
 }

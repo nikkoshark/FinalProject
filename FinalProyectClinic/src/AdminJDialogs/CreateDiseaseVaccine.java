@@ -9,12 +9,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import AdminPanels.ListDisease;
-import AdminPanels.ListUsers;
 import AdminPanels.ListVaccine;
-import logic.Clinic;
-import logic.Disease;
 import logic.SqlConnection;
-import logic.Vaccine;
 
 import java.awt.SystemColor;
 import javax.swing.JLabel;
@@ -141,9 +137,8 @@ public class CreateDiseaseVaccine extends JDialog {
 											ps.setInt(4, 0);
 										}
 										ps.executeUpdate();
-										
-										
-										JOptionPane.showMessageDialog(null, "se ha guardado! wooo!");
+
+										JOptionPane.showMessageDialog(null, "¡Se ha guardado!");
 										ListDisease.loadSQLDisease();
 										clear();
 										
@@ -152,13 +147,6 @@ public class CreateDiseaseVaccine extends JDialog {
 										JOptionPane.showMessageDialog(null, "error dentro de guardar info nueva disease. " + e2.toString());
 										e2.printStackTrace();
 									}
-									
-									
-									
-									/*Disease insDisease = new Disease(txtCode.getText(), txtName.getText(), txtDesc.getText(), chckbxIsWatched.isSelected());
-									Clinic.getInstance().insertDisease(insDisease);
-									JOptionPane.showMessageDialog(null, "¡Registro de Enfermedad Satisfactoria!", "Registrar", JOptionPane.INFORMATION_MESSAGE);
-									*/
 								} else {
 									
 
@@ -172,8 +160,8 @@ public class CreateDiseaseVaccine extends JDialog {
 										ps.setString(3, txtDesc.getText());
 										ps.executeUpdate();
 										
-										
-										JOptionPane.showMessageDialog(null, "se ha guardado! wooo!");
+
+										JOptionPane.showMessageDialog(null, "¡Se ha guardado!");
 										ListVaccine.loadSQLVaccine();
 										clear();
 										
@@ -182,14 +170,6 @@ public class CreateDiseaseVaccine extends JDialog {
 										JOptionPane.showMessageDialog(null, "error dentro de guardar info nueva vaccine. " + e2.toString());
 										e2.printStackTrace();
 									}
-									
-									
-									
-									
-									/*Vaccine insVaccine = new Vaccine(txtCode.getText(), txtName.getText(), txtDesc.getText());
-									Clinic.getInstance().insertVaccine(insVaccine);
-									JOptionPane.showMessageDialog(null, "¡Registro de Vacuna Satisfactoria!", "Registrar", JOptionPane.INFORMATION_MESSAGE);
-									*/
 									
 									clear();
 								}
@@ -210,9 +190,8 @@ public class CreateDiseaseVaccine extends JDialog {
 										ps.setString(4, disease);
 										
 										ps.executeUpdate();
-										
-										JOptionPane.showMessageDialog(null, "SE HA MODIFICADO LESSGOOO!");
-										
+
+										JOptionPane.showMessageDialog(null, "¡Se ha modificado!");
 										
 										
 									} catch (Exception e2) {
@@ -220,12 +199,6 @@ public class CreateDiseaseVaccine extends JDialog {
 										e2.printStackTrace();
 									}
 									
-									/*disease.setCode(txtCode.getText());
-									disease.setName(txtName.getText());
-									disease.setDescription(txtDesc.getText());
-									disease.setWatched(chckbxIsWatched.isSelected());
-									Clinic.getInstance().modifiedDisease(disease);
-									*/
 									ListDisease.loadSQLDisease();
 									dispose();
 									
@@ -242,7 +215,7 @@ public class CreateDiseaseVaccine extends JDialog {
 										
 										ps.executeUpdate();
 										
-										JOptionPane.showMessageDialog(null, "SE HA MODIFICADO LESSGOOO!");
+										JOptionPane.showMessageDialog(null, "¡Se ha modificado!");
 										
 										
 										
@@ -250,12 +223,6 @@ public class CreateDiseaseVaccine extends JDialog {
 										JOptionPane.showMessageDialog(null, "error dentro de update vaccine. " + e2.toString());
 										e2.printStackTrace();
 									}
-									
-									/*vaccine.setCode(txtCode.getText());
-									vaccine.setName(txtName.getText());
-									vaccine.setDescription(txtDesc.getText());
-									Clinic.getInstance().modifiedVaccine(vaccine);
-									*/
 									
 									ListVaccine.loadSQLVaccine();
 									dispose();
@@ -295,12 +262,15 @@ public class CreateDiseaseVaccine extends JDialog {
 		
 		if (type.equalsIgnoreCase("disease")) {
 			chckbxIsWatched.setSelected(false);
+			txtCode.setText("");
 			//txtCode.setText(getCodeDisease(Clinic.getInstance().getCodeDisease()));
 		}
 		else {
+			txtCode.setText("");
 			//txtCode.setText(getCodeVaccine(Clinic.getInstance().getCodeVaccine()));			
 		}
 	}
+	
 	private void loadSQLVD() {
 		if (disease != null) {
 			try {
@@ -310,7 +280,7 @@ public class CreateDiseaseVaccine extends JDialog {
 				
 				ps = con.prepareStatement("SELECT id, name, description, in_observation FROM disease "
 						+ "WHERE id = ?");
-				ps.setString(1, disease); //ESTE ES EL ID, PRIMERA POSICION
+				ps.setString(1, disease);
 				rs = ps.executeQuery();
 				
 				while (rs.next()) {
@@ -323,7 +293,6 @@ public class CreateDiseaseVaccine extends JDialog {
 						chckbxIsWatched.setSelected(false);
 					
 				}
-				//ps.executeUpdate();
 				JOptionPane.showMessageDialog(null, "ALM SE ESTA VIENDO");
 				
 				
@@ -340,7 +309,7 @@ public class CreateDiseaseVaccine extends JDialog {
 				
 				ps = con.prepareStatement("SELECT id, name, description FROM vaccine "
 						+ "WHERE id=?");
-				ps.setString(1, vaccine); //ESTE ES EL ID, PRIMERA POSICION
+				ps.setString(1, vaccine); 
 				rs = ps.executeQuery();
 				
 				while (rs.next()) {
@@ -348,8 +317,6 @@ public class CreateDiseaseVaccine extends JDialog {
 					txtName.setText(rs.getString("name"));
 					txtDesc.setText(rs.getString("description"));
 				}
-				//ps.executeUpdate();
-				JOptionPane.showMessageDialog(null, "ALM SE ESTA VIENDO");
 				
 				
 				
@@ -359,27 +326,6 @@ public class CreateDiseaseVaccine extends JDialog {
 			}
 		}
 	}
-	
-	/*
-	private void loadVD() {
-		if (disease != (-1)) {
-			
-			
-			txtCode.setText(disease.getCode());
-			txtName.setText(disease.getName());
-			txtDesc.setText(disease.getDescription());
-			chckbxIsWatched.setSelected(disease.isWatched());
-		}
-		else if (vaccine != (-1)) {
-			
-			
-			txtCode.setText(vaccine.getCode());
-			txtName.setText(vaccine.getName());
-			txtDesc.setText(vaccine.getDescription());
-		}
-	}*/
-	
-	
 	
 	/*
 	private static String getCodeVaccine(int codeVaccine) {

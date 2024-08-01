@@ -85,9 +85,8 @@ public class CheckupInfoPanel extends JPanel {
 		}
 		
         ZoneId zoneId = ZoneId.systemDefault();
-		Date dateTime = Date.from(localDateTime.atZone(zoneId).toInstant());
 		
-		dateChooser = new JDateChooser(dateTime);
+		dateChooser = new JDateChooser(Date.from(localDateTime.atZone(zoneId).toInstant()));
 		dateChooser.setBounds(10, 28, 87, 20);
 		add(dateChooser);
 		dateChooser.setEnabled(false);

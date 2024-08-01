@@ -118,15 +118,13 @@ public class ListUsers extends JPanel {
 						PreparedStatement ps;
 						ps = con.prepareStatement("DELETE FROM [user] WHERE id=? ");
 						ps.setInt(1, seleUser);
-						//EL ÓRDEN DE CÓMO SE VA A INSERTAR ES EN BASE AL QUERY
 						
 						ps.executeUpdate();
-						
-						JOptionPane.showMessageDialog(null, "SE BORRÓ NMMS QUE FELIZ!");
-						//clean();
+
+						JOptionPane.showMessageDialog(null, "¡Se ha borrado!");
 						
 					} catch (SQLException e1) {
-						JOptionPane.showMessageDialog(null, "error dentro de ELIMINAR. sadge. " + e1.toString());
+						JOptionPane.showMessageDialog(null, "error dentro de ELIMINAR USUARIO." + e1.toString());
 						e1.printStackTrace();
 					}
 						loadSQLUsers();
@@ -182,17 +180,5 @@ public class ListUsers extends JPanel {
 		
 	}
 	
-	/*
-	public static void loadUsers() {
-		model.setRowCount(0);
-		row = new Object[table.getColumnCount()];
-		
-		for (User user : Clinic.getInstance().getMyUsers()) {
-			row[0] = " " + user.getName();
-			row[1] = " " + user.getType();
-			model.addRow(row);
-		}
-		
-	}*/
 	
 }

@@ -22,23 +22,16 @@ import com.toedter.calendar.JDateChooser;
 
 import Dashboards.AppointmentInfo;
 import Dashboards.GenderInfo;
-import logic.Appoinment;
-import logic.Clinic;
 import logic.SqlConnection;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.beans.PropertyChangeEvent;
 
 public class MSecretaryPanel extends JPanel {
@@ -92,8 +85,6 @@ public class MSecretaryPanel extends JPanel {
 					btnEdit.setEnabled(true);
 					btnDelete.setEnabled(true);
 					selAppoinment = (String) table.getModel().getValueAt(index, 0);
-					//String code = (String) table.getModel().getValueAt(index, 0);
-					//selAppoinment = Clinic.getInstance().searchAppoinment(code);
 				}
 			}
 		});
@@ -153,18 +144,11 @@ public class MSecretaryPanel extends JPanel {
 
 		Date date = new Date();
 		dateChooser.setDate(date);
-		LocalDateTime local = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-		ZonedDateTime zone = local.atZone(ZoneId.systemDefault());
-		Date dateoutput = Date.from(zone.toInstant());
 		
 		btnEdit = new JButton("EDITAR CITA");
 		btnEdit.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 20));
 		btnEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				/*if (selAppoinment.getStatus().equalsIgnoreCase("Visto")) {
-					JOptionPane.showMessageDialog(null, "Esta consulta ya fue realizada.", "Consulta hecha", JOptionPane.INFORMATION_MESSAGE);
-				}*/
-				 //pasaria un else aqui si lo de arriba existiera
 				CreateAppointment regApp = new CreateAppointment(selAppoinment);
 				regApp.setModal(true);
 				regApp.setVisible(true);
@@ -182,9 +166,6 @@ public class MSecretaryPanel extends JPanel {
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(selAppoinment != null) {
-					/*if (selAppoinment.getStatus().equalsIgnoreCase("Visto")) {
-						JOptionPane.showMessageDialog(null, "Esta consulta ya fue realizada.", "Consulta hecha", JOptionPane.INFORMATION_MESSAGE);
-					}*/
 
 					int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar la cita de: " + selAppoinment + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
 					if (option == JOptionPane.OK_OPTION) {
@@ -194,26 +175,17 @@ public class MSecretaryPanel extends JPanel {
 							PreparedStatement ps;
 							ps = con.prepareStatement("DELETE FROM appointment WHERE id=? ");
 							ps.setString(1, selAppoinment);
-							//EL ÓRDEN DE CÓMO SE VA A INSERTAR ES EN BASE AL QUERY
 							
 							ps.executeUpdate();
-							
-							JOptionPane.showMessageDialog(null, "SE BORRÓ NMMS QUE FELIZ!");
-							//clean();
+
+							JOptionPane.showMessageDialog(null, "¡Se ha eliminado!");
 							
 						} catch (SQLException e1) {
 							JOptionPane.showMessageDialog(null, "error dentro de ELIMINAR. sadge. " + e1.toString());
 							e1.printStackTrace();
 						}
-						
-						/*Clinic.getInstance().removeAppoinment(selAppoinment);
-						btnEdit.setEnabled(false);
-						btnDelete.setEnabled(false);*/
-						
-
 						loadSQLApp();
 					}
-					
 				}
 			}
 		});
@@ -241,7 +213,6 @@ public class MSecretaryPanel extends JPanel {
 		panel.setVisible(true);
 	}
 	
-
 	public static void loadSQLApp() {
 		model.setRowCount(0);
 		row = new Object[table.getColumnCount()];
@@ -268,37 +239,15 @@ public class MSecretaryPanel extends JPanel {
 				}
 				model.addRow(fila);
 			}
-			
+			ps.close();
+			rs.close();
+			con.close();
 			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "error dentro de AQUIII MSecretaryPanel, loadsqlapp. " +e.toString());
 			e.printStackTrace();
 		}
-		
-		
 	}
 	
 	
-	/*
-	public static void loadAppointments() {
-		model.setRowCount(0);
-		row = new Object[table.getColumnCount()];
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
-		SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-		for (Appoinment appointment : Clinic.getInstance().getMyAppoinments()) {
-			if (appointment.getDate().format(formatter).equals(dayFormat.format(dateChooser.getDate()))) {
-				row[0] = appointment.getCode();
-				row[1] = " " + appointment.getSsn();
-				row[2] = " " + appointment.getName();
-				row[3] = " " + appointment.getDate().format(timeFormatter);
-				// row[4] = " " + appointment.getMedic().getName();
-				row[5] = " " + appointment.getStatus();
-
-				model.addRow(row);
-
-			}
-		}
-	}*/
 }

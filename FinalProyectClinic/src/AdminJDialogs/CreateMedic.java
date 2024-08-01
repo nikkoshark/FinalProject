@@ -205,34 +205,7 @@ public class CreateMedic extends JDialog {
 							!ftxtPhone.getText().isEmpty() && dateChooserBirthday.getDate().getYear() < dateCompare.getYear() - 20) {
 							//VERIFICA QUE CADA UNA DE LOS TXT NO ESTÉ VACÍO
 							
-							/*
-							//PASAR ESTA VERIFICACIÓN A CLINIC
-							int thatsright = 0;
-							try {
-								Connection con1 = SqlConnection.getConnection();
-								PreparedStatement ps1;
-								ResultSet rs1;
-								
-								ps1 = con1.prepareStatement("SELECT ssn FROM ejemplo_noid WHERE id=?");
-								ps1.setString(1, medicSQL); //ESTE ES EL ID, PRIMERA POSICION
-								rs1 = ps1.executeQuery();
-								
-								while(rs1.next()) {
-									if(rs1.getString("ssn").equals(ftxtSSN.getText())) {
-										thatsright = 1;
-									}
-								}
-								
-							} catch (Exception e2) {
-								JOptionPane.showMessageDialog(null, "error en el connection de arriba idk " + e2.toString());
-								e2.printStackTrace();
-							}
-							*/
-							
-							if(Clinic.getInstance().isUniqueSSNSQL(medicSQL,ftxtSSN.getText()) || medicSQL != null) {
-								//if its true means that there is no equal ssn.
-								/*Clinic.getInstance().isUniqueSsnNumber(ftxtSSN.getText()) */
-								//ESTE IF DEBERIA DE PASAR LA INFO SI EL USUARIO ES UNICO, MEDIC != NULL <<-
+							if(Clinic.getInstance().isUniqueSSNSQL(ftxtSSN.getText()) || medicSQL != null) {
 								
 								String code = txtCode.getText();
 								String ssn =  ftxtSSN.getText();
@@ -275,15 +248,9 @@ public class CreateMedic extends JDialog {
 										}
 										ps.setString(12, medic_user);
 										
-										
-										//ps1 = con.prepareStatement("INSERT INTO medic(id_person, id_speciality, is_available, id_user) VALUES(?,?,?,?)");
-										//EL ÓRDEN DE CÓMO SE VA A INSERTAR ES EN BASE AL QUERY
-										
 										ps.executeUpdate();
+										JOptionPane.showMessageDialog(null, "¡Se ha guardado!");
 										
-										JOptionPane.showMessageDialog(null, "se ha guardado! wooo!");
-										
-
 										
 										ListMedic.loadSQLMedic(); //PARA QUE SE CARGUE AUTOMÁTICO LA LISTA YA QUE ESTÁ EN OTRA SECCIÓN
 										
@@ -294,34 +261,9 @@ public class CreateMedic extends JDialog {
 										e1.printStackTrace();
 									}
 
-									//ListMedic.loadSQLMedic();
-									//^^NO SE SI DEBERIA DE IR AQUI.
-									
-									
-									/* Medic insmedic = new Medic(code, ssn, name, lastName, phone, address, date, sex, speciality, available);
-									Clinic.getInstance().insertPerson(insmedic);
-									JOptionPane.showMessageDialog(null, "Registro hecho.", "Registro", JOptionPane.INFORMATION_MESSAGE);
-									clean();*/
-									
-									
 									
 								} else {
-									//ESTO NO SE SI VAYA A FUNCIONAR, PERO DEBERIA DE SER PARA CUANDO SE HACE UPDATE
 									
-									
-									//worthless?
-									/*
-									code = txtCode.getText();
-									ssn =  ftxtSSN.getText();
-									name = txtName.getText();
-									lastName = txtLastName.getText();
-									phone = ftxtPhone.getText();
-									address = txtAAddress.getText();
-									date = dateChooserBirthday.getDate();
-									sex = String.valueOf(cbSex.getSelectedItem()).charAt(0);
-									speciality = String.valueOf(cbSpeciality.getSelectedItem());
-									available = chbxAvailable.isSelected();
-									*/
 									try {
 										Connection con = SqlConnection.getConnection();
 										PreparedStatement ps;
@@ -346,12 +288,9 @@ public class CreateMedic extends JDialog {
 											ps.setInt(10, 0);
 										}
 										ps.setString(11, code);
-											//EL ÓRDEN DE CÓMO SE VA A INSERTAR ES EN BASE AL QUERY
 											
 										ps.executeUpdate();
-											
-										JOptionPane.showMessageDialog(null, "SE HA MODIFICADO LESSGOOO!");
-											//clean();
+										JOptionPane.showMessageDialog(null, "¡Se ha modificado!");
 											
 									} catch (SQLException e1) {
 										JOptionPane.showMessageDialog(null, "error dentro de guardar info nueva INSIDE. " + e1.toString());
@@ -360,20 +299,6 @@ public class CreateMedic extends JDialog {
 									
 									ListMedic.loadSQLMedic();
 									dispose();
-									/*medic.setCode(code);
-									medic.setSsn(ssn);
-									medic.setName(name);
-									medic.setLastName(lastName);
-									medic.setPhoneNumber(phone);
-									medic.setAddress(address);
-									medic.setBirthdate(date);
-									medic.setSex(sex);
-									((Medic)medic).setAvailable(available);
-									((Medic)medic).setSpeciality(speciality);
-									
-									Clinic.getInstance().modifiedPerson(medic);
-									dispose();
-									*/
 								}
 								
 							} else {
@@ -454,15 +379,13 @@ public class CreateMedic extends JDialog {
 			try {
 				PreparedStatement ps;
 				ResultSet rs;
-	
-						//+ "JOIN speciality ON speciality.id = medic.id_speciality"
 				Connection con = SqlConnection.getConnection();
 				ps = con.prepareStatement("SELECT m.id_speciality, m.is_avaible, p.id, p.ssn, "
 				        + "p.name, p.last_name, p.phone, p.direction, p.date_birth, p.sex "
 				        + "FROM medic m "
 				        + "FULL JOIN person p ON p.id = m.id_person "
 				        + "WHERE m.id_person = ?");
-				ps.setString(1, medicSQL); //ESTE ES EL ID, PRIMERA POSICION
+				ps.setString(1, medicSQL);
 				rs = ps.executeQuery();
 				
 				while(rs.next()) {
@@ -477,16 +400,9 @@ public class CreateMedic extends JDialog {
 					cbSpeciality.setSelectedIndex(rs.getInt("id_speciality"));
 					if(rs.getInt("is_avaible") == 1) 
 						chbxAvailable.setSelected(true);
-					else //(rs.getInt("available") == 0) 
+					else
 						chbxAvailable.setSelected(false);
 				}
-				
-				
-				//ps.executeUpdate();
-				JOptionPane.showMessageDialog(null, "ALM SE ESTA VIENDO");
-				//clean();
-				
-				
 				
 			} catch (SQLException esql) {
 				JOptionPane.showMessageDialog(null, "error dentro del createmdeic loadsqlmedic. " +esql.toString());

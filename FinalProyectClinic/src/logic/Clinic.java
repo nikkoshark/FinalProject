@@ -59,20 +59,25 @@ public class Clinic implements Serializable{
 		return clinic;
 	}
 	
-	public Integer getSQLCodePerson() {
+	public String getSQLCodePerson() {
 		//con = sql
 		try {
-			ps = con.prepareStatement("SELECT COUNT(id) FROM person");
-			//ps.executeQuery();
-			rs = ps.executeQuery();
-			rsmd = rs.getMetaData();
-			int total = rsmd.getColumnCount();
-			return total+1;
+			 con = SqlConnection.getConnection(); // Asumiendo que SqlConnection es tu clase de conexión
+		        ps = con.prepareStatement("SELECT MAX(CAST(id AS INT)) FROM person");
+		        rs = ps.executeQuery();
+
+		        if (rs.next()) {
+		            int maxId = rs.getInt(1); // Obtiene el valor máximo del id
+		            return String.valueOf(maxId + 1); // Retorna el próximo id incrementado en 1
+		        } else {
+		            // Si no hay registros, el primer ID será 1
+		            return "1";
+		        }
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "ERROR en Clinic.ISUNIQUEUSERSQL. " + e.toString());
 			e.printStackTrace();
+			return null;
 		}
-		return -1;
 	}
 	
 	
@@ -163,20 +168,21 @@ public class Clinic implements Serializable{
 	//searching algorithms
 	
 	//QUERYS -------------------------------------------------------------------------------------------
-	public boolean isUniqueSSNSQL(String medicSQL, String textfromtxt) {
+
+	
+	
+	
+	public boolean isUniqueSSNSQL(String textfromtxt) {
 
 		
 		try {
-			
 			ps = con.prepareStatement("SELECT ssn FROM person WHERE id=?");
-			ps.setString(1, medicSQL); //ESTE ES EL ID, PRIMERA POSICION
+			ps.setString(1, textfromtxt); //ESTE ES EL ID, PRIMERA POSICION
 			rs = ps.executeQuery();
 			
-			while(rs.next()) {
-				if(rs.getString("ssn").equals(textfromtxt)) {
-					return false;
-				}
-			}
+			if(rs.next()) 
+				return false;
+			
 			
 		} catch (Exception e2) {
 			JOptionPane.showMessageDialog(null, "Error en Clinic.ISUNIQUESSNSQL. " + e2.toString());
@@ -185,14 +191,14 @@ public class Clinic implements Serializable{
 		return true;
 	}
 	
-	public boolean isUniqueUserSQL(int userSQL, String textfromtxt) {
+	public boolean isUniqueUserSQL(String textfromtxt) {
 
 		try {
-			ps = con.prepareStatement("SELECT username FROM [user] WHERE id=?");
-			ps.setInt(1, userSQL); //ESTE ES EL ID, PRIMERA POSICION
+			ps = con.prepareStatement("SELECT username FROM [user] WHERE username=?");
+			ps.setString(1, textfromtxt); //ESTE ES EL ID, PRIMERA POSICION
 			rs = ps.executeQuery();
 			
-			if(rs.getString("username").equals(true)) 
+			if(rs.next()) 
 				return false;
 			
 			
@@ -217,6 +223,37 @@ public class Clinic implements Serializable{
 	*/
 	
 	//searching object by code
+	
+
+    public String searchSQLPerson(String ssn) {
+        String foundPersonSsn = null;
+
+        // SQL query to find a person by their SSN
+        String sql = "SELECT ssn FROM person WHERE ssn = ?";
+
+        try {
+            Connection con = SqlConnection.getConnection(); // Assuming SqlConnection is your connection utility class
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, ssn);
+            ResultSet rs = ps.executeQuery();
+
+            // Check if the person exists
+            if (rs.next()) {
+                foundPersonSsn = rs.getString("ssn");
+            }
+
+            // Close resources
+            rs.close();
+            ps.close();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace(); // Log the exception
+        }
+
+        return foundPersonSsn; // Return the found SSN or null if not found
+    }
+	
+	
 	public Person searchPerson(String ssn) {
 		for (Person per : myPersons) {
 			if (per.getSsn().equalsIgnoreCase(ssn)) {
@@ -494,6 +531,44 @@ public class Clinic implements Serializable{
 		return total;
 	}
 	
+	public int totalSQLPatientsStatus(String status) {
+	    int total = 0;
+	    Connection con = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+
+	    try {
+	        con = SqlConnection.getConnection(); // Assuming SqlConnection is your connection utility class
+
+	        // Prepare the SQL query to count patients with the given status
+	        ps = con.prepareStatement("SELECT COUNT(*) FROM appointment WHERE status = ?");
+	        ps.setString(1, status);
+	        rs = ps.executeQuery();
+
+	        // Retrieve the count result
+	        if (rs.next()) {
+	            total = rs.getInt(1); // Get the count from the first column
+	        }
+
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(null, "Error in totalPatientsStatus: " + e.toString());
+	        e.printStackTrace();
+	    } finally {
+	        // Close resources
+	        try {
+	            if (rs != null) rs.close();
+	            if (ps != null) ps.close();
+	            if (con != null) con.close();
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return total;
+	}
+
+	
+	/*
 	public int totalPatientsStatus(String status) {
 		int total = 0;
 		
@@ -504,18 +579,18 @@ public class Clinic implements Serializable{
 		}
 		
 		return total;
-	}
+	}*/
 	
 	
-	
+	/*
 	public int totalPatientsCheck() {
 		return myAppoinments.size();
-	}
+	}*/
 
 	
 	
 	//miscellaneous methods
-	
+	/*
 	public ArrayList<Appoinment> getAppoinmentsOfMedic(String codeMedic) {
 		ArrayList<Appoinment> appoinments = new ArrayList<>();
 		
@@ -528,7 +603,7 @@ public class Clinic implements Serializable{
 		}
 		
 		return appoinments;
-	}
+	}*/
 	
 	/*
 	public boolean validSQLUser(String username, String psw) {
@@ -565,7 +640,7 @@ public class Clinic implements Serializable{
 		
 		return false;
 	}
-	
+	/*
 	public boolean isUniquePhoneNumber(String number) {
 		
 		for (Person per : myPersons) {
@@ -575,8 +650,8 @@ public class Clinic implements Serializable{
 		}
 		
 		return true;
-	}
-	
+	}*/
+	/*
 	public boolean isUniqueSsnNumber(String number) {
 		
 		for (Person per : myPersons) {
@@ -586,7 +661,7 @@ public class Clinic implements Serializable{
 		}
 		
 		return true;
-	}
+	}*/
 	
 	
 }

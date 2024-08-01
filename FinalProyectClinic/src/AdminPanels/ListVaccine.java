@@ -75,7 +75,6 @@ public class ListVaccine extends JPanel {
 					btnEdit.setEnabled(true);
 					btnDelete.setEnabled(true);
 					selVaccine = (String) table.getModel().getValueAt(index, 0);
-					//VaccinesInfo.refreshSQLChart(selVaccine);
 				}
 			}
 		});
@@ -97,20 +96,16 @@ public class ListVaccine extends JPanel {
 						PreparedStatement ps;
 						ps = con.prepareStatement("DELETE FROM vaccine WHERE id=? ");
 						ps.setString(1, selVaccine);
-						//EL ÓRDEN DE CÓMO SE VA A INSERTAR ES EN BASE AL QUERY
 						
 						ps.executeUpdate();
-						
-						JOptionPane.showMessageDialog(null, "SE BORRÓ NMMS QUE FELIZ!");
+
+						JOptionPane.showMessageDialog(null, "¡Se ha eliminado!");
 						//clean();
 						
 					} catch (SQLException e1) {
 						JOptionPane.showMessageDialog(null, "error dentro de ELIMINAR. sadge. " + e1.toString());
 						e1.printStackTrace();
 					}
-					/*Clinic.getInstance().removeVaccine(selVaccine);
-					btnEdit.setEnabled(false);
-					btnDelete.setEnabled(false);*/
 					loadSQLVaccine();
 				}
 				

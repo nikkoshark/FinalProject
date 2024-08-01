@@ -18,11 +18,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
@@ -35,10 +32,7 @@ import javax.swing.JFormattedTextField;
 import com.toedter.calendar.JDateChooser;
 
 import Dashboards.AppointmentInfo;
-import logic.Appoinment;
 import logic.Clinic;
-import logic.Medic;
-import logic.Person;
 import logic.SqlConnection;
 
 import javax.swing.JSpinner;
@@ -206,31 +200,11 @@ public class CreateAppointment extends JDialog {
 					public void actionPerformed(ActionEvent e) {
 						if (cbDoctor.getSelectedIndex() != 0 && !ftxtSSN.getText().contains("   -       - ") && !txtNamePatient.getText().isEmpty()) {
 
-							/*
-							SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-							dateString = simpleDateFormat.format(dateChooser.getDate());
-							timeString = spnTime.getValue().toString();
-							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
-							gettheDateTime = LocalDateTime.parse(dateString+" "+timeString, formatter);
-							System.out.println(gettheDateTime.format(formatter));
-							*/
-								/*int i = 1;
-								for (Person per : Clinic.getInstance().getMyPersons()) {
-									if (per instanceof Medic) {
-										Medic med = (Medic) per;
-										if (cbDoctor.getSelectedIndex() == i) {
-											medic = med;
-										}
-										i++;
-									}
-								}*/
-								//esto se puede pasar a clinic
 								try {
 									ps = con.prepareStatement("SELECT p.name FROM medic m "
 											+ "JOIN person p ON p.id = m.id_person");
 									
 									rs = ps.executeQuery();
-									//medic = rs.getString("id");
 									int i = 0;
 									while (rs.next()) {
 										if(cbDoctor.getSelectedIndex() == i) {
@@ -238,17 +212,14 @@ public class CreateAppointment extends JDialog {
 										}
 										i++;
 									}
-
-									JOptionPane.showMessageDialog(null, "well done c:!");
 									
 								} catch (Exception e2) {
-									// TODO: handle exception
+									JOptionPane.showMessageDialog(null, "error en modificar createappointment. "+e2.toString());
 								}
 							
 							if(appointment == null) {
 								
 								try {
-									//PreparedStatement ps;
 									ps = con.prepareStatement("INSERT INTO appointment(id, name_patient, "
 											+ "ssn_patient, phone_patient, description, status, id_medic) VALUES(?,?,?,?,?,?,?)");
 									ps.setString(1, txtCode.getText());
@@ -260,20 +231,15 @@ public class CreateAppointment extends JDialog {
 									ps.setInt(7, cbDoctor.getSelectedIndex());
 
 									ps.executeUpdate();
-									
-									JOptionPane.showMessageDialog(null, "SE HA MODIFICADO LESSGOOO!");
+
+									JOptionPane.showMessageDialog(null, "¡Se ha guardado!");
 									
 									
 									
 								} catch (Exception e2) {
-									JOptionPane.showMessageDialog(null, "error dentro de update user. " + e2.toString());
+									JOptionPane.showMessageDialog(null, "error dentro de insert createappointment. " + e2.toString());
 									e2.printStackTrace();
 								}
-								/*
-								Appoinment insApp = new Appoinment(txtCode.getText(), txtNamePatient.getText(), ftxtSSN.getText(), ftxtPhone.getText(), txtaDescription.getText(), gettheDateTime, medic, String.valueOf(cbStatus.getSelectedItem()));
-								Clinic.getInstance().insertAppoinment(insApp);
-								JOptionPane.showMessageDialog(null, "Cita apuntada.", "Registrar Cita", JOptionPane.INFORMATION_MESSAGE);
-								*/
 								clean();
 								MSecretaryPanel.loadSQLApp();
 								
@@ -281,7 +247,6 @@ public class CreateAppointment extends JDialog {
 								
 
 								try {
-									//PreparedStatement ps;
 									ps = con.prepareStatement("UPDATE appointment SET name_patient=?, ssn_patient=?, phone_patient=?,"
 											+ "description=?, status=?, id_medic=? WHERE id=?");
 									ps.setString(1, txtNamePatient.getText());
@@ -293,25 +258,15 @@ public class CreateAppointment extends JDialog {
 									ps.setString(7, appointment);
 
 									ps.executeUpdate();
-									
-									JOptionPane.showMessageDialog(null, "SE HA MODIFICADO LESSGOOO!");
+
+									JOptionPane.showMessageDialog(null, "¡Se ha modificado!");
 									
 									
 									
 								} catch (Exception e2) {
-									JOptionPane.showMessageDialog(null, "error dentro de update user. " + e2.toString());
+									JOptionPane.showMessageDialog(null, "error dentro de update createappointment. " + e2.toString());
 									e2.printStackTrace();
 								}
-								/*
-								appointment.setCode(txtCode.getText());
-								appointment.setName(txtNamePatient.getText());
-								appointment.setSsn(ftxtSSN.getText());
-								appointment.setPhoneNumber(ftxtPhone.getText());
-								appointment.setMedic(medic);
-								appointment.setDescription(txtaDescription.getText());
-								appointment.setDate(gettheDateTime);
-								appointment.setStatus(String.valueOf(cbStatus.getSelectedItem()));
-								Clinic.getInstance().modifiedAppoinment(appointment);*/
 								dispose();
 								MSecretaryPanel.loadSQLApp();
 								MMedicPanel.loadSQLApp();
@@ -340,8 +295,8 @@ public class CreateAppointment extends JDialog {
 		loadSQLDoctors();
 		loadSQLApp();
 	}
-	
-//STAYS
+
+
 	private void clean() {
 		txtCode.setText(getCodeAppoinment(Clinic.getInstance().getCodeAppoinment()));
 		txtNamePatient.setText("");
@@ -357,8 +312,6 @@ public class CreateAppointment extends JDialog {
 	private void loadSQLApp() {
 		if (appointment != null) {
 			try {
-				//PreparedStatement ps;
-				//ResultSet rs;
 				
 				ps = con.prepareStatement("SELECT id, name_patient, ssn_patient, phone_patient, "
 						+ "description, status, /*date_a, time_a,*/ id_medic FROM appointment "
@@ -373,13 +326,10 @@ public class CreateAppointment extends JDialog {
 					ftxtPhone.setText(rs.getString("phone_patient"));
 					txtaDescription.setText(rs.getString("description"));
 					cbStatus.setSelectedItem(rs.getString("status"));
-					//dateChooser.setDate(rs.getDate("date_a"));
-					//spnTime.setValue(rs.getObject("time_a"));
 					cbDoctor.setSelectedIndex(rs.getInt("id_medic"));
 					
 
 				}
-				//ps.executeUpdate();
 				JOptionPane.showMessageDialog(null, "ALM SE ESTA VIENDO");
 				
 				
@@ -395,7 +345,6 @@ public class CreateAppointment extends JDialog {
 	private void loadSQLDoctors() {
 		cbDoctor.removeAllItems();
 		try {
-			//ResultSet rs;
 			PreparedStatement ps = con.prepareStatement("SELECT person.name FROM medic "
 					+ "JOIN person ON person.id = medic.id_person");
 			
@@ -414,51 +363,6 @@ public class CreateAppointment extends JDialog {
 			e.printStackTrace();
 		}
 	}
-	
-	/*
-	private void loadDoctors() {
-		cbDoctor.removeAllItems();
-		for(Person aux : Clinic.getInstance().getMyPersons()) {
-			if(aux instanceof Medic) {
-				String name = new String(aux.getName());
-				cbDoctor.addItem(name);
-			}
-		}
-		cbDoctor.insertItemAt(new String("<Seleccionar>"), 0);
-		cbDoctor.setSelectedIndex(0);
-
-	}*/
-	
-	//NEEDS FIXING.
-	/*
-	private void loadApp() {
-		if(appointment != null) {
-			txtCode.setText(appointment.getCode());
-			txtNamePatient.setText(appointment.getName());
-			ftxtSSN.setText(appointment.getSsn());
-			ftxtPhone.setText(appointment.getPhoneNumber());
-			txtaDescription.setText(appointment.getDescription());
-			
-			ZoneId zoneId = ZoneId.systemDefault();
-            Date dateTime = Date.from(appointment.getDate().atZone(zoneId).toInstant());
-			dateChooser.setDate(dateTime);
-			
-			int i = 1;
-			for (Person per : Clinic.getInstance().getMyPersons()) {
-				if (per instanceof Medic) {
-					Medic med = (Medic) per;
-					
-					if (appointment.getMedic().getCode().equalsIgnoreCase(med.getCode())) {
-						cbDoctor.setSelectedIndex(i);
-					}
-					i++;
-				}
-			}
-
-			cbStatus.setSelectedItem(appointment.getStatus());
-		}
-	}*/
-	
 	
 	private static String getCodeAppoinment(int codeApp) {
 		int total = codeApp / 10;

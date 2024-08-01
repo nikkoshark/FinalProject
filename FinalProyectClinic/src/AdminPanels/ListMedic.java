@@ -58,65 +58,14 @@ public class ListMedic extends JPanel {
 		
 		table = new JTable();
 		table.addMouseListener(new MouseAdapter() {
-				
-				//try {
-					
-					/*
-					
-					PreparedStatement ps;
-					ResultSet rs;
-					ResultSetMetaData rsmd;
-
-					Connection con = SqlConnection.getConnection();
-					ps = con.prepareStatement("SELECT nombre, especialidad FROM ejemplo_noid WHERE id=?");
-					ps.setString(1, code);
-									
-					rs = ps.executeQuery();
-					
-					while(rs.next()) {
-						
-					}
-					
-					
-					rsmd = rs.getMetaData();
-					columns = rsmd.getColumnCount();
-					*/
-							
-							
-							
-					/*
-					if(index>=0) {
-						btnEdit.setEnabled(true);
-						btnDelete.setEnabled(true);
-						String code = (String) table.getModel().getValueAt(index, 0);
-						selMedic = Clinic.getInstance().searchPersonByCode(code);
-					}
-						*/	
-							
-				//}catch(Exception err) {
-				//	JOptionPane.showMessageDialog(null, err.toString());
-				//}
-			
-			
-			
-			
-			
-			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
-
 				int index = table.getSelectedRow();
-				//System.out.println(index);
 				if(index >=0) {
 					btnEdit.setEnabled(true);
 					btnDelete.setEnabled(true);
-					selMedic = (String) table.getModel().getValueAt(index, 0); //guardar informacion del medico que se ha encontrado aqui
-
-					//System.out.println(selMedic);
+					selMedic = (String) table.getModel().getValueAt(index, 0);
 				}
-				
-				
 			}
 		});
 		scrollPane.setViewportView(table);
@@ -126,9 +75,6 @@ public class ListMedic extends JPanel {
 		String[] headers = {"Id", "Nombre", "Especialidad"}; //HEADERS FOR THE LIST
 		modelSQL.setColumnIdentifiers(headers);
 		table.setModel(modelSQL);
-		
-		
-		
 		
 		btnEdit = new JButton("EDITAR");
 		btnEdit.setEnabled(false);
@@ -152,9 +98,6 @@ public class ListMedic extends JPanel {
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(selMedic != null) {
-					/*
-					String code = txtCode.getText();
-					*/
 					 try { 
 							Connection con = SqlConnection.getConnection();
 							PreparedStatement ps;
@@ -162,27 +105,17 @@ public class ListMedic extends JPanel {
 									+ "DELETE FROM person WHERE id=?");
 							ps.setString(1, selMedic);
 							ps.setString(2, selMedic);
-							//EL ÓRDEN DE CÓMO SE VA A INSERTAR ES EN BASE AL QUERY
 							
 							ps.executeUpdate();
+
+							JOptionPane.showMessageDialog(null, "¡Se ha eliminado!");
 							
-							JOptionPane.showMessageDialog(null, "SE BORRÓ NMMS QUE FELIZ!");
-							//clean();
 							
 						} catch (SQLException e1) {
 							JOptionPane.showMessageDialog(null, "error dentro de ELIMINAR. sadge. " + e1.toString());
 							e1.printStackTrace();
 						}
-					
-					
-					//int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar el médico: " + selMedic.getName() + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
-					//if (option == JOptionPane.OK_OPTION) {
-						/*Clinic.getInstance().removePerson(selMedic); //ERROR MAKER
-						btnEdit.setEnabled(false);
-						btnDelete.setEnabled(false);*/
 						loadSQLMedic();
-					//}
-				
 				}
 			}
 		});
@@ -229,19 +162,5 @@ public class ListMedic extends JPanel {
 		}
 	}
 	
-	/*
-	public static void loadMedic() {
-		model.setRowCount(0);
-		row = new Object[table.getColumnCount()];
-		
-		for (Person med : Clinic.getInstance().getMyPersons()) {
-			if(med instanceof Medic) {
-				row[0] = med.getCode();
-				row[1] = med.getName();
-				row[2] = ((Medic) med).getSpeciality();
-				model.addRow(row);
-			}
-		}
-	}*/
 
 }
