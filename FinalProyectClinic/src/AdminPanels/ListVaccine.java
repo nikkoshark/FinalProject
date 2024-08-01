@@ -17,18 +17,23 @@ import javax.swing.table.DefaultTableModel;
 
 import AdminJDialogs.CreateDiseaseVaccine;
 import Dashboards.VaccinesInfo;
-import logic.Clinic;
-import logic.Vaccine;
+import logic.SqlConnection;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+
 import javax.swing.ScrollPaneConstants;
 
 public class ListVaccine extends JPanel {
 	private static JTable table;
 	private static DefaultTableModel model;
 	private static Object[] row;
-	private Vaccine selVaccine = null;
+	private String selVaccine = null;
 	private JButton btnDelete;
 	private JButton btnEdit;
 	private VaccinesInfo vacin;
@@ -69,8 +74,8 @@ public class ListVaccine extends JPanel {
 				if(index>=0) {
 					btnEdit.setEnabled(true);
 					btnDelete.setEnabled(true);
-					selVaccine = Clinic.getInstance().getMyVaccines().get(index);
-					VaccinesInfo.refreshChart(selVaccine);
+					selVaccine = (String) table.getModel().getValueAt(index, 0);
+					//VaccinesInfo.refreshSQLChart(selVaccine);
 				}
 			}
 		});
@@ -84,12 +89,29 @@ public class ListVaccine extends JPanel {
 		btnDelete.setEnabled(false);
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar la vacuna: " + selVaccine.getName() + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
+				int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar la vacuna: " + selVaccine + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
 				if (option == JOptionPane.OK_OPTION) {
-					Clinic.getInstance().removeVaccine(selVaccine);
+					
+					try { 
+						Connection con = SqlConnection.getConnection();
+						PreparedStatement ps;
+						ps = con.prepareStatement("DELETE FROM vaccine WHERE id=? ");
+						ps.setString(1, selVaccine);
+						//EL ÓRDEN DE CÓMO SE VA A INSERTAR ES EN BASE AL QUERY
+						
+						ps.executeUpdate();
+						
+						JOptionPane.showMessageDialog(null, "SE BORRÓ NMMS QUE FELIZ!");
+						//clean();
+						
+					} catch (SQLException e1) {
+						JOptionPane.showMessageDialog(null, "error dentro de ELIMINAR. sadge. " + e1.toString());
+						e1.printStackTrace();
+					}
+					/*Clinic.getInstance().removeVaccine(selVaccine);
 					btnEdit.setEnabled(false);
-					btnDelete.setEnabled(false);
-					loadVaccine();
+					btnDelete.setEnabled(false);*/
+					loadSQLVaccine();
 				}
 				
 			}
@@ -120,9 +142,43 @@ public class ListVaccine extends JPanel {
 		
 		dash.add(vacin);
 		
-		loadVaccine();
+		loadSQLVaccine();
 	}
 	
+
+	public static void loadSQLVaccine() {
+		model.setRowCount(0);
+		row = new Object[table.getColumnCount()];
+		PreparedStatement ps;
+		ResultSet rs;
+		ResultSetMetaData rsmd;
+		int columns;
+		
+		try {
+			Connection con = SqlConnection.getConnection();
+			ps = con.prepareStatement("SELECT id, name, description FROM vaccine");
+			rs = ps.executeQuery();
+			rsmd = rs.getMetaData();
+			columns = rsmd.getColumnCount();
+			
+			
+			while (rs.next()) {
+				Object[] fila = new Object[columns];
+				for(int indice=0; indice<columns; indice++) {
+					fila[indice] = rs.getObject(indice+1);
+				}
+				model.addRow(fila);
+			}
+			
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "error dentro listvaccine load " +e.toString());
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/*
 	public static void loadVaccine() {
 		model.setRowCount(0);
 		row = new Object[table.getColumnCount()];
@@ -134,5 +190,5 @@ public class ListVaccine extends JPanel {
 			model.addRow(row);
 			
 		}
-	}
+	}*/
 }

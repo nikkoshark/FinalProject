@@ -12,11 +12,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import AdminJDialogs.CreateMedic;
-import logic.Clinic;
-import logic.Medic;
-import logic.Person;
 import logic.SqlConnection;
-import login.User;
 
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
@@ -26,7 +22,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Date;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -63,8 +58,6 @@ public class ListMedic extends JPanel {
 		
 		table = new JTable();
 		table.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
 				
 				//try {
 					
@@ -104,7 +97,7 @@ public class ListMedic extends JPanel {
 				//	JOptionPane.showMessageDialog(null, err.toString());
 				//}
 			
-			}
+			
 			
 			
 			
@@ -114,13 +107,13 @@ public class ListMedic extends JPanel {
 				
 
 				int index = table.getSelectedRow();
-				System.out.println(index);
+				//System.out.println(index);
 				if(index >=0) {
 					btnEdit.setEnabled(true);
 					btnDelete.setEnabled(true);
 					selMedic = (String) table.getModel().getValueAt(index, 0); //guardar informacion del medico que se ha encontrado aqui
 
-					System.out.println(selMedic);
+					//System.out.println(selMedic);
 				}
 				
 				
@@ -130,7 +123,7 @@ public class ListMedic extends JPanel {
 		
 
 		modelSQL = new DefaultTableModel();
-		String[] headers = {"id", "Nombre", "Especialidad"}; //HEADERS FOR THE LIST
+		String[] headers = {"Id", "Nombre", "Especialidad"}; //HEADERS FOR THE LIST
 		modelSQL.setColumnIdentifiers(headers);
 		table.setModel(modelSQL);
 		
@@ -148,7 +141,7 @@ public class ListMedic extends JPanel {
 				regMedic.setVisible(true);
 				btnEdit.setEnabled(false);
 				btnDelete.setEnabled(false);
-				
+				selMedic = null; //RECENTLY ADDED.
 				
 			}
 		});
@@ -165,8 +158,10 @@ public class ListMedic extends JPanel {
 					 try { 
 							Connection con = SqlConnection.getConnection();
 							PreparedStatement ps;
-							ps = con.prepareStatement("DELETE FROM ejemplo_noid WHERE id=? ");
+							ps = con.prepareStatement("DELETE FROM medic WHERE id_person=? "
+									+ "DELETE FROM person WHERE id=?");
 							ps.setString(1, selMedic);
+							ps.setString(2, selMedic);
 							//EL ÓRDEN DE CÓMO SE VA A INSERTAR ES EN BASE AL QUERY
 							
 							ps.executeUpdate();
@@ -212,7 +207,9 @@ public class ListMedic extends JPanel {
 		
 		try {
 			Connection con = SqlConnection.getConnection();
-			ps = con.prepareStatement("SELECT id, nombre, especialidad FROM ejemplo_noid");
+			ps = con.prepareStatement("SELECT id_person, person.name, speciality.name FROM medic "
+					+ "JOIN person ON medic.id_person = person.id	"
+					+ "JOIN speciality ON speciality.id = medic.id_speciality");
 			
 			rs = ps.executeQuery();
 			rsmd = rs.getMetaData();
@@ -232,7 +229,7 @@ public class ListMedic extends JPanel {
 		}
 	}
 	
-	
+	/*
 	public static void loadMedic() {
 		model.setRowCount(0);
 		row = new Object[table.getColumnCount()];
@@ -245,6 +242,6 @@ public class ListMedic extends JPanel {
 				model.addRow(row);
 			}
 		}
-	}
+	}*/
 
 }

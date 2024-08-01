@@ -14,6 +14,9 @@ import javax.swing.JOptionPane;
 import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -36,6 +39,8 @@ import logic.Appoinment;
 import logic.Clinic;
 import logic.Medic;
 import logic.Person;
+import logic.SqlConnection;
+
 import javax.swing.JSpinner;
 import javax.swing.SpinnerListModel;
 
@@ -51,21 +56,25 @@ public class CreateAppointment extends JDialog {
 	private JFormattedTextField ftxtSSN;
 	private JTextArea txtaDescription;
 	private JComboBox cbDoctor;
-	private Appoinment appoinment = null;
-	private String dateString;
-	private String timeString;
-	private LocalDateTime gettheDateTime;
+	private String appointment = null;
+	//private String dateString;
+	//private String timeString;
+	//private LocalDateTime gettheDateTime;
+	
+	private Connection con = SqlConnection.getConnection();
+	private PreparedStatement ps;
+	private ResultSet rs;
 
-	private Medic medic = null;
+	private int medicPOS = (-1);
 	private Date date = null;
 
 	/**
 	 * Create the dialog.
 	 */
-	public CreateAppointment(Appoinment app) {
-		appoinment = app;
+	public CreateAppointment(String app) {
+		appointment = app;
 		setTitle("Modificar");
-		if(appoinment == null) {
+		if(appointment == null) {
 			setTitle("Registrar");
 		} 
 		
@@ -88,7 +97,6 @@ public class CreateAppointment extends JDialog {
 			contentPanel.add(lblNewLabel_1);
 	
 			txtCode = new JTextField();
-			txtCode.setEditable(false);
 			txtCode.setText(getCodeAppoinment((Clinic.getInstance().getCodeAppoinment())));
 			txtCode.setColumns(10);
 			txtCode.setBounds(116, 115, 120, 20);
@@ -191,21 +199,22 @@ public class CreateAppointment extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				JButton btnSave = new JButton("MODIFICAR");
-				if(appoinment == null) {
+				if(appointment == null) {
 					btnSave.setText("SALVAR");
 				}
 				btnSave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if (cbDoctor.getSelectedIndex() != 0 && !ftxtSSN.getText().contains("   -       - ") && !txtNamePatient.getText().isEmpty()) {
 
+							/*
 							SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 							dateString = simpleDateFormat.format(dateChooser.getDate());
 							timeString = spnTime.getValue().toString();
 							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
 							gettheDateTime = LocalDateTime.parse(dateString+" "+timeString, formatter);
 							System.out.println(gettheDateTime.format(formatter));
-							
-								int i = 1;
+							*/
+								/*int i = 1;
 								for (Person per : Clinic.getInstance().getMyPersons()) {
 									if (per instanceof Medic) {
 										Medic med = (Medic) per;
@@ -214,33 +223,100 @@ public class CreateAppointment extends JDialog {
 										}
 										i++;
 									}
+								}*/
+								//esto se puede pasar a clinic
+								try {
+									ps = con.prepareStatement("SELECT p.name FROM medic m "
+											+ "JOIN person p ON p.id = m.id_person");
+									
+									rs = ps.executeQuery();
+									//medic = rs.getString("id");
+									int i = 0;
+									while (rs.next()) {
+										if(cbDoctor.getSelectedIndex() == i) {
+											medicPOS = i;
+										}
+										i++;
+									}
+
+									JOptionPane.showMessageDialog(null, "well done c:!");
+									
+								} catch (Exception e2) {
+									// TODO: handle exception
 								}
 							
-							if(appoinment == null) {
+							if(appointment == null) {
+								
+								try {
+									//PreparedStatement ps;
+									ps = con.prepareStatement("INSERT INTO appointment(id, name_patient, "
+											+ "ssn_patient, phone_patient, description, status, id_medic) VALUES(?,?,?,?,?,?,?)");
+									ps.setString(1, txtCode.getText());
+									ps.setString(2, txtNamePatient.getText());
+									ps.setString(3, ftxtSSN.getText());
+									ps.setString(4, ftxtPhone.getText());
+									ps.setString(5, txtaDescription.getText());
+									ps.setString(6, (String)cbStatus.getSelectedItem());
+									ps.setInt(7, cbDoctor.getSelectedIndex());
+
+									ps.executeUpdate();
 									
+									JOptionPane.showMessageDialog(null, "SE HA MODIFICADO LESSGOOO!");
+									
+									
+									
+								} catch (Exception e2) {
+									JOptionPane.showMessageDialog(null, "error dentro de update user. " + e2.toString());
+									e2.printStackTrace();
+								}
+								/*
 								Appoinment insApp = new Appoinment(txtCode.getText(), txtNamePatient.getText(), ftxtSSN.getText(), ftxtPhone.getText(), txtaDescription.getText(), gettheDateTime, medic, String.valueOf(cbStatus.getSelectedItem()));
 								Clinic.getInstance().insertAppoinment(insApp);
 								JOptionPane.showMessageDialog(null, "Cita apuntada.", "Registrar Cita", JOptionPane.INFORMATION_MESSAGE);
+								*/
 								clean();
-								MSecretaryPanel.loadAppointments();
+								MSecretaryPanel.loadSQLApp();
 								
-							} else {
+							} else { 
 								
-								appoinment.setCode(txtCode.getText());
-								appoinment.setName(txtNamePatient.getText());
-								appoinment.setSsn(ftxtSSN.getText());
-								appoinment.setPhoneNumber(ftxtPhone.getText());
-								appoinment.setMedic(medic);
-								appoinment.setDescription(txtaDescription.getText());
-								appoinment.setDate(gettheDateTime);
-								appoinment.setStatus(String.valueOf(cbStatus.getSelectedItem()));
-								
-								Clinic.getInstance().modifiedAppoinment(appoinment);
+
+								try {
+									//PreparedStatement ps;
+									ps = con.prepareStatement("UPDATE appointment SET name_patient=?, ssn_patient=?, phone_patient=?,"
+											+ "description=?, status=?, id_medic=? WHERE id=?");
+									ps.setString(1, txtNamePatient.getText());
+									ps.setString(2, ftxtSSN.getText());
+									ps.setString(3, ftxtPhone.getText());
+									ps.setString(4, txtaDescription.getText());
+									ps.setString(5, (String)cbStatus.getSelectedItem());
+									ps.setInt(6, cbDoctor.getSelectedIndex());
+									ps.setString(7, appointment);
+
+									ps.executeUpdate();
+									
+									JOptionPane.showMessageDialog(null, "SE HA MODIFICADO LESSGOOO!");
+									
+									
+									
+								} catch (Exception e2) {
+									JOptionPane.showMessageDialog(null, "error dentro de update user. " + e2.toString());
+									e2.printStackTrace();
+								}
+								/*
+								appointment.setCode(txtCode.getText());
+								appointment.setName(txtNamePatient.getText());
+								appointment.setSsn(ftxtSSN.getText());
+								appointment.setPhoneNumber(ftxtPhone.getText());
+								appointment.setMedic(medic);
+								appointment.setDescription(txtaDescription.getText());
+								appointment.setDate(gettheDateTime);
+								appointment.setStatus(String.valueOf(cbStatus.getSelectedItem()));
+								Clinic.getInstance().modifiedAppoinment(appointment);*/
 								dispose();
+								MSecretaryPanel.loadSQLApp();
+								MMedicPanel.loadSQLApp();
+								AppointmentInfo.refreshChart();
 							}
-							MSecretaryPanel.loadAppointments();
-							MMedicPanel.loadAppointments();
-							AppointmentInfo.refreshChart();
 						}
 						else {
 							JOptionPane.showMessageDialog(null, "¡Parámetro(s) sin completar!\nPor favor completar los campos.", "Información Vacía", JOptionPane.ERROR_MESSAGE);
@@ -261,8 +337,8 @@ public class CreateAppointment extends JDialog {
 				buttonPane.add(cancelButton);
 			}
 		}
-		loadDoctors();
-		loadApp();
+		loadSQLDoctors();
+		loadSQLApp();
 	}
 	
 //STAYS
@@ -277,35 +353,69 @@ public class CreateAppointment extends JDialog {
 		dateChooser.setDate(new Date());
 	}
 	
-	//NEEDS FIXING.
-	private void loadApp() {
-		if(appoinment != null) {
-			txtCode.setText(appoinment.getCode());
-			txtNamePatient.setText(appoinment.getName());
-			ftxtSSN.setText(appoinment.getSsn());
-			ftxtPhone.setText(appoinment.getPhoneNumber());
-			txtaDescription.setText(appoinment.getDescription());
-			
-			ZoneId zoneId = ZoneId.systemDefault();
-            Date dateTime = Date.from(appoinment.getDate().atZone(zoneId).toInstant());
-			dateChooser.setDate(dateTime);
-			
-			int i = 1;
-			for (Person per : Clinic.getInstance().getMyPersons()) {
-				if (per instanceof Medic) {
-					Medic med = (Medic) per;
-					
-					if (appoinment.getMedic().getCode().equalsIgnoreCase(med.getCode())) {
-						cbDoctor.setSelectedIndex(i);
-					}
-					i++;
-				}
-			}
 
-			cbStatus.setSelectedItem(appoinment.getStatus());
+	private void loadSQLApp() {
+		if (appointment != null) {
+			try {
+				//PreparedStatement ps;
+				//ResultSet rs;
+				
+				ps = con.prepareStatement("SELECT id, name_patient, ssn_patient, phone_patient, "
+						+ "description, status, /*date_a, time_a,*/ id_medic FROM appointment "
+						+ "WHERE id = ?");
+				ps.setString(1, appointment); //ESTE ES EL ID, PRIMERA POSICION
+				rs = ps.executeQuery();
+				
+				while (rs.next()) {
+					txtCode.setText(rs.getString("id"));
+					txtNamePatient.setText(rs.getString("name_patient"));
+					ftxtSSN.setText(rs.getString("ssn_patient"));
+					ftxtPhone.setText(rs.getString("phone_patient"));
+					txtaDescription.setText(rs.getString("description"));
+					cbStatus.setSelectedItem(rs.getString("status"));
+					//dateChooser.setDate(rs.getDate("date_a"));
+					//spnTime.setValue(rs.getObject("time_a"));
+					cbDoctor.setSelectedIndex(rs.getInt("id_medic"));
+					
+
+				}
+				//ps.executeUpdate();
+				JOptionPane.showMessageDialog(null, "ALM SE ESTA VIENDO");
+				
+				
+				
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "error dentro del loadsqlapp create app. " +e.toString());
+				e.printStackTrace();
+			}
 		}
 	}
 	
+
+	private void loadSQLDoctors() {
+		cbDoctor.removeAllItems();
+		try {
+			//ResultSet rs;
+			PreparedStatement ps = con.prepareStatement("SELECT person.name FROM medic "
+					+ "JOIN person ON person.id = medic.id_person");
+			
+			
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				String name = rs.getString("name");
+				cbDoctor.addItem(name);
+			}
+
+			cbDoctor.insertItemAt(new String("<Seleccionar>"), 0);
+			cbDoctor.setSelectedIndex(0);
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "error dentro del loadsqldoctor create appointment. " +e.toString());
+			e.printStackTrace();
+		}
+	}
+	
+	/*
 	private void loadDoctors() {
 		cbDoctor.removeAllItems();
 		for(Person aux : Clinic.getInstance().getMyPersons()) {
@@ -317,7 +427,38 @@ public class CreateAppointment extends JDialog {
 		cbDoctor.insertItemAt(new String("<Seleccionar>"), 0);
 		cbDoctor.setSelectedIndex(0);
 
-	}
+	}*/
+	
+	//NEEDS FIXING.
+	/*
+	private void loadApp() {
+		if(appointment != null) {
+			txtCode.setText(appointment.getCode());
+			txtNamePatient.setText(appointment.getName());
+			ftxtSSN.setText(appointment.getSsn());
+			ftxtPhone.setText(appointment.getPhoneNumber());
+			txtaDescription.setText(appointment.getDescription());
+			
+			ZoneId zoneId = ZoneId.systemDefault();
+            Date dateTime = Date.from(appointment.getDate().atZone(zoneId).toInstant());
+			dateChooser.setDate(dateTime);
+			
+			int i = 1;
+			for (Person per : Clinic.getInstance().getMyPersons()) {
+				if (per instanceof Medic) {
+					Medic med = (Medic) per;
+					
+					if (appointment.getMedic().getCode().equalsIgnoreCase(med.getCode())) {
+						cbDoctor.setSelectedIndex(i);
+					}
+					i++;
+				}
+			}
+
+			cbStatus.setSelectedItem(appointment.getStatus());
+		}
+	}*/
+	
 	
 	private static String getCodeAppoinment(int codeApp) {
 		int total = codeApp / 10;

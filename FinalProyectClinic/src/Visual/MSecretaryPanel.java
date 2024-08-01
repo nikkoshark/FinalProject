@@ -24,6 +24,7 @@ import Dashboards.AppointmentInfo;
 import Dashboards.GenderInfo;
 import logic.Appoinment;
 import logic.Clinic;
+import logic.SqlConnection;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -32,6 +33,11 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.beans.PropertyChangeListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.beans.PropertyChangeEvent;
 
@@ -43,7 +49,7 @@ public class MSecretaryPanel extends JPanel {
 	private AppointmentInfo appinfo;
 	private JButton btnEdit;
 	private static JDateChooser dateChooser;
-	private Appoinment selAppoinment = null;
+	private String selAppoinment = null;
 	private JButton btnDelete;
 	private JComboBox cbDash;
 
@@ -85,8 +91,9 @@ public class MSecretaryPanel extends JPanel {
 				if(index>=0) {
 					btnEdit.setEnabled(true);
 					btnDelete.setEnabled(true);
-					String code = (String) table.getModel().getValueAt(index, 0);
-					selAppoinment = Clinic.getInstance().searchAppoinment(code);
+					selAppoinment = (String) table.getModel().getValueAt(index, 0);
+					//String code = (String) table.getModel().getValueAt(index, 0);
+					//selAppoinment = Clinic.getInstance().searchAppoinment(code);
 				}
 			}
 		});
@@ -138,7 +145,7 @@ public class MSecretaryPanel extends JPanel {
 		dateChooser = new JDateChooser();
 		dateChooser.addPropertyChangeListener(new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent evt) {
-				loadAppointments();
+				loadSQLApp();
 			}
 		});
 		dateChooser.setBounds(650, 23, 117, 20);
@@ -154,16 +161,16 @@ public class MSecretaryPanel extends JPanel {
 		btnEdit.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 20));
 		btnEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (selAppoinment.getStatus().equalsIgnoreCase("Visto")) {
+				/*if (selAppoinment.getStatus().equalsIgnoreCase("Visto")) {
 					JOptionPane.showMessageDialog(null, "Esta consulta ya fue realizada.", "Consulta hecha", JOptionPane.INFORMATION_MESSAGE);
-				}
-				else {
-					CreateAppointment regApp = new CreateAppointment(selAppoinment);
-					regApp.setModal(true);
-					regApp.setVisible(true);
-					btnEdit.setEnabled(false);
-					btnDelete.setEnabled(false);
-				}
+				}*/
+				 //pasaria un else aqui si lo de arriba existiera
+				CreateAppointment regApp = new CreateAppointment(selAppoinment);
+				regApp.setModal(true);
+				regApp.setVisible(true);
+				btnEdit.setEnabled(false);
+				btnDelete.setEnabled(false);
+				
 			}
 		});
 		btnEdit.setEnabled(false);
@@ -175,18 +182,38 @@ public class MSecretaryPanel extends JPanel {
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(selAppoinment != null) {
-					if (selAppoinment.getStatus().equalsIgnoreCase("Visto")) {
+					/*if (selAppoinment.getStatus().equalsIgnoreCase("Visto")) {
 						JOptionPane.showMessageDialog(null, "Esta consulta ya fue realizada.", "Consulta hecha", JOptionPane.INFORMATION_MESSAGE);
-					}
-					else {
-						int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar la cita de: " + selAppoinment.getName() + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
-						if (option == JOptionPane.OK_OPTION) {
-							Clinic.getInstance().removeAppoinment(selAppoinment);
-							btnEdit.setEnabled(false);
-							btnDelete.setEnabled(false);
-							loadAppointments();
+					}*/
+
+					int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar la cita de: " + selAppoinment + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
+					if (option == JOptionPane.OK_OPTION) {
+						
+						try { 
+							Connection con = SqlConnection.getConnection();
+							PreparedStatement ps;
+							ps = con.prepareStatement("DELETE FROM appointment WHERE id=? ");
+							ps.setString(1, selAppoinment);
+							//EL ÓRDEN DE CÓMO SE VA A INSERTAR ES EN BASE AL QUERY
+							
+							ps.executeUpdate();
+							
+							JOptionPane.showMessageDialog(null, "SE BORRÓ NMMS QUE FELIZ!");
+							//clean();
+							
+						} catch (SQLException e1) {
+							JOptionPane.showMessageDialog(null, "error dentro de ELIMINAR. sadge. " + e1.toString());
+							e1.printStackTrace();
 						}
+						
+						/*Clinic.getInstance().removeAppoinment(selAppoinment);
+						btnEdit.setEnabled(false);
+						btnDelete.setEnabled(false);*/
+						
+
+						loadSQLApp();
 					}
+					
 				}
 			}
 		});
@@ -204,7 +231,7 @@ public class MSecretaryPanel extends JPanel {
 		dash.add(appinfo);
 		menuclicked(appinfo);
 		
-		loadAppointments();
+		loadSQLApp();
 
 	}
 	
@@ -214,6 +241,45 @@ public class MSecretaryPanel extends JPanel {
 		panel.setVisible(true);
 	}
 	
+
+	public static void loadSQLApp() {
+		model.setRowCount(0);
+		row = new Object[table.getColumnCount()];
+		PreparedStatement ps;
+		ResultSet rs;
+		ResultSetMetaData rsmd;
+		int columns;
+		
+		try {
+			Connection con = SqlConnection.getConnection();
+			ps = con.prepareStatement("SELECT a.id, a.ssn_patient, a.name_patient, "
+					+ "a.time_a, p.name, a.status FROM appointment a "
+					+ "INNER JOIN medic m ON m.id_person = a.id_medic "
+					+ "INNER JOIN person p ON p.id = m.id_person");
+			rs = ps.executeQuery();
+			rsmd = rs.getMetaData();
+			columns = rsmd.getColumnCount();
+			
+			
+			while (rs.next()) {
+				Object[] fila = new Object[columns];
+				for(int indice=0; indice<columns; indice++) {
+					fila[indice] = rs.getObject(indice+1);
+				}
+				model.addRow(fila);
+			}
+			
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "error dentro de AQUIII MSecretaryPanel, loadsqlapp. " +e.toString());
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	
+	/*
 	public static void loadAppointments() {
 		model.setRowCount(0);
 		row = new Object[table.getColumnCount()];
@@ -234,5 +300,5 @@ public class MSecretaryPanel extends JPanel {
 
 			}
 		}
-	}
+	}*/
 }

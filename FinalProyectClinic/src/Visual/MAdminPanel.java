@@ -78,7 +78,7 @@ public class MAdminPanel extends JPanel {
 		JMenuItem mntmSCreate = new JMenuItem("Registrar");
 		mntmSCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CreateUser createUser = new CreateUser(null);
+				CreateUser createUser = new CreateUser(-1);
 				createUser.setVisible(true);
 				
 			}

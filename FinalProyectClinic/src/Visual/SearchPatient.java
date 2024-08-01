@@ -12,9 +12,12 @@ import javax.swing.table.DefaultTableModel;
 import logic.Clinic;
 import logic.Patient;
 import logic.Person;
+import logic.SqlConnection;
 
 import java.awt.SystemColor;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -26,6 +29,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 
 public class SearchPatient extends JDialog {
 
@@ -91,9 +98,8 @@ public class SearchPatient extends JDialog {
 								int index = table.getSelectedRow();
 								if(index>=0) {
 									String ssn = (String) table.getModel().getValueAt(index, 1); 
-									Person patient = Clinic.getInstance().searchPerson(ssn);
-									
-									CreateCheckup createCheck = new CreateCheckup(null, patient);
+									//Person patient = Clinic.getInstance().searchPerson(ssn);									
+									CreateCheckup createCheck = new CreateCheckup(null, ssn);
 									createCheck.setModal(true);
 									createCheck.setVisible(true);
 								}
@@ -146,7 +152,7 @@ public class SearchPatient extends JDialog {
 				txtSearchBar.addKeyListener(new KeyAdapter() {
 					@Override
 					public void keyReleased(KeyEvent e) {
-						loadPatient();
+						loadSQLPatient();
 					}
 				});
 				txtSearchBar.setBounds(121, 34, 166, 20);
@@ -174,9 +180,58 @@ public class SearchPatient extends JDialog {
 				buttonPane.add(btnClose);
 			}
 		}
-		loadPatient();
+		loadSQLPatient();
 	}
 	
+	public static void loadSQLPatient() {
+		model.setRowCount(0);
+		row = new Object[table.getColumnCount()];
+		PreparedStatement ps;
+		ResultSet rs;
+		ResultSetMetaData rsmd;
+		int columns;
+		
+		
+		try {
+			Connection con = SqlConnection.getConnection();
+			ps = con.prepareStatement("SELECT id, ssn, name, last_name FROM person ");
+			
+			rs = ps.executeQuery();
+			rsmd = rs.getMetaData();
+			columns = rsmd.getColumnCount();
+			
+			while(rs.next()) {
+				Object[] fila = new Object[columns];
+				for(int indice=0; indice<columns; indice++) {
+					
+					if (rdbtnCedula.isSelected()) {
+						if (rs.getString("ssn").contains(txtSearchBar.getText())) {
+							fila[indice] = rs.getObject(indice+1);
+						}
+					}else if (rdbtnCodigo.isSelected()) {
+						if (rs.getString("id").contains(txtSearchBar.getText())) {
+							fila[indice] = rs.getObject(indice+1);
+						}
+					} else if(rdbtnNombre.isSelected()) {
+						if(rs.getString("name").contains(txtSearchBar.getText())) {
+							fila[indice] = rs.getObject(indice+1);
+						}
+					}
+					
+					
+				}
+				model.addRow(fila);
+						
+			}
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "error dentro de loadsql PATIENT searchpatient. " +e.toString());
+		}
+	}
+	
+	
+	
+	/*
 	public static void loadPatient() {
 		model.setRowCount(0);
 		row = new Object[table.getColumnCount()];
@@ -210,7 +265,7 @@ public class SearchPatient extends JDialog {
 				}
 			}
 		}
-	}
+	}*/
 	
 	public void changeRadioButton(JRadioButton btn) {
 		rdbtnCedula.setSelected(false);

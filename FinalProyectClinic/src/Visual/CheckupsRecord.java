@@ -24,13 +24,13 @@ public class CheckupsRecord extends JPanel {
 	private static DefaultTableModel modelCheckUp;
 	private static DefaultTableModel modelRecord;
 	private static Object[] row;
-	private static Person searchpatient = null;
+	private static String searchpatient = null;
 	private CheckUp selCheckUp = null;
 
 	/**
 	 * Create the panel.
 	 */
-	public CheckupsRecord(Person patient) {
+	public CheckupsRecord(String patient) {
 		searchpatient = patient;
 		setBackground(SystemColor.inactiveCaption);
 		setSize(614,403);
@@ -107,11 +107,23 @@ public class CheckupsRecord extends JPanel {
 		tableMedicalR.setModel(modelRecord);
 		scrollMedicalR.setViewportView(tableMedicalR);
 		
-		loadCheckup();
-		loadMedicalR();
+		loadSQLCheckup();
+		loadSQLMedicalR();
 
 	}
 	
+	
+
+	public static void loadSQLCheckup() {
+		
+	}
+	
+
+
+	public static void loadSQLMedicalR() {
+		
+	}
+	/*
 	public static void loadCheckup() {
 		modelCheckUp.setRowCount(0);
 		row = new Object[tableCheckup.getColumnCount()];
@@ -123,8 +135,9 @@ public class CheckupsRecord extends JPanel {
 			row[2] = check.getDiagnosis();
 			modelCheckUp.addRow(row);
 		}
-	}
-
+	}*/
+	
+	/*
 	public static void loadMedicalR() {
 		modelRecord.setRowCount(0);
 		row = new Object[tableCheckup.getColumnCount()];
@@ -136,5 +149,5 @@ public class CheckupsRecord extends JPanel {
 			row[2] = check.getDiagnosis();
 			modelRecord.addRow(row);
 		}
-	}
+	}*/
 }

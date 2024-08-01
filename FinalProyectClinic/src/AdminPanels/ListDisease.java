@@ -18,11 +18,16 @@ import javax.swing.table.DefaultTableModel;
 
 import AdminJDialogs.CreateDiseaseVaccine;
 import Dashboards.DiseaseInfo;
-import logic.Clinic;
-import logic.Disease;
+import logic.SqlConnection;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+
 import javax.swing.ScrollPaneConstants;
 
 public class ListDisease extends JPanel {
@@ -31,7 +36,7 @@ public class ListDisease extends JPanel {
 	private static Object[] row; 
 	private JButton btnDelete;
 	private JButton btnEdit;
-	private Disease selDisease;
+	private String selDisease = null;
 	private DiseaseInfo dinfo;
 
 	/**
@@ -72,8 +77,8 @@ public class ListDisease extends JPanel {
 				if(index>=0) {
 					btnEdit.setEnabled(true);
 					btnDelete.setEnabled(true);
-					selDisease = Clinic.getInstance().getMyDiseases().get(index);
-					DiseaseInfo.refreshChart(selDisease);
+					selDisease = (String) table.getModel().getValueAt(index, 0);
+					//DiseaseInfo.refreshSQLChart(selDisease);
 				}
 			}
 		});
@@ -89,12 +94,30 @@ public class ListDisease extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				
 				if(selDisease != null) {
-					int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar la enfermedad: " + selDisease.getName() + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
+					int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar la enfermedad: " + selDisease + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
 					if (option == JOptionPane.OK_OPTION) {
-						Clinic.getInstance().removeDisease(selDisease);
+						try { 
+							Connection con = SqlConnection.getConnection();
+							PreparedStatement ps;
+							ps = con.prepareStatement("DELETE FROM disease WHERE id=? ");
+							ps.setString(1, selDisease);
+							//EL ÓRDEN DE CÓMO SE VA A INSERTAR ES EN BASE AL QUERY
+							
+							ps.executeUpdate();
+							
+							JOptionPane.showMessageDialog(null, "SE BORRÓ NMMS QUE FELIZ!");
+							//clean();
+							
+						} catch (SQLException e1) {
+							JOptionPane.showMessageDialog(null, "error dentro de ELIMINAR. sadge. " + e1.toString());
+							e1.printStackTrace();
+						}
+						
+						
+						/*Clinic.getInstance().removeDisease(selDisease);
 						btnEdit.setEnabled(false);
-						btnDelete.setEnabled(false);
-						loadDisease();
+						btnDelete.setEnabled(false);*/
+						loadSQLDisease();
 					}
 				} 				
 			}
@@ -124,9 +147,50 @@ public class ListDisease extends JPanel {
 		
 		dash.add(dinfo);
 
-		loadDisease();
+		loadSQLDisease();
 	}
 	
+
+	public static void loadSQLDisease() {
+		model.setRowCount(0);
+		row = new Object[table.getColumnCount()];
+		PreparedStatement ps;
+		ResultSet rs;
+		ResultSetMetaData rsmd;
+		int columns;
+		
+		try {
+			Connection con = SqlConnection.getConnection();
+			ps = con.prepareStatement("SELECT id, name, description, in_observation  FROM disease");
+			rs = ps.executeQuery();
+			rsmd = rs.getMetaData();
+			columns = rsmd.getColumnCount();
+			
+			
+			while (rs.next()) {
+				Object[] fila = new Object[columns];
+				for(int indice=0; indice<columns; indice++) {
+					fila[indice] = rs.getObject(indice+1);
+					if (indice == 3) {
+						fila[indice] = "Neutro";
+						if(rs.getInt("in_observation") == 1) {
+							fila[indice] = "Vigilado";
+						}
+					}
+				}
+				model.addRow(fila);
+			}
+			
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "error dentro listdisease load " +e.toString());
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	/*
 	public static void loadDisease() {
 		model.setRowCount(0);
 		row = new Object[table.getColumnCount()];
@@ -142,5 +206,5 @@ public class ListDisease extends JPanel {
 			model.addRow(row);
 			
 		}
-	}
+	}*/
 }

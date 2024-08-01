@@ -14,6 +14,7 @@ import javax.swing.table.DefaultTableModel;
 import AdminJDialogs.CreateUser;
 import Dashboards.UserInfo;
 import logic.Clinic;
+import logic.SqlConnection;
 import login.User;
 
 import javax.swing.JButton;
@@ -21,6 +22,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+
 import javax.swing.ScrollPaneConstants;
 import javax.swing.ListSelectionModel;
 
@@ -29,7 +36,7 @@ public class ListUsers extends JPanel {
 	private static JTable table;
 	private static DefaultTableModel model;
 	private static Object[] row;
-	private User seleUser = null;
+	private int seleUser = (-1);
 	private JButton btnDelete;
 	private JButton btnEdit;
 	private UserInfo usin;
@@ -75,14 +82,15 @@ public class ListUsers extends JPanel {
 				if (index >= 0) {
 					btnEdit.setEnabled(true);
 					btnDelete.setEnabled(true);
-					seleUser = Clinic.getInstance().getMyUsers().get(index);
+					seleUser = (int) table.getModel().getValueAt(index, 0); //guardar informacion del medico que se ha encontrado aqui
+
 				}
 			}
 		});
 		
 		
 		model = new DefaultTableModel();
-		String[] headers = {"Usuario", "Posición"}; //HEADERS FOR THE LIST
+		String[] headers = {"Id","Usuario", "Posición"}; //HEADERS FOR THE LIST
 		model.setColumnIdentifiers(headers);
 		
 		table.setModel(model);
@@ -104,14 +112,25 @@ public class ListUsers extends JPanel {
 		btnDelete = new JButton("ELIMINAR");
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(seleUser != null) {
-					int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar el usuario: " + seleUser.getName() + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
-					if (option == JOptionPane.OK_OPTION) {
-						Clinic.getInstance().removeUser(seleUser);
-						btnEdit.setEnabled(false);
-						btnDelete.setEnabled(false);
-						loadUsers();
+				if(seleUser != (-1)) {
+					try { 
+						Connection con = SqlConnection.getConnection();
+						PreparedStatement ps;
+						ps = con.prepareStatement("DELETE FROM [user] WHERE id=? ");
+						ps.setInt(1, seleUser);
+						//EL ÓRDEN DE CÓMO SE VA A INSERTAR ES EN BASE AL QUERY
+						
+						ps.executeUpdate();
+						
+						JOptionPane.showMessageDialog(null, "SE BORRÓ NMMS QUE FELIZ!");
+						//clean();
+						
+					} catch (SQLException e1) {
+						JOptionPane.showMessageDialog(null, "error dentro de ELIMINAR. sadge. " + e1.toString());
+						e1.printStackTrace();
 					}
+						loadSQLUsers();
+					
 				}
 			}
 		});
@@ -125,9 +144,45 @@ public class ListUsers extends JPanel {
 		dash.setLayout(null);
 		
 		dash.add(usin);
-		loadUsers();
+		loadSQLUsers();
 	}
 	
+
+	public static void loadSQLUsers() {
+		model.setRowCount(0);
+		row = new Object[table.getColumnCount()];
+		PreparedStatement ps;
+		ResultSet rs;
+		ResultSetMetaData rsmd;
+		int columns;
+		
+		try {
+			Connection con = SqlConnection.getConnection();
+			ps = con.prepareStatement("SELECT [user].id, [user].username, user_position.name FROM [user]"
+					+ "JOIN user_position ON user_position.id = [user].id_user_position");
+			rs = ps.executeQuery();
+			rsmd = rs.getMetaData();
+			columns = rsmd.getColumnCount();
+			
+			
+			while (rs.next()) {
+				Object[] fila = new Object[columns];
+				for(int indice=0; indice<columns; indice++) {
+					fila[indice] = rs.getObject(indice+1);
+				}
+				model.addRow(fila);
+			}
+			
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "error dentro de loadsql list " +e.toString());
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	/*
 	public static void loadUsers() {
 		model.setRowCount(0);
 		row = new Object[table.getColumnCount()];
@@ -138,6 +193,6 @@ public class ListUsers extends JPanel {
 			model.addRow(row);
 		}
 		
-	}
+	}*/
 	
 }

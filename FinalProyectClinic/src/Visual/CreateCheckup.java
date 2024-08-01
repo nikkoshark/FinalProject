@@ -17,10 +17,15 @@ import logic.Clinic;
 import logic.Disease;
 import logic.Patient;
 import logic.Person;
+import logic.SqlConnection;
 
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,7 +35,12 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JOptionPane;
+
+import com.microsoft.sqlserver.jdbc.dataclassification.Label;
 import com.toedter.calendar.JDateChooser;
+
+import AdminPanels.ListUsers;
+
 import javax.swing.JTextArea;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
@@ -54,9 +64,9 @@ public class CreateCheckup extends JDialog {
 	private JComboBox cbSex;
 	private JComboBox cbBloodType;
 	private JButton btnEdit;
-	private Person patient = null;
-	private Person searchPerson = null;
-	private Appoinment appinfo = null;
+	private String patient = null; //person
+	private String searchPerson = null; //person
+	private String appinfo = null; // appointment
 	private int patientVer = 0;
 	private char ch;
 
@@ -64,16 +74,70 @@ public class CreateCheckup extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public CreateCheckup(Appoinment app, Person patientRecord) {
+	public CreateCheckup(String app, String patientRecord) {
 		searchPerson = patientRecord;
 		if(searchPerson == null) {
 			appinfo = app;
-			patient = Clinic.getInstance().searchPerson(appinfo.getSsn().toString());
+			//BUSCAR A LA PERSONA SI EXISTE Y GUARDARLA EN PATIENT
+			//patient = Clinic.getInstance().searchPerson(appinfo.getSsn().toString());
 			if(patient == null) {
-				patient = new Patient(null, appinfo.getSsn(), appinfo.getName(), null, appinfo.getPhoneNumber(), null, null, ch, null, null);
+				//SI LA PERSONA NO EXISTE, OTRO INSERT
+
+				try {
+					Connection con = SqlConnection.getConnection();
+					PreparedStatement ps;
+					ps = con.prepareStatement("INSERT INTO  person(id, ssn, name, last_name, phone,"  
+							+ "direction, date_birth, sex) VALUES(?,?,?,?,?,?,?,?)");
+					
+					ps.setString(1, txtCode.getText());
+					ps.setString(2, ftxtSSN.getText());
+					ps.setString(3, txtName.getText());
+					ps.setString(4, txtLastName.getText());
+					ps.setString(5, ftxtPhone.getText());
+					ps.setString(6, txtaAddress.getText());
+					ps.setObject(7, dateChooser, java.sql.Types.DATE);
+					ps.setString(8, Character.toString(String.valueOf(cbSex.getSelectedItem()).charAt(0)));
+					
+					ps.executeUpdate();
+					
+					JOptionPane.showMessageDialog(null, "se ha guardado! wooo!");
+										
+					
+				} catch (Exception e2) {
+					JOptionPane.showMessageDialog(null, "error dentro de guardar info nueva createcheckup. " + e2.toString());
+					e2.printStackTrace();
+				}
+				//patient = new Patient(null, appinfo.getSsn(), appinfo.getName(), null, appinfo.getPhoneNumber(), null, null, ch, null, null);
 			}
 		} else {
-			patient = patientRecord;
+			//DE LO CONTRARIO SE GUARDA EN PATIENT EL ID DE LA PERSONA, AKA, UPDATE
+
+			try {
+				Connection con = SqlConnection.getConnection();
+				PreparedStatement ps = con.prepareStatement("UPDATE person SET ssn=?, "
+						+ "name=?, last_name=?, phone=?, direction=?, date_birth=?, sex=? WHERE id=? ");
+
+				ps.setString(1, ftxtSSN.getText());
+				ps.setString(2, txtName.getText());
+				ps.setString(3, txtLastName.getText());
+				ps.setString(4, ftxtPhone.getText());
+				ps.setString(5, txtaAddress.getText());
+				ps.setObject(6, dateChooser, java.sql.Types.DATE);
+				ps.setString(7, Character.toString(String.valueOf(cbSex.getSelectedItem()).charAt(0)));
+				
+				ps.setString(8, txtCode.getText());
+				
+				
+				ps.executeUpdate();
+				
+				JOptionPane.showMessageDialog(null, "SE HA MODIFICADO LESSGOOO!");
+				
+			} catch (Exception e2) {
+				JOptionPane.showMessageDialog(null, "error dentro de update createcheckup FIRST. " + e2.toString());
+				e2.printStackTrace();
+			}
+			
+			//patient = patientRecord;
 		}
 		
 		setBounds(100, 100, 915, 546);
@@ -86,7 +150,7 @@ public class CreateCheckup extends JDialog {
 
 		//** *******************************************************************************************
 		if(searchPerson == null) {
-			checkupInfoPanel = new CheckupInfoPanel(appinfo.getDate(), patient);
+			checkupInfoPanel = new CheckupInfoPanel(appinfo, patient);
 		}
 		checkupsRecord = new CheckupsRecord(patient);
 
@@ -261,6 +325,16 @@ public class CreateCheckup extends JDialog {
 			JButton btnPatient = new JButton("*Salvar Paciente");
 			btnPatient.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					//IF ELSE QUE CREE UN INSERT O DE LO CONTRARIO UN MODIFY
+					if (patient == null) {
+						
+					} else {
+						
+					}
+					
+					
+					
+					/*
 					String code = txtCode.getText();
 					String ssn =  ftxtSSN.getText();
 					String name = txtName.getText();
@@ -286,7 +360,7 @@ public class CreateCheckup extends JDialog {
 						((Patient)patient).setEmail(email);
 						System.out.println(patient.getCode());
 						Clinic.getInstance().modifiedPerson(patient);
-					}
+					}*/
 					JOptionPane.showMessageDialog(null, "Ha guardado al paciente.", "Registro", JOptionPane.INFORMATION_MESSAGE);
 					GenderInfo.refreshChart();
 				}
@@ -296,7 +370,9 @@ public class CreateCheckup extends JDialog {
 				JButton btnRegister = new JButton("FINALIZAR");
 				btnRegister.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						appinfo.setStatus("Visto");
+						
+						
+						/*appinfo.setStatus("Visto");
 						Clinic.getInstance().modifiedAppoinment(appinfo);
 						CheckUp checkUp = CheckupInfoPanel.sendCheckUp(patient, appinfo.getMedic());
 						if(checkUp.isMedicalRecord()==true) {
@@ -310,6 +386,7 @@ public class CreateCheckup extends JDialog {
 						}
 						Clinic.getInstance().insertCheckUp(checkUp);
 						//Clinic.getInstance().modifiedPerson(patient);
+						*/
 						JOptionPane.showMessageDialog(null, "Se ha guardado la cita.", "Registro", JOptionPane.INFORMATION_MESSAGE);
 						
 						dispose();
@@ -364,9 +441,59 @@ public class CreateCheckup extends JDialog {
 		lblHis.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 15));
 		hisP.add(lblHis);
 		
-		loadperson();
+		loadSQLperson();
 	}
 
+	
+
+	private void loadSQLperson() {
+		if(patient!= null)
+		{			
+			txtCode.setText(patient);
+		}
+		
+		try {
+			PreparedStatement ps;
+			ResultSet rs;
+
+					//+ "JOIN speciality ON speciality.id = medic.id_speciality"
+			Connection con = SqlConnection.getConnection();
+			ps = con.prepareStatement("SELECT m.id_speciality, m.is_avaible, p.id, p.ssn, "
+			        + "p.name, p.last_name, p.phone, p.direction, p.date_birth, p.sex "
+			        + "FROM medic m "
+			        + "FULL JOIN person p ON p.id = m.id_person "
+			        + "WHERE m.id_person = ?");
+			ps.setString(1, patient); //ESTE ES EL ID, PRIMERA POSICION
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				txtCode.setText(rs.getString("id"));
+				ftxtSSN.setText(rs.getString("ssn"));
+				txtName.setText(rs.getString("name"));
+				txtLastName.setText(rs.getString("last_name"));
+				ftxtPhone.setText(rs.getString("phone"));
+				txtaAddress.setText(rs.getString("direction"));
+				dateChooser.setDate(rs.getDate("date_birth"));
+				cbSex.setSelectedItem(rs.getString("sex"));
+			}
+			
+			
+			//ps.executeUpdate();
+			JOptionPane.showMessageDialog(null, "ALM SE ESTA VIENDO");
+			//clean();
+			
+			
+			
+		} catch (SQLException esql) {
+			JOptionPane.showMessageDialog(null, "error dentro del createcheckup load. " +esql.toString());
+			esql.printStackTrace();
+		}
+		
+	}
+	
+	
+	
+	/*
 	private void loadperson() {
 		if(patient.getCode()!= null)
 		{			
@@ -382,7 +509,7 @@ public class CreateCheckup extends JDialog {
 		cbBloodType.setSelectedItem(((Patient)patient).getBloodType());
 		cbSex.setSelectedItem(patient.getSex());		
 		
-	}
+	}*/
 
 	private void changeEditable(boolean bool, int ver, String text) {
 		ftxtSSN.setEditable(bool);

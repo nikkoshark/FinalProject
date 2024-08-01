@@ -1,6 +1,7 @@
 package Dashboards;
 
 import java.awt.Dimension;
+import java.sql.Connection;
 
 import javax.swing.JPanel;
 
@@ -10,6 +11,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 
 import logic.Clinic;
+import logic.SqlConnection;
 import logic.Vaccine;
 
 public class VaccinesInfo extends JPanel {
@@ -42,7 +44,23 @@ public class VaccinesInfo extends JPanel {
 		panel.add(chartPanel);
 	}
 	
-	public static void refreshChart(Vaccine selVaccine) {
+
+	public static void refreshSQLChart(int selVaccine) {
+		try {
+			Connection con = SqlConnection.getConnection();
+			
+			
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	
+	
+	}
+	
+	/*
+	public static void refreshChart(int selVaccine) {
+		
 		dataset.clear();
 			
 		cantVaccinated = Clinic.getInstance().totalPatientsWithVaccine(selVaccine.getCode());
@@ -52,5 +70,9 @@ public class VaccinesInfo extends JPanel {
 		dataset.setValue("No vacunados", Clinic.getInstance().getMyPersons().size() - cantVaccinated); 
 
 		chart.setTitle("Vacunados de: "+titlet);
-	}
+		
+		
+	}*/
+	
+	
 }

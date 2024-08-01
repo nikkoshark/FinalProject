@@ -82,6 +82,35 @@ public class Main extends JFrame {
 			menuclicked(adminPanel);
 		}
 		
+		/* * 
+		try {
+			Connection con = SqlConnection.getConnection();
+			PreparedStatement ps;
+			ResultSet rs;
+			
+			ps = con.prepareStatement("SELECT * FROM [user] WHERE username=?");
+			ps.setString(1, userSQL);
+			rs = ps.executeQuery();
+			
+			if(rs.getInt("id_user_position") == 3) {
+				menuclicked(secretaryPanel);
+			}else if(rs.getInt("id_user_position") == 2) {
+				menuclicked(medicPanel);
+			}else {
+				menuclicked(adminPanel);
+			}
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null, "error dentro de conectar. " +ex.toString());
+		}
+		 * */
+		
+		
+		
+		
+		
+		
 		contentPane = new JPanel();
 		contentPane.setBackground(SystemColor.activeCaption);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

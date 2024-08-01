@@ -9,9 +9,11 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import AdminPanels.ListDisease;
+import AdminPanels.ListUsers;
 import AdminPanels.ListVaccine;
 import logic.Clinic;
 import logic.Disease;
+import logic.SqlConnection;
 import logic.Vaccine;
 
 import java.awt.SystemColor;
@@ -22,6 +24,9 @@ import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.awt.event.ActionEvent;
 import javax.swing.JCheckBox;
 
@@ -32,8 +37,8 @@ public class CreateDiseaseVaccine extends JDialog {
 	private JTextField txtName;
 	private JLabel lblTitle;
 	private JTextArea txtDesc;
-	private Disease disease = null;
-	private Vaccine vaccine = null;
+	private String disease = null;
+	private String vaccine = null;
 	private String type = null;
 	private JCheckBox chckbxIsWatched = new JCheckBox("En Vigilancia");
 
@@ -41,7 +46,7 @@ public class CreateDiseaseVaccine extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public CreateDiseaseVaccine(String typeToRegister, Disease dis, Vaccine vac) {
+	public CreateDiseaseVaccine(String typeToRegister, String dis, String vac) {
 		
 		disease = dis;
 		vaccine = vac;
@@ -55,11 +60,11 @@ public class CreateDiseaseVaccine extends JDialog {
 		if(type.equalsIgnoreCase("disease")) {
 			lblTitle = new JLabel("REGISTRO ENFERMEDAD");
 			chckbxIsWatched.setVisible(true);
-			txtCode.setText(getCodeDisease(Clinic.getInstance().getCodeDisease()));
+			//txtCode.setText(getCodeDisease(Clinic.getInstance().getCodeDisease()));
 		}else {
 			lblTitle = new JLabel("REGISTRO VACUNA");
 			chckbxIsWatched.setVisible(false);
-			txtCode.setText(getCodeVaccine(Clinic.getInstance().getCodeVaccine()));
+			//txtCode.setText(getCodeVaccine(Clinic.getInstance().getCodeVaccine()));
 		}
 		
 		setBounds(100, 100, 450, 300);
@@ -79,9 +84,6 @@ public class CreateDiseaseVaccine extends JDialog {
 			JLabel lblCode = new JLabel("C\u00F3digo");
 			lblCode.setBounds(32, 9, 46, 14);
 			contentPanel.add(lblCode);
-
-			
-			txtCode.setEditable(false);
 			txtCode.setColumns(10);
 			txtCode.setBounds(32, 32, 120, 20);
 			contentPanel.add(txtCode);
@@ -123,34 +125,144 @@ public class CreateDiseaseVaccine extends JDialog {
 						if (!txtCode.getText().isEmpty() && !txtName.getText().isEmpty() && !txtDesc.getText().isEmpty()) {
 							if(vaccine == null && disease == null) {
 								if(type.equalsIgnoreCase("disease")) {
-									Disease insDisease = new Disease(txtCode.getText(), txtName.getText(), txtDesc.getText(), chckbxIsWatched.isSelected());
+									
+
+									try {
+										Connection con = SqlConnection.getConnection();
+										PreparedStatement ps;
+										ps = con.prepareStatement("INSERT INTO disease(id, name, description, in_observation)"
+												+ "VALUES (?,?,?,?)");
+										ps.setString(1, txtCode.getText());
+										ps.setString(2, txtName.getText());
+										ps.setString(3, txtDesc.getText());
+										if(chckbxIsWatched.isSelected() == true) {
+											ps.setInt(4, 1);
+										} else {
+											ps.setInt(4, 0);
+										}
+										ps.executeUpdate();
+										
+										
+										JOptionPane.showMessageDialog(null, "se ha guardado! wooo!");
+										ListDisease.loadSQLDisease();
+										clear();
+										
+										
+									} catch (Exception e2) {
+										JOptionPane.showMessageDialog(null, "error dentro de guardar info nueva disease. " + e2.toString());
+										e2.printStackTrace();
+									}
+									
+									
+									
+									/*Disease insDisease = new Disease(txtCode.getText(), txtName.getText(), txtDesc.getText(), chckbxIsWatched.isSelected());
 									Clinic.getInstance().insertDisease(insDisease);
 									JOptionPane.showMessageDialog(null, "¡Registro de Enfermedad Satisfactoria!", "Registrar", JOptionPane.INFORMATION_MESSAGE);
-									clear();
+									*/
 								} else {
-									Vaccine insVaccine = new Vaccine(txtCode.getText(), txtName.getText(), txtDesc.getText());
+									
+
+									try {
+										Connection con = SqlConnection.getConnection();
+										PreparedStatement ps;
+										ps = con.prepareStatement("INSERT INTO vaccine(id, name, description)"
+												+ "VALUES (?,?,?)");
+										ps.setString(1, txtCode.getText());
+										ps.setString(2, txtName.getText());
+										ps.setString(3, txtDesc.getText());
+										ps.executeUpdate();
+										
+										
+										JOptionPane.showMessageDialog(null, "se ha guardado! wooo!");
+										ListVaccine.loadSQLVaccine();
+										clear();
+										
+										
+									} catch (Exception e2) {
+										JOptionPane.showMessageDialog(null, "error dentro de guardar info nueva vaccine. " + e2.toString());
+										e2.printStackTrace();
+									}
+									
+									
+									
+									
+									/*Vaccine insVaccine = new Vaccine(txtCode.getText(), txtName.getText(), txtDesc.getText());
 									Clinic.getInstance().insertVaccine(insVaccine);
 									JOptionPane.showMessageDialog(null, "¡Registro de Vacuna Satisfactoria!", "Registrar", JOptionPane.INFORMATION_MESSAGE);
+									*/
+									
 									clear();
 								}
 							} else  {
 								if (type.equalsIgnoreCase("disease")){
-									disease.setCode(txtCode.getText());
+									
+									try {
+										Connection con = SqlConnection.getConnection();
+										PreparedStatement ps = con.prepareStatement("UPDATE disease SET name=?,"
+												+ "description=?, in_observation=? WHERE id=?");
+										ps.setString(1, txtName.getText());
+										ps.setString(2, txtDesc.getText());
+										if(chckbxIsWatched.isSelected() == true) {
+											ps.setInt(3, 1);
+										} else {
+											ps.setInt(3, 0);
+										}
+										ps.setString(4, disease);
+										
+										ps.executeUpdate();
+										
+										JOptionPane.showMessageDialog(null, "SE HA MODIFICADO LESSGOOO!");
+										
+										
+										
+									} catch (Exception e2) {
+										JOptionPane.showMessageDialog(null, "error dentro de update disease. " + e2.toString());
+										e2.printStackTrace();
+									}
+									
+									/*disease.setCode(txtCode.getText());
 									disease.setName(txtName.getText());
 									disease.setDescription(txtDesc.getText());
 									disease.setWatched(chckbxIsWatched.isSelected());
 									Clinic.getInstance().modifiedDisease(disease);
+									*/
+									ListDisease.loadSQLDisease();
 									dispose();
+									
+									
 								} else {
-									vaccine.setCode(txtCode.getText());
+									
+									try {
+										Connection con = SqlConnection.getConnection();
+										PreparedStatement ps = con.prepareStatement("UPDATE vaccine SET name=?,"
+												+ "description=? WHERE id=?");
+										ps.setString(1, txtName.getText());
+										ps.setString(2, txtDesc.getText());
+										ps.setString(3, vaccine);
+										
+										ps.executeUpdate();
+										
+										JOptionPane.showMessageDialog(null, "SE HA MODIFICADO LESSGOOO!");
+										
+										
+										
+									} catch (Exception e2) {
+										JOptionPane.showMessageDialog(null, "error dentro de update vaccine. " + e2.toString());
+										e2.printStackTrace();
+									}
+									
+									/*vaccine.setCode(txtCode.getText());
 									vaccine.setName(txtName.getText());
 									vaccine.setDescription(txtDesc.getText());
 									Clinic.getInstance().modifiedVaccine(vaccine);
+									*/
+									
+									ListVaccine.loadSQLVaccine();
 									dispose();
 								}
 							}
-							ListDisease.loadDisease();
-							ListVaccine.loadVaccine();
+							ListDisease.loadSQLDisease();
+							ListVaccine.loadSQLVaccine();
 								
 						} else {
 							JOptionPane.showMessageDialog(null, "¡Parámetro(s) sin completar!\nPor favor completar los campos.", "Información Vacía", JOptionPane.ERROR_MESSAGE);
@@ -173,7 +285,7 @@ public class CreateDiseaseVaccine extends JDialog {
 				buttonPane.add(btnCancel);
 			}
 		}
-		loadVD();
+		loadSQLVD();
 	}
 
 	private void clear() {
@@ -183,27 +295,93 @@ public class CreateDiseaseVaccine extends JDialog {
 		
 		if (type.equalsIgnoreCase("disease")) {
 			chckbxIsWatched.setSelected(false);
-			txtCode.setText(getCodeDisease(Clinic.getInstance().getCodeDisease()));
+			//txtCode.setText(getCodeDisease(Clinic.getInstance().getCodeDisease()));
 		}
 		else {
-			txtCode.setText(getCodeVaccine(Clinic.getInstance().getCodeVaccine()));			
+			//txtCode.setText(getCodeVaccine(Clinic.getInstance().getCodeVaccine()));			
+		}
+	}
+	private void loadSQLVD() {
+		if (disease != null) {
+			try {
+				PreparedStatement ps;
+				ResultSet rs;
+				Connection con = SqlConnection.getConnection();
+				
+				ps = con.prepareStatement("SELECT id, name, description, in_observation FROM disease "
+						+ "WHERE id = ?");
+				ps.setString(1, disease); //ESTE ES EL ID, PRIMERA POSICION
+				rs = ps.executeQuery();
+				
+				while (rs.next()) {
+					txtCode.setText(rs.getString("id"));
+					txtName.setText(rs.getString("name"));
+					txtDesc.setText(rs.getString("description"));
+					if(rs.getInt("in_observation") == 1) 
+						chckbxIsWatched.setSelected(true);
+					else 
+						chckbxIsWatched.setSelected(false);
+					
+				}
+				//ps.executeUpdate();
+				JOptionPane.showMessageDialog(null, "ALM SE ESTA VIENDO");
+				
+				
+				
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "error dentro del loaddisease . " +e.toString());
+				e.printStackTrace();
+			}
+		} else if (vaccine != null) {
+			try {
+				PreparedStatement ps;
+				ResultSet rs;
+				Connection con = SqlConnection.getConnection();
+				
+				ps = con.prepareStatement("SELECT id, name, description FROM vaccine "
+						+ "WHERE id=?");
+				ps.setString(1, vaccine); //ESTE ES EL ID, PRIMERA POSICION
+				rs = ps.executeQuery();
+				
+				while (rs.next()) {
+					txtCode.setText(rs.getString("id"));
+					txtName.setText(rs.getString("name"));
+					txtDesc.setText(rs.getString("description"));
+				}
+				//ps.executeUpdate();
+				JOptionPane.showMessageDialog(null, "ALM SE ESTA VIENDO");
+				
+				
+				
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "error dentro de THIS loadvaccine. " +e.toString());
+				e.printStackTrace();
+			}
 		}
 	}
 	
+	/*
 	private void loadVD() {
-		if (disease != null) {
+		if (disease != (-1)) {
+			
+			
 			txtCode.setText(disease.getCode());
 			txtName.setText(disease.getName());
 			txtDesc.setText(disease.getDescription());
 			chckbxIsWatched.setSelected(disease.isWatched());
 		}
-		else if (vaccine != null) {
+		else if (vaccine != (-1)) {
+			
+			
 			txtCode.setText(vaccine.getCode());
 			txtName.setText(vaccine.getName());
 			txtDesc.setText(vaccine.getDescription());
 		}
-	}
+	}*/
 	
+	
+	
+	/*
 	private static String getCodeVaccine(int codeVaccine) {
 		int total = codeVaccine / 10;
 		String code = null;
@@ -224,9 +402,9 @@ public class CreateDiseaseVaccine extends JDialog {
 		}
 		
 		return code;
-	}
+	}*/
 
-	
+	/*
 	private static String getCodeDisease(int codeDisease) {
 		int total = codeDisease / 10;
 		String code = null;
@@ -247,5 +425,5 @@ public class CreateDiseaseVaccine extends JDialog {
 		}
 		
 		return code;
-	}
+	}*/
 }

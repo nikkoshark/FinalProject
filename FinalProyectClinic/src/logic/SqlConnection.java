@@ -7,7 +7,7 @@ public class SqlConnection {
 	public static Connection getConnection(){
 		String url =
 	           "jdbc:sqlserver://localhost:1433; "
-	         + "databaseName=gestion_paquete_g4; "
+	         + "databaseName=clinica_m_f; "
 	         + "trustServerCertificate=true;"
 	         + "loginTimeout=30";
 

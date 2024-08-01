@@ -31,7 +31,14 @@ import Dashboards.AppointmentInfo;
 import Dashboards.GenderInfo;
 import logic.Appoinment;
 import logic.Clinic;
+import logic.SqlConnection;
+
 import java.beans.PropertyChangeListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.beans.PropertyChangeEvent;
 
 public class MMedicPanel extends JPanel {
@@ -41,7 +48,7 @@ public class MMedicPanel extends JPanel {
 	private JButton btnConsultar;
 	private JButton btnEdit;
 	private JButton btnDelete;
-	private Appoinment selAppoinment = null;
+	private String selAppoinment = null;
 	private GenderInfo ginfo;
 	private AppointmentInfo appinfo;
 	private JComboBox cbDash;
@@ -87,8 +94,9 @@ public class MMedicPanel extends JPanel {
 					btnConsultar.setEnabled(true);
 					btnDelete.setEnabled(true);
 					btnEdit.setEnabled(true);
-					String code = (String) table.getModel().getValueAt(index, 0);
-					selAppoinment = Clinic.getInstance().searchAppoinment(code);
+					selAppoinment = (String) table.getModel().getValueAt(index, 0);
+					//String code = (String) table.getModel().getValueAt(index, 0);
+					//selAppoinment = Clinic.getInstance().searchAppoinment(code);
 				}
 			}
 		});
@@ -122,18 +130,16 @@ public class MMedicPanel extends JPanel {
 		btnConsultar.setEnabled(false);
 		btnConsultar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				/*
 				if (selAppoinment.getStatus().equalsIgnoreCase("Visto")) {
 					JOptionPane.showMessageDialog(null, "Esta consulta ya fue realizada.", "Consulta hecha", JOptionPane.INFORMATION_MESSAGE);
-				}
-				else {
-					CreateCheckup createCheck = new CreateCheckup(selAppoinment, null);
-					createCheck.setModal(true);
-					createCheck.setVisible(true);
-					btnConsultar.setEnabled(false);
-					btnDelete.setEnabled(false);
-					btnEdit.setEnabled(false);					
-				}
+				}*/ //HABIA UN ELSE AQUI
+				CreateCheckup createCheck = new CreateCheckup(selAppoinment, null);
+				createCheck.setModal(true);
+				createCheck.setVisible(true);
+				btnConsultar.setEnabled(false);
+				btnDelete.setEnabled(false);
+				btnEdit.setEnabled(false);	
 				
 			}
 		});
@@ -149,7 +155,7 @@ public class MMedicPanel extends JPanel {
 		dateChooser = new JDateChooser();
 		dateChooser.addPropertyChangeListener(new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent evt) {
-				loadAppointments();
+				loadSQLApp();
 			}
 		});
 		dateChooser.setBounds(650, 23, 117, 20);
@@ -195,16 +201,15 @@ public class MMedicPanel extends JPanel {
 		btnEdit = new JButton("EDITAR CITA");
 		btnEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (selAppoinment.getStatus().equalsIgnoreCase("Visto")) {
+				/*if (selAppoinment.getStatus().equalsIgnoreCase("Visto")) {
 					JOptionPane.showMessageDialog(null, "Esta consulta ya fue realizada.", "Consulta hecha", JOptionPane.INFORMATION_MESSAGE);
-				}
-				else {
-					CreateAppointment regApp = new CreateAppointment(selAppoinment);
-					regApp.setModal(true);
-					regApp.setVisible(true);
-					btnEdit.setEnabled(false);
-					btnDelete.setEnabled(false);
-				}
+				}*/
+				CreateAppointment regApp = new CreateAppointment(selAppoinment);
+				regApp.setModal(true);
+				regApp.setVisible(true);
+				btnEdit.setEnabled(false);
+				btnDelete.setEnabled(false);
+				
 			}
 		});
 		btnEdit.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 20));
@@ -216,17 +221,33 @@ public class MMedicPanel extends JPanel {
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(selAppoinment != null) {
-					if (selAppoinment.getStatus().equalsIgnoreCase("Visto")) {
+					/*if (selAppoinment.getStatus().equalsIgnoreCase("Visto")) {
 						JOptionPane.showMessageDialog(null, "Esta consulta ya fue realizada.", "Consulta hecha", JOptionPane.INFORMATION_MESSAGE);
-					}
-					else {
-						int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar la cita de: " + selAppoinment.getName() + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
+					}*/
+						int option = JOptionPane.showConfirmDialog(null, "¿Desea eliminar la cita de: " + selAppoinment + "?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
 						if (option == JOptionPane.OK_OPTION) {
-							Clinic.getInstance().removeAppoinment(selAppoinment);
-							btnEdit.setEnabled(false);
-							btnDelete.setEnabled(false);
-							loadAppointments();
-						}
+
+							try { 
+								Connection con = SqlConnection.getConnection();
+								PreparedStatement ps;
+								ps = con.prepareStatement("DELETE FROM appointment WHERE id=? ");
+								ps.setString(1, selAppoinment);
+								//EL ÓRDEN DE CÓMO SE VA A INSERTAR ES EN BASE AL QUERY
+								
+								ps.executeUpdate();
+								
+								JOptionPane.showMessageDialog(null, "SE BORRÓ NMMS QUE FELIZ!");
+								//clean();
+								
+							} catch (SQLException e1) {
+								JOptionPane.showMessageDialog(null, "error dentro de ELIMINAR. sadge. " + e1.toString());
+								e1.printStackTrace();
+							}
+							
+						/*Clinic.getInstance().removeAppoinment(selAppoinment);
+						btnEdit.setEnabled(false);
+						btnDelete.setEnabled(false);*/
+						loadSQLApp();
 					}
 				}
 			}
@@ -236,7 +257,7 @@ public class MMedicPanel extends JPanel {
 		btnDelete.setBounds(1065, 510, 248, 41);
 		panel.add(btnDelete);
 
-		loadAppointments();
+		loadSQLApp();
 	}
 	
 
@@ -247,6 +268,40 @@ public class MMedicPanel extends JPanel {
 		
 	}
 
+	public static void loadSQLApp() {
+		model.setRowCount(0);
+		row = new Object[table.getColumnCount()];
+		PreparedStatement ps;
+		ResultSet rs;
+		ResultSetMetaData rsmd;
+		int columns;
+		
+		try {
+			Connection con = SqlConnection.getConnection();
+			ps = con.prepareStatement("SELECT a.id, a.ssn_patient, a.name_patient, "
+					+ "a.time_a, a.status FROM appointment a ");
+			rs = ps.executeQuery();
+			rsmd = rs.getMetaData();
+			columns = rsmd.getColumnCount();
+			
+			
+			while (rs.next()) {
+				Object[] fila = new Object[columns];
+				for(int indice=0; indice<columns; indice++) {
+					fila[indice] = rs.getObject(indice+1);
+				}
+				model.addRow(fila);
+			}
+			
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "error dentro de AQUIII MMedicPanel, loadsqlapp. " +e.toString());
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/*
 	public static void loadAppointments() {
 		model.setRowCount(0);
 		row = new Object[table.getColumnCount()];
@@ -265,7 +320,7 @@ public class MMedicPanel extends JPanel {
 
 			}
 		}
-	}
+	}*/
 
 
 	private class PanelButtonMouseAdapter extends MouseAdapter{
@@ -290,4 +345,6 @@ public class MMedicPanel extends JPanel {
 			sPatient.setVisible(true);
 		}
 	}
+
+
 }

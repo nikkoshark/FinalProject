@@ -11,6 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.toedter.calendar.JDateChooser;
 
 import logic.CheckUp;
@@ -19,6 +21,7 @@ import logic.Disease;
 import logic.Medic;
 import logic.Patient;
 import logic.Person;
+import logic.SqlConnection;
 import logic.Vaccine;
 
 import javax.swing.JTextArea;
@@ -30,6 +33,10 @@ import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 
 public class CheckupInfoPanel extends JPanel {
 	private static JDateChooser dateChooser;
@@ -43,16 +50,26 @@ public class CheckupInfoPanel extends JPanel {
 	private static Object[] row;
 	private static LocalDateTime localDateTime;
 	private static JComboBox cbVaccine;
-	private static Patient patient  = null;
+	private static String patient  = null;
 	private static ArrayList<Disease> patientsDiseases = new ArrayList<>();
 	private static ArrayList<Disease> avaibleDiseases = new ArrayList<>();
 
 	/**
 	 * Create the panel.
 	 */
-	public CheckupInfoPanel(LocalDateTime date, Person patientReceive) {
-		patient = (Patient) patientReceive;
-		localDateTime = date;
+	public CheckupInfoPanel(String date, String patientReceive) {
+		patient =  patientReceive;
+		
+		try {
+			Connection c = SqlConnection.getConnection();
+			PreparedStatement ps = c.prepareStatement("SELECT date_a FROM appointment WHERE id=?");
+			ps.setObject(1, date);
+			ResultSet rs = ps.executeQuery();
+			localDateTime = LocalDateTime.parse(rs.getObject("date_a").toString());
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		
 		setBackground(SystemColor.inactiveCaption);
 		setSize(614,403);
@@ -68,7 +85,7 @@ public class CheckupInfoPanel extends JPanel {
 		}
 		
         ZoneId zoneId = ZoneId.systemDefault();
-		Date dateTime = Date.from(date.atZone(zoneId).toInstant());
+		Date dateTime = Date.from(localDateTime.atZone(zoneId).toInstant());
 		
 		dateChooser = new JDateChooser(dateTime);
 		dateChooser.setBounds(10, 28, 87, 20);
@@ -130,8 +147,8 @@ public class CheckupInfoPanel extends JPanel {
 				if (e.getClickCount() == 2) {
 					patientsDiseases.add(avaibleDiseases.get(tableAv.getSelectedRow()));
 					avaibleDiseases.remove(avaibleDiseases.get(tableAv.getSelectedRow()));
-					loadDiseasePat();
-					loadDiseaseAv();
+					//loadDiseasePat();
+					//loadDiseaseAv();
 				}
 			}
 		});
@@ -155,8 +172,8 @@ public class CheckupInfoPanel extends JPanel {
 				if (e.getClickCount() == 2) {
 					avaibleDiseases.add(patientsDiseases.get(tablePat.getSelectedRow()));
 					patientsDiseases.remove(patientsDiseases.get(tablePat.getSelectedRow()));
-					loadDiseaseAv();
-					loadDiseasePat();
+					//loadDiseaseAv();
+					//loadDiseasePat();
 				}
 			}
 		});
@@ -182,11 +199,11 @@ public class CheckupInfoPanel extends JPanel {
 		chbxMedicalR.setBounds(408, 359, 196, 23);
 		add(chbxMedicalR);
 		
-		loadVaccines();
-		loadDiseaseAv();
-		loadDiseasePat();
+		//loadVaccines();
+		//loadDiseaseAv();
+		//loadDiseasePat();
 	}	
-
+/*
 	private void loadVaccines() {
 		cbVaccine.removeAllItems();
 		cbVaccine.insertItemAt(new String("<SELECCIONAR>"), 0);
@@ -211,7 +228,9 @@ public class CheckupInfoPanel extends JPanel {
 		
 		cbVaccine.setSelectedIndex(0);
 	}
+	*/
 	
+	/*
 	private void loadDiseaseAv() {
 		model.setRowCount(0);
 		row = new Object[tableAv.getColumnCount()];
@@ -221,7 +240,10 @@ public class CheckupInfoPanel extends JPanel {
 			model.addRow(row);			
 		}
 	}
+	*/
 	
+	
+	/*
 	private void loadDiseasePat() {
 		modelPatient.setRowCount(0);
 		row = new Object[tablePat.getColumnCount()];
@@ -234,6 +256,9 @@ public class CheckupInfoPanel extends JPanel {
 			}
 		}
 	}
+	*/
+	
+	
 	private static String getCodeCheckup(int codeCheck) {
 		int total = codeCheck / 10;
 		String code = null;
@@ -255,7 +280,7 @@ public class CheckupInfoPanel extends JPanel {
 		
 		return code;
 	}
-	
+	/*
 	public static CheckUp sendCheckUp(Person aPatient, Medic aMedic) {
 		String diagnosis = txtaDiagnosis.getText();
 		String symptoms = txtaSymptoms.getText();
@@ -268,7 +293,7 @@ public class CheckupInfoPanel extends JPanel {
 				}
 			}
 			
-			CheckUp checkUp = new CheckUp(getCodeCheckup(Clinic.getInstance().getCodeCheckUp()), diagnosis, symptoms, localDateTime, aMedic , (Patient)aPatient, null/*myDiseases*/, chbxMedicalR.isSelected());
+			CheckUp checkUp = new CheckUp(getCodeCheckup(Clinic.getInstance().getCodeCheckUp()), diagnosis, symptoms, localDateTime, aMedic , (Patient)aPatient, null, chbxMedicalR.isSelected());
 			Clinic.getInstance().insertCheckUp(checkUp);
 			return checkUp;
 		}
@@ -278,17 +303,21 @@ public class CheckupInfoPanel extends JPanel {
 		
 		return null;
 	}
+	*/
 	
+	
+	/*
 	public static Vaccine sendVaccine() {
 		return Clinic.getInstance().getMyVaccines().get(cbVaccine.getSelectedIndex());
-	}
+	}*/
 
+	/*
 	public static ArrayList<Disease> sendDisease() {
 		for(Disease disease : Clinic.getInstance().getMyDiseases()) { // the ones added to the checkup
 			patientsDiseases.add(disease);
 		}
 		return patientsDiseases;
 	}
-	
+	*/
 	
 }

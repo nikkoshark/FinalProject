@@ -4,8 +4,10 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.time.LocalDate;
+import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
 
 import login.User;
 
@@ -22,13 +24,15 @@ public class Clinic implements Serializable{
 	private static Clinic clinic = null;
 	private static User loginUser = null;
 	private Integer codePerson = null;
+	private Integer codeSQLPerson = null;
 	private Integer codeCheckUp = null;
 	private Integer codeAppoinment = null;
 	private Integer codeVaccine = null;
 	private Integer codeDisease = null;
-	private Connection con = SqlConnection.getConnection();
-	private PreparedStatement ps1;
-	private ResultSet rs1;
+	private static Connection con = SqlConnection.getConnection();
+	private static PreparedStatement ps;
+	private static ResultSet rs;
+	private static ResultSetMetaData rsmd;
 	
 	private Clinic() {
 		this.myPersons = new ArrayList<Person>();
@@ -39,12 +43,11 @@ public class Clinic implements Serializable{
 		this.myUsers = new ArrayList<User>();
 		
 		this.codePerson = new Integer(1);
+		this.codeSQLPerson = new Integer(1);
 		this.codeCheckUp = new Integer(1);
 		this.codeAppoinment = new Integer(1);
 		this.codeVaccine = new Integer(1);
 		this.codeDisease = new Integer(1);
-		
-		
 		
 		
 	}
@@ -55,8 +58,26 @@ public class Clinic implements Serializable{
 		}
 		return clinic;
 	}
+	
+	public Integer getSQLCodePerson() {
+		//con = sql
+		try {
+			ps = con.prepareStatement("SELECT COUNT(id) FROM person");
+			//ps.executeQuery();
+			rs = ps.executeQuery();
+			rsmd = rs.getMetaData();
+			int total = rsmd.getColumnCount();
+			return total+1;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR en Clinic.ISUNIQUEUSERSQL. " + e.toString());
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	
 	public Integer getCodePerson() {
-		return codePerson;
+		return codeSQLPerson;
 	}
 	
 	public Integer getCodeCheckUp() {
@@ -140,6 +161,60 @@ public class Clinic implements Serializable{
 	}
 	
 	//searching algorithms
+	
+	//QUERYS -------------------------------------------------------------------------------------------
+	public boolean isUniqueSSNSQL(String medicSQL, String textfromtxt) {
+
+		
+		try {
+			
+			ps = con.prepareStatement("SELECT ssn FROM person WHERE id=?");
+			ps.setString(1, medicSQL); //ESTE ES EL ID, PRIMERA POSICION
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				if(rs.getString("ssn").equals(textfromtxt)) {
+					return false;
+				}
+			}
+			
+		} catch (Exception e2) {
+			JOptionPane.showMessageDialog(null, "Error en Clinic.ISUNIQUESSNSQL. " + e2.toString());
+			e2.printStackTrace();
+		}
+		return true;
+	}
+	
+	public boolean isUniqueUserSQL(int userSQL, String textfromtxt) {
+
+		try {
+			ps = con.prepareStatement("SELECT username FROM [user] WHERE id=?");
+			ps.setInt(1, userSQL); //ESTE ES EL ID, PRIMERA POSICION
+			rs = ps.executeQuery();
+			
+			if(rs.getString("username").equals(true)) 
+				return false;
+			
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR en Clinic.ISUNIQUEUSERSQL. " + e.toString());
+			e.printStackTrace();
+		}
+		return true;
+	}
+	
+/*
+	public boolean isUniqueUserName(String name) {
+		
+		for (User use : myUsers) {
+			if (use.getName().equalsIgnoreCase(name)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	*/
 	
 	//searching object by code
 	public Person searchPerson(String ssn) {
@@ -263,10 +338,27 @@ public class Clinic implements Serializable{
 		return -1;
 	}
 	
-	//insertion methods
+	//INSERT -------------------------------------------
+	
+	
+	//TBD
+/*
+	public void insertSQLPerson(int person) {
+		//myPersons.add(person);
+		try {
+			ps = con.prepareStatement("SELECT COUNT(id) FROM person");
+			ps.executeQuery();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR en Clinic.ISUNIQUEUSERSQL. " + e.toString());
+			e.printStackTrace();
+		}
+		codeSQLPerson++;
+	}*/
+	
 	public void insertUser(User user) {
 		myUsers.add(user);
 	}
+	/*
 	
 	public void insertPerson(Person person) {
 		myPersons.add(person);
@@ -291,9 +383,11 @@ public class Clinic implements Serializable{
 	public void insertDisease(Disease disease) {
 		myDiseases.add(disease);
 		codeDisease++;
-	}
+	}*/
 	
-	//modified methods
+	//MODIFY ----------------------------------------------------
+	
+	/*
 	public void modifiedUser(User user) {
 		myUsers.set(getIndexUser(user.getName()), user);
 	}
@@ -312,9 +406,11 @@ public class Clinic implements Serializable{
 	
 	public void modifiedPerson(Person person) {
 		myPersons.set(getIndexPerson(person.getCode()), person);
-	}
+	}*/
 	
-	//remove methods
+	//REMOVE --------------------------------------------------------
+	
+	/*
 	public void removeUser(User user) {
 		myUsers.remove(user);
 	}
@@ -338,7 +434,7 @@ public class Clinic implements Serializable{
 	public void removeDisease(Disease disease) {
 		myDiseases.remove(disease);
 	}
-	
+	*/
 	
 	
 	//analytics methods
@@ -434,6 +530,31 @@ public class Clinic implements Serializable{
 		return appoinments;
 	}
 	
+	/*
+	public boolean validSQLUser(String username, String psw) {
+		try {
+			//con = SqlConnection.getConnection();
+			ps = con.prepareStatement("SELECT username, password FROM [user]"
+					+ "WHERE username=?");
+			ps.setString(1, username);
+			
+			while (rs.next()) {
+				if(rs.getString("username").equals(username) && rs.getString("password").equals(psw)) {
+					loginUser = username;
+					return true;
+				}
+			}
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR en Clinic.validSQLUser. " + e.toString());
+			e.printStackTrace();
+		}
+		return false;
+	}
+	*/
+	
+	
+	
 	public boolean validUser(String username, String psw) {
 		for(User user: myUsers) {
 			if(user.getName().equals(username) && user.getPassword().equals(psw)) {
@@ -467,15 +588,5 @@ public class Clinic implements Serializable{
 		return true;
 	}
 	
-	public boolean isUniqueUserName(String name) {
-		
-		for (User use : myUsers) {
-			if (use.getName().equalsIgnoreCase(name)) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
 	
 }

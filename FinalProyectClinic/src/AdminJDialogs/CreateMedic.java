@@ -10,13 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
-import org.jfree.date.EasterSundayRule;
-
 import logic.Clinic;
-import logic.Medic;
-import logic.Person;
 import logic.SqlConnection;
-import sun.security.mscapi.CKeyPairGenerator.RSA;
 
 import java.awt.SystemColor;
 import javax.swing.JLabel;
@@ -31,18 +26,14 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.awt.event.ActionEvent;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerListModel;
 import com.toedter.calendar.JDateChooser;
 
 import AdminPanels.ListMedic;
-import jdk.nashorn.internal.objects.annotations.Where;
 
 import javax.swing.JFormattedTextField;
 
@@ -94,7 +85,7 @@ public class CreateMedic extends JDialog {
 
 			txtCode = new JTextField();
 			txtCode.setEditable(true); //CAMBIADO PARA EL ESPERIMENTO XD
-			//txtCode.setText(getCodePerson(Clinic.getInstance().getCodePerson()));
+			txtCode.setText((Clinic.getInstance().getSQLCodePerson()).toString());
 			txtCode.setColumns(10);
 			txtCode.setBounds(39, 77, 85, 20);
 			contentPanel.add(txtCode);
@@ -214,7 +205,7 @@ public class CreateMedic extends JDialog {
 							!ftxtPhone.getText().isEmpty() && dateChooserBirthday.getDate().getYear() < dateCompare.getYear() - 20) {
 							//VERIFICA QUE CADA UNA DE LOS TXT NO ESTÉ VACÍO
 							
-							
+							/*
 							//PASAR ESTA VERIFICACIÓN A CLINIC
 							int thatsright = 0;
 							try {
@@ -236,9 +227,10 @@ public class CreateMedic extends JDialog {
 								JOptionPane.showMessageDialog(null, "error en el connection de arriba idk " + e2.toString());
 								e2.printStackTrace();
 							}
+							*/
 							
-							
-							if(thatsright == 0 || medicSQL != null) {
+							if(Clinic.getInstance().isUniqueSSNSQL(medicSQL,ftxtSSN.getText()) || medicSQL != null) {
+								//if its true means that there is no equal ssn.
 								/*Clinic.getInstance().isUniqueSsnNumber(ftxtSSN.getText()) */
 								//ESTE IF DEBERIA DE PASAR LA INFO SI EL USUARIO ES UNICO, MEDIC != NULL <<-
 								
@@ -250,8 +242,9 @@ public class CreateMedic extends JDialog {
 								String address = txtAAddress.getText();
 								Date date = dateChooserBirthday.getDate();
 								char sex = String.valueOf(cbSex.getSelectedItem()).charAt(0);
-								String speciality = String.valueOf(cbSpeciality.getSelectedItem());
+								int speciality = cbSpeciality.getSelectedIndex();
 								boolean available = chbxAvailable.isSelected();
+								String medic_user = txtCode.getText();
 								
 								
 								if(medicSQL == null) {
@@ -261,9 +254,9 @@ public class CreateMedic extends JDialog {
 									try { 
 										Connection con = SqlConnection.getConnection();
 										PreparedStatement ps;
-										ps = con.prepareStatement("INSERT INTO ejemplo_noid(id, ssn, "
-												+ "nombre, apellido, telefono, direccion, fecha_nacimiento, sexo, "
-												+ "especialidad, available) VALUES (?,?,?,?,?,?,?,?,?,?)");
+										ps = con.prepareStatement("INSERT INTO person(id, ssn, name, last_name, phone,"
+												+ "direction, date_birth, sex) VALUES(?,?,?,?,?,?,?,?);"
+												+ "INSERT INTO medic(id_person, id_speciality, is_avaible, id_user) VALUES(?,?,?,?)");
 										ps.setString(1, code);
 										ps.setString(2, ssn);
 										ps.setString(3, name);
@@ -272,12 +265,18 @@ public class CreateMedic extends JDialog {
 										ps.setString(6, address);
 										ps.setObject(7, date, java.sql.Types.DATE);
 										ps.setString(8, Character.toString(sex));
-										ps.setString(9, speciality);
+										ps.setString(9, code);
+										
+										ps.setInt(10, speciality);
 										if(available == true) {
-											ps.setInt(10, 1);
+											ps.setInt(11, 1);
 										} else if(available == false){
-											ps.setInt(10, 0);
+											ps.setInt(11, 0);
 										}
+										ps.setString(12, medic_user);
+										
+										
+										//ps1 = con.prepareStatement("INSERT INTO medic(id_person, id_speciality, is_available, id_user) VALUES(?,?,?,?)");
 										//EL ÓRDEN DE CÓMO SE VA A INSERTAR ES EN BASE AL QUERY
 										
 										ps.executeUpdate();
@@ -309,6 +308,9 @@ public class CreateMedic extends JDialog {
 								} else {
 									//ESTO NO SE SI VAYA A FUNCIONAR, PERO DEBERIA DE SER PARA CUANDO SE HACE UPDATE
 									
+									
+									//worthless?
+									/*
 									code = txtCode.getText();
 									ssn =  ftxtSSN.getText();
 									name = txtName.getText();
@@ -319,13 +321,13 @@ public class CreateMedic extends JDialog {
 									sex = String.valueOf(cbSex.getSelectedItem()).charAt(0);
 									speciality = String.valueOf(cbSpeciality.getSelectedItem());
 									available = chbxAvailable.isSelected();
-									
+									*/
 									try {
 										Connection con = SqlConnection.getConnection();
 										PreparedStatement ps;
-										ps = con.prepareStatement("UPDATE ejemplo_noid SET ssn=?, "
-												+ "nombre=?, apellido=?, telefono=?, direccion=?, fecha_nacimiento=?, sexo=?, "
-												+ "especialidad=?, available=? WHERE id=? ");
+										ps = con.prepareStatement("UPDATE person SET ssn=?, "
+												+ "name=?, last_name=?, phone=?, direction=?, date_birth=?, sex=? WHERE id=? "
+												+ "UPDATE medic SET id_speciality=?, is_avaible=? WHERE id_person=? ");
 										ps.setString(1, ssn);
 										ps.setString(2, name);
 										ps.setString(3, lastName);
@@ -333,13 +335,17 @@ public class CreateMedic extends JDialog {
 										ps.setString(5, address);
 										ps.setObject(6, date, java.sql.Types.DATE);
 										ps.setString(7, Character.toString(sex));
-										ps.setString(8, speciality);
+										ps.setString(8, code);
+										
+										ps.setInt(9, speciality);
+										
+										
 										if(available == true) {
-											ps.setInt(9, 1);
+											ps.setInt(10, 1);
 										} else if(available == false){
-											ps.setInt(9, 0);
+											ps.setInt(10, 0);
 										}
-										ps.setString(10, code);
+										ps.setString(11, code);
 											//EL ÓRDEN DE CÓMO SE VA A INSERTAR ES EN BASE AL QUERY
 											
 										ps.executeUpdate();
@@ -406,9 +412,9 @@ public class CreateMedic extends JDialog {
 	//WILL NEED TO BE REMOVED. I THINK.
 	//OR FIXED, SO THAT IT GOES THROUGH SQL INSTEAD OF HERE.
 	private static String getCodePerson(int codePerson) {
-		int total = codePerson / 10;
+		//int total = codePerson / 10;
 		String code = null;
-		
+		/*
 		code = "P-0000" + codePerson;
 		
 		if (total >= 1 && total < 10) {
@@ -423,7 +429,7 @@ public class CreateMedic extends JDialog {
 		else if (total >= 1000) {
 			code = "P-" + codePerson;
 		}
-		
+		*/
 		return code;
 	}
 
@@ -449,43 +455,41 @@ public class CreateMedic extends JDialog {
 				PreparedStatement ps;
 				ResultSet rs;
 	
+						//+ "JOIN speciality ON speciality.id = medic.id_speciality"
 				Connection con = SqlConnection.getConnection();
-				ps = con.prepareStatement("SELECT id, ssn, "
-						+ "nombre, apellido, telefono, direccion, fecha_nacimiento, sexo, "
-						+ "especialidad, available FROM ejemplo_noid WHERE id=?");
+				ps = con.prepareStatement("SELECT m.id_speciality, m.is_avaible, p.id, p.ssn, "
+				        + "p.name, p.last_name, p.phone, p.direction, p.date_birth, p.sex "
+				        + "FROM medic m "
+				        + "FULL JOIN person p ON p.id = m.id_person "
+				        + "WHERE m.id_person = ?");
 				ps.setString(1, medicSQL); //ESTE ES EL ID, PRIMERA POSICION
 				rs = ps.executeQuery();
 				
 				while(rs.next()) {
-					txtCode.setText(String.valueOf(medicSQL));
+					txtCode.setText(rs.getString("id"));
 					ftxtSSN.setText(rs.getString("ssn"));
-					txtName.setText(rs.getString("nombre"));
-					txtLastName.setText(rs.getString("apellido"));
-					ftxtPhone.setText(rs.getString("telefono"));
-					txtAAddress.setText(rs.getString("direccion"));
-					dateChooserBirthday.setDate(rs.getDate("fecha_nacimiento"));
-					if(rs.getString("sexo").equalsIgnoreCase("F")) 
-						cbSex.setSelectedIndex(1);
-					else 
-						cbSex.setSelectedIndex(2);
-					
-					cbSpeciality.setSelectedItem(rs.getString("especialidad"));
-					
-					if(rs.getInt("available") == 1) 
+					txtName.setText(rs.getString("name"));
+					txtLastName.setText(rs.getString("last_name"));
+					ftxtPhone.setText(rs.getString("phone"));
+					txtAAddress.setText(rs.getString("direction"));
+					dateChooserBirthday.setDate(rs.getDate("date_birth"));
+					cbSex.setSelectedItem(rs.getString("sex"));
+					cbSpeciality.setSelectedIndex(rs.getInt("id_speciality"));
+					if(rs.getInt("is_avaible") == 1) 
 						chbxAvailable.setSelected(true);
-					else if (rs.getInt("available") == 0) 
+					else //(rs.getInt("available") == 0) 
 						chbxAvailable.setSelected(false);
 				}
 				
 				
-				ps.executeUpdate();
+				//ps.executeUpdate();
 				JOptionPane.showMessageDialog(null, "ALM SE ESTA VIENDO");
-				clean();
+				//clean();
 				
 				
 				
 			} catch (SQLException esql) {
-				JOptionPane.showMessageDialog(null, "error dentro del loadsqlmedic. " +esql.toString());
+				JOptionPane.showMessageDialog(null, "error dentro del createmdeic loadsqlmedic. " +esql.toString());
 				esql.printStackTrace();
 			}
 		}
