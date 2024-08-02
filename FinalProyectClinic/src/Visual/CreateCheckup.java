@@ -163,7 +163,7 @@ public class CreateCheckup extends JDialog {
 				txtCode = new JTextField();
 				txtCode.setEditable(false);
 				txtCode.setColumns(10);
-				txtCode.setText(getCodePatient(Clinic.getInstance().getCodePerson()));
+				//txtCode.setText(getCodePatient(Clinic.getInstance().getCodePerson()));
 				txtCode.setBounds(10, 43, 120, 20);
 				patientP.add(txtCode);
 				
@@ -481,7 +481,6 @@ public class CreateCheckup extends JDialog {
 			
 			
 			//ps.executeUpdate();
-			JOptionPane.showMessageDialog(null, "ALM SE ESTA VIENDO");
 			//clean();
 			
 			

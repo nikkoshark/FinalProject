@@ -18,9 +18,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
@@ -29,8 +26,6 @@ import com.toedter.calendar.JDateChooser;
 
 import Dashboards.AppointmentInfo;
 import Dashboards.GenderInfo;
-import logic.Appoinment;
-import logic.Clinic;
 import logic.SqlConnection;
 
 import java.beans.PropertyChangeListener;

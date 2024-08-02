@@ -58,13 +58,13 @@ public class VaccinesInfo extends JPanel {
 	
 	}
 	
-	/*
-	public static void refreshChart(int selVaccine) {
+	
+	public static void refreshChart(String selVaccine) {
 		
 		dataset.clear();
 			
-		cantVaccinated = Clinic.getInstance().totalPatientsWithVaccine(selVaccine.getCode());
-		String titlet = selVaccine.getName();
+		cantVaccinated = Clinic.getInstance().totalPatientsWithVaccine(selVaccine);
+		String titlet = selVaccine;
 		
 		dataset.setValue("Vacunados", cantVaccinated);
 		dataset.setValue("No vacunados", Clinic.getInstance().getMyPersons().size() - cantVaccinated); 
@@ -72,7 +72,7 @@ public class VaccinesInfo extends JPanel {
 		chart.setTitle("Vacunados de: "+titlet);
 		
 		
-	}*/
+	}
 	
 	
 }
